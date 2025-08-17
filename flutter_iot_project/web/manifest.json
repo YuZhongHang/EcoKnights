@@ -1,6 +1,6 @@
 {
-    "name": "flutter_iot_project",
-    "short_name": "flutter_iot_project",
+    "name": "auth_bloc",
+    "short_name": "auth_bloc",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
