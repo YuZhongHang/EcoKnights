@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../logic/cubit/auth_cubit.dart';
 import '../screens/create_password/ui/create_password.dart';
 import '../screens/forget/ui/forget_screen.dart';
-import '../screens/home/ui/home_sceren.dart';
+import '../screens/home/ui/home_screen.dart';
 import '../screens/login/ui/login_screen.dart';
 import '../screens/signup/ui/sign_up_sceen.dart';
+import '../screens/profile/profile_screen.dart';
 import 'routes.dart';
+
 
 class AppRouter {
   late AuthCubit authCubit;
@@ -63,6 +65,13 @@ class AppRouter {
             child: const LoginScreen(),
           ),
         );
+
+      case Routes.home:
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case Routes.profileScreen:
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      default:
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
     }
     return null;
   }

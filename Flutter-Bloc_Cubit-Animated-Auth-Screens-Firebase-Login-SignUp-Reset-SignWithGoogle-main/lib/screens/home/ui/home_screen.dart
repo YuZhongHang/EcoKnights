@@ -75,6 +75,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyles.font15DarkBlue500Weight
                     .copyWith(fontSize: 30.sp),
               ),
+
+              SizedBox(height: 20.h),
+
+              AppTextButton(
+                buttonText: 'Go to Profile',
+                textStyle: TextStyles.font15DarkBlue500Weight,
+                onPressed: () {
+                  context.pushNamed(Routes.profileScreen);
+                },
+                ),
+
+                SizedBox(height: 20.h),
+
               BlocConsumer<AuthCubit, AuthState>(
                 buildWhen: (previous, current) => previous != current,
                 listenWhen: (previous, current) => previous != current,
