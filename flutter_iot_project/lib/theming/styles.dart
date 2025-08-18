@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'colors.dart';
 
 class TextStyles {
-  static TextStyle font24Blue700Weight = TextStyle(
+  static TextStyle font24Blue700Weight = GoogleFonts.robotoSlab(
     fontSize: 24.sp,
     fontWeight: FontWeight.w700,
     color: ColorsManager.mainBlue,
   );
 
-  static TextStyle font14Blue400Weight = TextStyle(
+  static TextStyle font14Blue400Weight = GoogleFonts.roboto(
     fontSize: 14.sp,
     fontWeight: FontWeight.w400,
     color: ColorsManager.mainBlue,

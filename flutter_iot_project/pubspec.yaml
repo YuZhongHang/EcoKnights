@@ -44,6 +44,7 @@ dependencies:
   gap: ^3.0.1
   google_sign_in: ^6.2.1
   rive: ^0.13.4
+  google_fonts: ^5.0.0
 
 dev_dependencies:
   flutter_lints: ^4.0.0
@@ -87,3 +88,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  
