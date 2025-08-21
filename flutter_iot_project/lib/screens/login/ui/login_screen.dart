@@ -32,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.lightYellow,
       body: OfflineBuilder(
         connectivityBuilder: (
           BuildContext context,
@@ -117,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Login',
                           style: TextStyles.font24Blue700Weight,
                         ),
-                        Gap(10.h),
+                        Gap(5.h),
                         Text(
                           "Login To Continue Using The App",
                           style: TextStyles.font14Grey400Weight,
