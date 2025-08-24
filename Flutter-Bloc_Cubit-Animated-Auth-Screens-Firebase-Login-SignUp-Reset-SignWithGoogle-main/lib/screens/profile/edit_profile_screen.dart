@@ -263,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       // Save to Firestore (merge)
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'name': newName,
+        'username': newName,
         'phoneNumber': fullPhone,
         'photoURL': user.photoURL ?? '',
         'updatedAt': FieldValue.serverTimestamp(),

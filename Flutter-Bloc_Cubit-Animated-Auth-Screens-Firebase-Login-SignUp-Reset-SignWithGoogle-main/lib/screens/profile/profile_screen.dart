@@ -1,9 +1,8 @@
-// In lib/ui/profile/profile_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../profile/edit_profile_screen.dart';
+import 'change_password_screen.dart'; // New page
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,9 +30,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/login');
-      // ⚠️ Replace '/login' with the route name of your login screen
+      Navigator.of(context)
+          .pushReplacementNamed('/login'); // Replace with your login route
     }
+  }
+
+  Widget _buildButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(200, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(text, style: const TextStyle(fontSize: 16)),
+      ),
+    );
   }
 
   @override
@@ -64,35 +79,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
               user?.email ?? 'No Email',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const EditProfileScreen(),
-                  ),
-                );
-                _refreshUser(); // refresh after coming back
-              },
-              child: const Text('Edit Profile'),
-            ),
-            const SizedBox(height: 20),
-            // 🚀 Logout button
-            ElevatedButton(
-              onPressed: _logout,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                minimumSize: const Size(150, 45),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            const SizedBox(height: 30),
+            // Buttons
+            _buildButton('Edit Profile', () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EditProfileScreen(),
                 ),
-              ),
-              child: const Text(
-                'Log Out',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
+              );
+              _refreshUser();
+            }),
+            _buildButton('Change Password', () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ChangePasswordScreen(),
+                ),
+              );
+            }),
+            _buildButton('Log Out', _logout),
           ],
         ),
       ),
