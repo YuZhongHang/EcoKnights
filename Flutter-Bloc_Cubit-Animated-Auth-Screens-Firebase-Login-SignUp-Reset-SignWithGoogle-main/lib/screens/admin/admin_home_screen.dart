@@ -1,3 +1,4 @@
+import 'package:auth_bloc/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,8 +32,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       // Load current user data
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final userDoc =
-            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
 
         if (userDoc.exists) {
           currentUser = UserModel.fromFirestore(userDoc);
@@ -50,7 +53,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
   Future<void> _loadUserStats() async {
     try {
-      final usersQuery = await FirebaseFirestore.instance.collection('users').get();
+      final usersQuery =
+          await FirebaseFirestore.instance.collection('users').get();
 
       final stats = <String, int>{
         'total': 0,
@@ -137,21 +141,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  void _navigateToEditProfile() {
+  void _navigateToViewProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+      MaterialPageRoute(builder: (context) => const ProfileScreen()),
     ).then((_) => _loadAdminData());
   }
 
   // Admin action items
   List<AdminActionItem> get _adminActions => [
         AdminActionItem(
-          title: 'Edit Profile',
+          title: 'View Profile',
           subtitle: 'Update your info',
-          icon: Icons.edit,
+          icon: Icons.account_circle,
           color: Colors.pink,
-          onTap: _navigateToEditProfile,
+          onTap: _navigateToViewProfile,
         ),
         AdminActionItem(
           title: 'Manage Users',
@@ -161,13 +165,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           onTap: _navigateToUserManagement,
         ),
         AdminActionItem(
-          title: 'System Settings',
-          subtitle: 'Configure app settings',
-          icon: Icons.settings,
-          color: Colors.green,
-          onTap: () => _showComingSoon('System Settings'),
-        ),
-        AdminActionItem(
           title: 'Analytics',
           subtitle: 'View app analytics and reports',
           icon: Icons.analytics,
@@ -175,25 +172,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           onTap: () => _showComingSoon('Analytics'),
         ),
         AdminActionItem(
-          title: 'Content Management',
-          subtitle: 'Manage app content',
-          icon: Icons.article,
-          color: Colors.purple,
-          onTap: () => _showComingSoon('Content Management'),
-        ),
-        AdminActionItem(
           title: 'Notifications',
           subtitle: 'Send push notifications',
           icon: Icons.notifications,
           color: Colors.indigo,
           onTap: () => _showComingSoon('Notifications'),
-        ),
-        AdminActionItem(
-          title: 'Backup & Restore',
-          subtitle: 'Manage data backups',
-          icon: Icons.backup,
-          color: Colors.teal,
-          onTap: () => _showComingSoon('Backup & Restore'),
         ),
       ];
 
@@ -270,7 +253,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.admin_panel_settings, size: 48, color: Colors.white),
+            const Icon(Icons.admin_panel_settings,
+                size: 48, color: Colors.white),
             const SizedBox(height: 16),
             Text(
               'Welcome, ${currentUser?.username ?? 'Admin'}!',
