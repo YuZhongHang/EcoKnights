@@ -1,3 +1,5 @@
+// In lib/ui/profile/edit_profile_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,8 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     // Initialize controller with current display name
     _nameController = TextEditingController(
-      text: FirebaseAuth.instance.currentUser?.displayName ?? '',
-    );
+        text: FirebaseAuth.instance.currentUser?.displayName ?? '');
   }
 
   @override
@@ -54,6 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
+        // Handle case where user is not logged in (though unlikely to reach this screen then)
         _showMessage('Error: User not logged in.');
         return;
       }
@@ -63,19 +65,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _nameController.text != user.displayName) {
         await user.updateDisplayName(_nameController.text);
         await user.reload();
+        final updatedUser = FirebaseAuth.instance.currentUser;
       }
 
       // Upload new image if selected
       if (_image != null) {
+        // Create a reference to the Firebase Storage location
+        // Using user.uid ensures each user has their own unique folder for profile pictures
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('user_profile_images')
-            .child('${user.uid}.jpg');
+            .child('${user.uid}.jpg'); // Or .png, based on your image type
 
+        // Upload the file
         final uploadTask = storageRef.putFile(_image!);
+
+        // Wait for the upload to complete and get the snapshot
         final snapshot = await uploadTask.whenComplete(() {});
+
+        // Get the download URL of the uploaded image
         final downloadUrl = await snapshot.ref.getDownloadURL();
 
+        // Update the user's photoURL in Firebase Authentication
         await user.updatePhotoURL(downloadUrl);
       }
 
@@ -92,14 +103,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut();
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/login');
-      // ⚠️ Change '/login' to your actual login route
-    }
-  }
-
+  // Helper function to show a SnackBar message
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -108,6 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine the initial image for the CircleAvatar
     ImageProvider profileImage;
     if (_image != null) {
       profileImage = FileImage(_image!);
@@ -115,7 +120,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         FirebaseAuth.instance.currentUser!.photoURL!.isNotEmpty) {
       profileImage = NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!);
     } else {
-      profileImage = const AssetImage('assets/default_profile.png');
+      // Fallback to a default asset image or a placeholder icon
+      profileImage = const AssetImage(
+          'assets/default_profile.png'); // You'll need to add a default image
+      // Or: profileImage = const Icon(Icons.account_circle, size: 100).image as ImageProvider;
     }
 
     return Scaffold(
@@ -123,6 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: const Text('Edit Profile'),
       ),
       body: Stack(
+        // Use Stack to overlay the loading indicator
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -133,17 +142,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   GestureDetector(
                     onTap: _pickImage,
                     child: CircleAvatar(
-                      radius: 60,
+                      radius:
+                          60, // Slightly larger radius for better visibility
                       backgroundImage: profileImage,
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor:
+                          Colors.grey.shade200, // Background for default/empty
                       child: _image == null &&
                               (FirebaseAuth.instance.currentUser?.photoURL ==
                                       null ||
                                   FirebaseAuth
                                       .instance.currentUser!.photoURL!.isEmpty)
                           ? const Icon(Icons.camera_alt,
-                              color: Colors.blueGrey, size: 40)
-                          : null,
+                              color: Colors.blueGrey,
+                              size: 40) // Icon if no image
+                          : null, // No child if image is present
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -151,7 +163,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: _nameController,
                     decoration: const InputDecoration(
                       labelText: 'Name',
-                      border: OutlineInputBorder(),
+                      border:
+                          OutlineInputBorder(), // Add a border for better aesthetics
                       prefixIcon: Icon(Icons.person),
                     ),
                     validator: (value) {
@@ -163,43 +176,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _saveProfile,
+                    onPressed: _isLoading
+                        ? null
+                        : _saveProfile, // Disable button while loading
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
+                      minimumSize:
+                          const Size(double.infinity, 50), // Full width button
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       elevation: 5,
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(
+                            color: Colors.white) // Show spinner
                         : const Text(
                             'Save Profile',
                             style: TextStyle(fontSize: 18),
                           ),
                   ),
-                  const SizedBox(height: 20),
-                  // 🚀 NEW: Logout button
-                  ElevatedButton(
-                    onPressed: _logout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 5,
-                    ),
-                    child: const Text(
-                      'Log Out',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
-          if (_isLoading)
+          if (_isLoading) // Overlay a translucent background and spinner when loading
             Container(
               color: Colors.black54,
               child: const Center(
