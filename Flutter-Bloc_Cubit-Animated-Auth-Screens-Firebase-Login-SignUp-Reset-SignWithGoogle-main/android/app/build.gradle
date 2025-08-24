@@ -29,7 +29,8 @@ if (flutterVersionName == null) {
 android {
     namespace = "com.example.auth_bloc"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "25.1.8937393"
+    compileSdkVersion 34
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
