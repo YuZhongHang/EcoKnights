@@ -1,0 +1,482 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../models/user_model.dart';
+import 'admin_user_management.dart';
+import '../profile/edit_profile_screen.dart';
+
+class AdminHomeScreen extends StatefulWidget {
+  const AdminHomeScreen({super.key});
+
+  @override
+  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+}
+
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  UserModel? currentUser;
+  Map<String, int> userStats = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdminData();
+  }
+
+  Future<void> _loadAdminData() async {
+    try {
+      setState(() => isLoading = true);
+
+      // Load current user data
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+        if (userDoc.exists) {
+          currentUser = UserModel.fromFirestore(userDoc);
+        }
+      }
+
+      // Load user statistics
+      await _loadUserStats();
+    } catch (e) {
+      debugPrint('Error loading admin data: $e');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _loadUserStats() async {
+    try {
+      final usersQuery = await FirebaseFirestore.instance.collection('users').get();
+
+      final stats = <String, int>{
+        'total': 0,
+        'active': 0,
+        'inactive': 0,
+        'admins': 0,
+        'users': 0,
+      };
+
+      for (var doc in usersQuery.docs) {
+        try {
+          final user = UserModel.fromFirestore(doc);
+
+          stats['total'] = stats['total']! + 1;
+
+          if (user.isActive) {
+            stats['active'] = stats['active']! + 1;
+          } else {
+            stats['inactive'] = stats['inactive']! + 1;
+          }
+
+          if (user.isAdmin) {
+            stats['admins'] = stats['admins']! + 1;
+          } else {
+            stats['users'] = stats['users']! + 1;
+          }
+        } catch (e) {
+          debugPrint('Error parsing user document: $e');
+        }
+      }
+
+      if (mounted) {
+        setState(() => userStats = stats);
+      }
+    } catch (e) {
+      debugPrint('Error loading user stats: $e');
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await FirebaseAuth.instance.signOut();
+
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error logging out: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  void _navigateToUserManagement() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AdminUserManagement()),
+    );
+  }
+
+  void _navigateToEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+    ).then((_) => _loadAdminData());
+  }
+
+  // Admin action items
+  List<AdminActionItem> get _adminActions => [
+        AdminActionItem(
+          title: 'Edit Profile',
+          subtitle: 'Update your info',
+          icon: Icons.edit,
+          color: Colors.pink,
+          onTap: _navigateToEditProfile,
+        ),
+        AdminActionItem(
+          title: 'Manage Users',
+          subtitle: 'View, edit, and delete users',
+          icon: Icons.people,
+          color: Colors.blue,
+          onTap: _navigateToUserManagement,
+        ),
+        AdminActionItem(
+          title: 'System Settings',
+          subtitle: 'Configure app settings',
+          icon: Icons.settings,
+          color: Colors.green,
+          onTap: () => _showComingSoon('System Settings'),
+        ),
+        AdminActionItem(
+          title: 'Analytics',
+          subtitle: 'View app analytics and reports',
+          icon: Icons.analytics,
+          color: Colors.orange,
+          onTap: () => _showComingSoon('Analytics'),
+        ),
+        AdminActionItem(
+          title: 'Content Management',
+          subtitle: 'Manage app content',
+          icon: Icons.article,
+          color: Colors.purple,
+          onTap: () => _showComingSoon('Content Management'),
+        ),
+        AdminActionItem(
+          title: 'Notifications',
+          subtitle: 'Send push notifications',
+          icon: Icons.notifications,
+          color: Colors.indigo,
+          onTap: () => _showComingSoon('Notifications'),
+        ),
+        AdminActionItem(
+          title: 'Backup & Restore',
+          subtitle: 'Manage data backups',
+          icon: Icons.backup,
+          color: Colors.teal,
+          onTap: () => _showComingSoon('Backup & Restore'),
+        ),
+      ];
+
+  void _showComingSoon(String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$feature - Coming Soon!'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadAdminData,
+            tooltip: 'Refresh Data',
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _handleLogout,
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadAdminData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildWelcomeSection(),
+                    const SizedBox(height: 24),
+                    _buildStatsSection(),
+                    const SizedBox(height: 24),
+                    _buildQuickActionsSection(),
+                    const SizedBox(height: 24),
+                    _buildAdminActionsGrid(),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+
+  // --- UI Builders ---
+
+  Widget _buildWelcomeSection() {
+    return Card(
+      elevation: 4,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Colors.red, Colors.redAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.admin_panel_settings, size: 48, color: Colors.white),
+            const SizedBox(height: 16),
+            Text(
+              'Welcome, ${currentUser?.username ?? 'Admin'}!',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You have administrator privileges to manage the system',
+              style: TextStyle(fontSize: 16, color: Colors.white70),
+            ),
+            if (currentUser?.email != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Logged in as: ${currentUser!.email}',
+                style: const TextStyle(fontSize: 14, color: Colors.white60),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'User Statistics',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          childAspectRatio: 1.5,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          children: [
+            _buildStatCard('Total Users', '${userStats['total'] ?? 0}',
+                Icons.people, Colors.blue),
+            _buildStatCard('Active Users', '${userStats['active'] ?? 0}',
+                Icons.verified_user, Colors.green),
+            _buildStatCard('Inactive Users', '${userStats['inactive'] ?? 0}',
+                Icons.person_off, Colors.orange),
+            _buildStatCard('Admins', '${userStats['admins'] ?? 0}',
+                Icons.admin_panel_settings, Colors.red),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
+    return Card(
+      elevation: 3,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Quick Actions',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _navigateToUserManagement,
+                icon: const Icon(Icons.people),
+                label: const Text('Manage Users'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _loadAdminData,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Refresh Data'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAdminActionsGrid() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Admin Tools',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: _adminActions.length,
+          itemBuilder: (context, index) {
+            final action = _adminActions[index];
+            return Card(
+              elevation: 3,
+              child: InkWell(
+                onTap: action.onTap,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(action.icon, size: 36, color: action.color),
+                      const SizedBox(height: 8),
+                      Text(
+                        action.title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        action.subtitle,
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+// Helper class for admin actions
+class AdminActionItem {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  AdminActionItem({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+}
