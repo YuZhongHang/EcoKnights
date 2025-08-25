@@ -22,11 +22,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   File? _image;
   bool _isLoading = false;
 
-  /// Selected country calling code (always includes '+')
   String _selectedCountryCode = '+60'; // default MY
 
-  /// A reasonably wide list of country codes. Add more if you need.
-  /// (Kept compact to avoid an enormous file.)
   static const Map<String, String> _countryCodes = {
     'Malaysia': '+60',
     'Singapore': '+65',
@@ -119,68 +116,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .collection('users')
           .doc(user.uid)
           .get();
-      if (!snap.exists) return;
 
+      if (!snap.exists) return;
       final data = snap.data();
       if (data == null) return;
 
       final stored = (data['phoneNumber'] as String?)?.trim() ?? '';
       if (stored.isEmpty) return;
 
-      // Clean: keep '+' and digits only (strip spaces, dashes, etc.)
       final cleaned = _cleanPlusDigits(stored);
+      final split = _splitByKnownCountryCode(cleaned);
 
-      // If it starts with '+', try to split into country code + local part using our known codes
-      if (cleaned.startsWith('+')) {
-        final split = _splitByKnownCountryCode(cleaned);
-        if (split != null) {
-          setState(() {
-            _selectedCountryCode = split.$1; // country code
-            _phoneController.text = split.$2; // local number
-          });
-          return;
-        }
-      }
-
-      // Otherwise, fall back: keep the default country code, show digits as local number
       setState(() {
-        _phoneController.text = cleaned.replaceAll('+', '');
+        if (split != null) {
+          _selectedCountryCode = split.$1;
+          _phoneController.text = split.$2;
+        } else {
+          _phoneController.text = cleaned.replaceAll('+', '');
+        }
       });
     } catch (_) {
-      // Silent fail; keep defaults
+      // ignore errors silently
     }
   }
 
-  /// Returns string with only '+' and digits kept.
   String _cleanPlusDigits(String input) {
     final only = input.replaceAll(RegExp(r'[^\d+]'), '');
-    // Normalize multiple '+' just in case
-    final normalized = only.replaceFirst(RegExp(r'^\+*'), '+');
-    return normalized.startsWith('+')
-        ? '+${normalized.substring(1)}'
-        : normalized;
+    return only.startsWith('+') ? only : '+$only';
   }
 
-  /// Try to split "+<cc><local>" using our known country codes.
-  /// Chooses the longest matching code.
-  /// Returns (countryCode, localPart) or null if no match.
-  (String, String)? _splitByKnownCountryCode(String withPlus) {
-    // Sort codes by length desc to prefer the longest match (e.g., +852 over +85)
+  (String, String)? _splitByKnownCountryCode(String full) {
     final codes = _countryCodes.values.toSet().toList()
       ..sort((a, b) => b.length.compareTo(a.length));
-
     for (final code in codes) {
-      if (withPlus.startsWith(code)) {
-        final local = withPlus.substring(code.length);
-        return (code, local);
+      if (full.startsWith(code)) {
+        return (code, full.substring(code.length));
       }
     }
     return null;
   }
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (pickedFile != null) {
       setState(() => _image = File(pickedFile.path));
     }
@@ -196,32 +174,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       builder: (context) {
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 8),
-              const Text('Select Country/Region',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: entries.length,
-                  itemBuilder: (context, i) {
-                    final e = entries[i];
-                    final selected = e.value == _selectedCountryCode;
-                    return ListTile(
-                      title: Text(e.key),
-                      subtitle: Text(e.value),
-                      trailing: selected ? const Icon(Icons.check) : null,
-                      onTap: () {
-                        setState(() => _selectedCountryCode = e.value);
-                        Navigator.pop(context);
-                      },
-                    );
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: ListView.builder(
+              itemCount: entries.length,
+              itemBuilder: (context, i) {
+                final e = entries[i];
+                final selected = e.value == _selectedCountryCode;
+                return ListTile(
+                  title: Text(e.key),
+                  subtitle: Text(e.value),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    setState(() => _selectedCountryCode = e.value);
+                    Navigator.pop(context);
                   },
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
         );
       },
@@ -230,38 +200,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
 
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception('User not logged in');
+      if (user == null) throw Exception('Not logged in');
 
-      // Update display name in Auth
       final newName = _nameController.text.trim();
       if (newName.isNotEmpty && newName != (user.displayName ?? '')) {
         await user.updateDisplayName(newName);
       }
 
-      // Upload profile image if chosen
       if (_image != null) {
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child('user_profile_images')
-            .child('${user.uid}.jpg');
+        final ref =
+            FirebaseStorage.instance.ref('user_profile_images/${user.uid}.jpg');
         final snap = await ref.putFile(_image!).whenComplete(() {});
         final url = await snap.ref.getDownloadURL();
         await user.updatePhotoURL(url);
       }
 
-      await user.reload();
+      final local = _phoneController.text.trim().replaceAll(RegExp(r'\D'), '');
+      final fullPhone = '${_selectedCountryCode}$local';
 
-      // Build and normalize the full phone number
-      final localDigits =
-          _phoneController.text.trim().replaceAll(RegExp(r'\D'), '');
-      final fullPhone = '${_selectedCountryCode}$localDigits';
-
-      // Save to Firestore (merge)
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'username': newName,
         'phoneNumber': fullPhone,
@@ -269,20 +229,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
-      // Also reflect immediately in UI (ensures latest shows)
-      setState(() {
-        _phoneController.text = localDigits;
-      });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully! ✅')),
+          const SnackBar(content: Text('✅ Profile updated')),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text('❌ Error: $e')),
         );
       }
     } finally {
@@ -290,17 +245,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Widget _buildProfileImage(User? user) {
+    if (_image != null)
+      return CircleAvatar(radius: 60, backgroundImage: FileImage(_image!));
+    if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
+      return CircleAvatar(
+          radius: 60, backgroundImage: NetworkImage(user.photoURL!));
+    }
+    return CircleAvatar(
+      radius: 60,
+      backgroundColor: Colors.grey.shade200,
+      child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    ImageProvider profileImage;
-    if (_image != null) {
-      profileImage = FileImage(_image!);
-    } else if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
-      profileImage = NetworkImage(user.photoURL!);
-    } else {
-      profileImage = const AssetImage('assets/default_profile.png');
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Profile')),
@@ -313,19 +274,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: ListView(
                 children: [
                   GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundImage: profileImage,
-                      backgroundColor: Colors.grey.shade200,
-                      child: _image == null &&
-                              (user?.photoURL == null ||
-                                  (user!.photoURL ?? '').isEmpty)
-                          ? const Icon(Icons.camera_alt,
-                              color: Colors.blueGrey, size: 40)
-                          : null,
-                    ),
-                  ),
+                      onTap: _pickImage, child: _buildProfileImage(user)),
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _nameController,
@@ -334,20 +283,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       labelText: 'Name',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.person),
-                      prefixIconConstraints: const BoxConstraints(
+                      prefixIconConstraints: BoxConstraints(
                         minWidth: 72, // width of the icon container
                         minHeight: 48,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 12),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
+                      ),
                     ),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'Enter your name'
-                        : null,
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Enter your name';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
-
-                  /// SINGLE field with tappable prefix -> both move together on error
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
@@ -355,7 +307,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Phone Number',
                       border: const OutlineInputBorder(),
-                      // Tappable prefix that opens the country picker
                       prefixIcon: InkWell(
                         onTap: _openCountryPicker,
                         child: Container(
@@ -364,30 +315,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Text(
                             _selectedCountryCode,
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 12,
                       ),
                     ),
                     validator: (value) {
                       final v = (value ?? '').trim();
                       if (v.isEmpty) return 'Enter phone number';
-                      // digits-only, 7..15 length constraint (E.164 local part guideline)
                       if (!RegExp(r'^\d{7,15}$').hasMatch(v)) {
                         return 'Enter 7–15 digits';
                       }
                       return null;
                     },
                   ),
-
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: _isLoading ? null : _saveProfile,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
@@ -400,7 +354,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           if (_isLoading)
             Container(
-              color: Colors.black54,
+              color: Colors.black45,
               child: const Center(child: CircularProgressIndicator()),
             ),
         ],
