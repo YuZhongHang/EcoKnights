@@ -299,44 +299,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
+  
   Widget _buildProfileImage(User? user) {
-    if (_image != null) {
-      return Stack(
-        children: [
-          CircleAvatar(radius: 60, backgroundImage: FileImage(_image!)),
-          if (_isUploadingImage)
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-              ),
-            ),
-        ],
-      );
-    }
-    
-    if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
-      return CircleAvatar(
-        radius: 60, 
-        backgroundImage: NetworkImage(user.photoURL!),
-        onBackgroundImageError: (_, __) {
-          // Fallback to default avatar if image fails to load
-        },
-      );
-    }
-    
-    return CircleAvatar(
-      radius: 60,
-      backgroundColor: Colors.grey.shade200,
+  final double size = 120; // diameter of profile picture
+
+  Widget imageWidget;
+
+  if (_image != null) {
+    imageWidget = Image.file(
+      _image!,
+      width: size,
+      height: size,
+      fit: BoxFit.cover, // cover fills but keeps aspect ratio
+    );
+  } else if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
+    imageWidget = Image.network(
+      user.photoURL!,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: size,
+          height: size,
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
+        );
+      },
+    );
+  } else {
+    imageWidget = Container(
+      width: size,
+      height: size,
+      color: Colors.grey.shade200,
       child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
     );
   }
+
+  return Stack(
+    children: [
+      ClipOval(child: imageWidget),
+      if (_isUploadingImage)
+        Positioned.fill(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.black54,
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          ),
+        ),
+    ],
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -352,9 +369,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               key: _formKey,
               child: ListView(
                 children: [
+                  const SizedBox(height: 20),
                   GestureDetector(
                     onTap: _isUploadingImage ? null : _pickImage,
-                    child: _buildProfileImage(user),
+                    child: Center(child:_buildProfileImage(user)),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -366,6 +384,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  TextFormField(
+                  initialValue: user?.email ?? '',
+                  enabled: false, // make it non-editable
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                    prefixIconConstraints: BoxConstraints(
+                      minWidth: 72,
+                      minHeight: 48,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 12,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                   TextFormField(
                     controller: _nameController,
                     textInputAction: TextInputAction.next,
