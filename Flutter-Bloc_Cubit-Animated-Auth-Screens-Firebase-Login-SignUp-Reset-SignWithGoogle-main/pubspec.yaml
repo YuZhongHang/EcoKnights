@@ -46,6 +46,7 @@ dependencies:
   google_sign_in: ^6.2.1
   rive: ^0.13.4
   file_picker: ^6.1.5
+  http: ^1.1.0
   
 
 dev_dependencies:

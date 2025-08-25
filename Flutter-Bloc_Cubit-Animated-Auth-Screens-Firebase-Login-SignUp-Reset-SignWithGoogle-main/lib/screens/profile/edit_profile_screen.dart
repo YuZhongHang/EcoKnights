@@ -3,9 +3,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -21,8 +22,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   File? _image;
   bool _isLoading = false;
+  bool _isUploadingImage = false;
 
   String _selectedCountryCode = '+60'; // default MY
+
+  // TODO: Replace with your Cloudinary credentials
+  static const String CLOUDINARY_CLOUD_NAME = 'dlonnxqqz';
+  static const String CLOUDINARY_UPLOAD_PRESET = 'flutter_profile_pics';
+  static const String CLOUDINARY_UPLOAD_URL = 
+      'https://api.cloudinary.com/v1_1/$CLOUDINARY_CLOUD_NAME/image/upload';
 
   static const Map<String, String> _countryCodes = {
     'Malaysia': '+60',
@@ -164,6 +172,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<String?> _uploadImageToCloudinary(File imageFile) async {
+    setState(() => _isUploadingImage = true);
+    
+    try {
+      final request = http.MultipartRequest('POST', Uri.parse(CLOUDINARY_UPLOAD_URL));
+      
+      request.fields['upload_preset'] = CLOUDINARY_UPLOAD_PRESET;
+      request.fields['folder'] = 'profile_images'; // Optional: organize in folders
+      
+      request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+      
+      final response = await request.send();
+      
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.toBytes();
+        final responseString = String.fromCharCodes(responseData);
+        final jsonMap = json.decode(responseString);
+        
+        return jsonMap['secure_url']; // This is the image URL
+      } else {
+        throw Exception('Failed to upload image: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Cloudinary upload error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Failed to upload image: $e')),
+        );
+      }
+      return null;
+    } finally {
+      setState(() => _isUploadingImage = false);
+    }
+  }
+
   void _openCountryPicker() {
     final entries = _countryCodes.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
@@ -211,28 +254,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         await user.updateDisplayName(newName);
       }
 
+      String? imageUrl;
       if (_image != null) {
-        final ref =
-            FirebaseStorage.instance.ref('user_profile_images/${user.uid}.jpg');
-        final snap = await ref.putFile(_image!).whenComplete(() {});
-        final url = await snap.ref.getDownloadURL();
-        await user.updatePhotoURL(url);
+        imageUrl = await _uploadImageToCloudinary(_image!);
+        if (imageUrl != null) {
+          await user.updatePhotoURL(imageUrl);
+        }
       }
 
       final local = _phoneController.text.trim().replaceAll(RegExp(r'\D'), '');
       final fullPhone = '${_selectedCountryCode}$local';
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      Map<String, dynamic> userData = {
         'username': newName,
         'phoneNumber': fullPhone,
-        'photoURL': user.photoURL ?? '',
         'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      };
+
+      if (imageUrl != null) {
+        userData['photoURL'] = imageUrl;
+      } else if (user.photoURL != null) {
+        userData['photoURL'] = user.photoURL!;
+      }
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
+        userData, 
+        SetOptions(merge: true)
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Profile updated')),
+          const SnackBar(content: Text('✅ Profile updated successfully!')),
         );
+        // Clear the selected image after successful upload
+        setState(() => _image = null);
       }
     } catch (e) {
       if (mounted) {
@@ -246,12 +301,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildProfileImage(User? user) {
-    if (_image != null)
-      return CircleAvatar(radius: 60, backgroundImage: FileImage(_image!));
+    if (_image != null) {
+      return Stack(
+        children: [
+          CircleAvatar(radius: 60, backgroundImage: FileImage(_image!)),
+          if (_isUploadingImage)
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+            ),
+        ],
+      );
+    }
+    
     if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
       return CircleAvatar(
-          radius: 60, backgroundImage: NetworkImage(user.photoURL!));
+        radius: 60, 
+        backgroundImage: NetworkImage(user.photoURL!),
+        onBackgroundImageError: (_, __) {
+          // Fallback to default avatar if image fails to load
+        },
+      );
     }
+    
     return CircleAvatar(
       radius: 60,
       backgroundColor: Colors.grey.shade200,
@@ -274,7 +353,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: ListView(
                 children: [
                   GestureDetector(
-                      onTap: _pickImage, child: _buildProfileImage(user)),
+                    onTap: _isUploadingImage ? null : _pickImage,
+                    child: _buildProfileImage(user),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tap to change profile picture',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 12,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _nameController,
@@ -284,7 +374,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.person),
                       prefixIconConstraints: BoxConstraints(
-                        minWidth: 72, // width of the icon container
+                        minWidth: 72,
                         minHeight: 48,
                       ),
                       contentPadding: EdgeInsets.symmetric(
@@ -337,13 +427,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _saveProfile,
+                    onPressed: (_isLoading || _isUploadingImage) ? null : _saveProfile,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: _isLoading
+                    child: (_isLoading || _isUploadingImage)
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text('Save Profile',
                             style: TextStyle(fontSize: 18)),
