@@ -76,7 +76,7 @@ void setup() {
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
 
-  Serial.println("ESP32 Air Quality + Dust + Temp/Humidity Monitor");
+  Serial.println("Ecoknight Air Quality + Dust + Temp/Humidity Monitor");
   Serial.println("Calibrating MQ-135 sensor...");
   
   // Calibrate MQ-135
@@ -151,27 +151,75 @@ void loop() {
 
   // ----- OLED Output -----
   display.clearDisplay();
-  display.setCursor(0,0);
   display.setTextSize(1);
 
-  display.print("CO2: "); display.print((int)co2_ppm);
-  display.println(" PPM");
+  // Draw sensor boxes (x, y, w, h)
+  display.drawRect(0, 0, 64, 26, SSD1306_WHITE);    // Box 1 (CO2)
+  display.drawRect(64, 0, 64, 26, SSD1306_WHITE);   // Box 2 (Temp)
+  display.drawRect(0, 26, 64, 26, SSD1306_WHITE);   // Box 3 (Humi)
+  display.drawRect(64, 26, 64, 26, SSD1306_WHITE);  // Box 4 (Dust)
 
-  display.print("Quality: "); display.println(airQuality);
+  // ---- CO2 ----
+  display.setCursor(5, 2);
+  display.print("CO2");
 
-  display.print("Temp: "); display.print(temperature); display.println(" C");
-  display.print("Humidity: "); display.print(humidity); display.println(" %");
+  char co2Str[10];
+  sprintf(co2Str, "%d ppm", (int)co2_ppm);
 
-  display.print("Dust: "); display.print((int)dust_density);
-  display.println(" mg/m3");
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(co2Str, 0, 0, &x1, &y1, &w, &h);
+  int16_t cx = (64 - w) / 2;
+  display.setCursor(cx, 12);
+  display.print(co2Str);
 
-  char timeString[25];
+  // ---- Temp ----
+  display.setCursor(70, 2);
+  display.print("Temp");
+
+  char tempStr[10];
+  sprintf(tempStr, "%d C", (int)temperature);
+
+  display.getTextBounds(tempStr, 0, 0, &x1, &y1, &w, &h);
+  cx = 64 + (64 - w) / 2;
+  display.setCursor(cx, 12);
+  display.print(tempStr);
+
+  // ---- Humi ----
+  display.setCursor(5, 28);
+  display.print("Humi");
+
+  char humiStr[10];
+  sprintf(humiStr, "%d %%", (int)humidity);
+
+  display.getTextBounds(humiStr, 0, 0, &x1, &y1, &w, &h);
+  cx = (64 - w) / 2;
+  display.setCursor(cx, 38);
+  display.print(humiStr);
+
+  // ---- Dust ----
+  display.setCursor(70, 28);
+  display.print("Dust");
+
+  char dustStr[12];
+  sprintf(dustStr, "%d mg", (int)dust_density);
+
+  display.getTextBounds(dustStr, 0, 0, &x1, &y1, &w, &h);
+  cx = 64 + (64 - w) / 2;
+  display.setCursor(cx, 38);
+  display.print(dustStr);
+
+  // ---- Timestamp (bottom center) ----
+  char timeString[25]; 
   strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
-  display.println(timeString);
-                
+
+  display.getTextBounds(timeString, 0, 0, &x1, &y1, &w, &h);
+  cx = (SCREEN_WIDTH - w) / 2;
+  display.setCursor(cx, 56);
+  display.print(timeString);
+
   display.display();
 
-  delay(1000);
 }
 
 // ----------------- MQ-135 Functions -----------------
