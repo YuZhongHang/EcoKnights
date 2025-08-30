@@ -14,12 +14,18 @@
 // Red->'+'Rail, Black->'-'Rail, Green->'+'Rail, Blue->'-'Rail, Yellow->D32, White->D33
 
 
+
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "DHT.h"
 #include <WiFi.h>
 #include "time.h"
+
+
+// ----------------- Firebase Setup -----------------
+#define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
+#define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -218,6 +224,7 @@ void loop() {
   display.setCursor(cx, 56);
   display.print(timeString);
 
+  delay(1000);
   display.display();
 
 }
