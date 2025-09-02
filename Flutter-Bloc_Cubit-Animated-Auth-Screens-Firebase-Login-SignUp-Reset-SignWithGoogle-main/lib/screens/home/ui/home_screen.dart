@@ -28,12 +28,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<AuthCubit>(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -87,24 +81,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     .collection('devices')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        color: ColorsManager.mainBlue,
-                      ),
+                          color: ColorsManager.mainBlue),
                     );
                   }
 
-                  final devices = snapshot.data!.docs;
-                  print(
-                      "Device count: ${snapshot.data?.docs.length}"); // Debugging
+                  if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  }
 
-                  if (devices.isEmpty) {
-                    // ✅ Show Add Device Button when no devices
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    // Show Add Device button
                     return Center(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const AddDeviceScreen()),
@@ -116,7 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
-                  // ✅ Show list of devices with Edit + History
+                  // Show devices if found
+                  final devices = snapshot.data!.docs;
+
                   return ListView.builder(
                     itemCount: devices.length,
                     itemBuilder: (context, index) {
@@ -136,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: const Icon(Icons.edit,
                                     color: ColorsManager.mainBlue),
                                 onPressed: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => AddDeviceScreen(
@@ -151,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: const Icon(Icons.history,
                                     color: ColorsManager.mainBlue),
                                 onPressed: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => DataHistoryScreen(
@@ -179,7 +174,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (state is AuthLoading) {
                   ProgressIndicaror.showProgressIndicator(context);
                 } else if (state is UserSignedOut) {
-                  context.pop();
                   context.pushNamedAndRemoveUntil(
                     Routes.loginScreen,
                     predicate: (route) => false,

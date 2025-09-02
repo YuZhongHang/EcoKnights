@@ -50,12 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<AuthCubit>(context);
-  }
-
   SafeArea _loginPage(BuildContext context) {
     return SafeArea(
       child: Padding(
@@ -102,18 +96,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   predicate: (route) => false,
                   arguments: [state.googleUser, state.credential],
                 );
+              } else if (state is AdminSignIn) {
+                riveHelper.addSuccessController();
+                await Future.delayed(const Duration(seconds: 2));
+                riveHelper.dispose();
+                if (!context.mounted) return;
+                context.pushNamedAndRemoveUntil(
+                  Routes.adminHome, // make sure this route exists
+                  predicate: (route) => false,
+                );
               }
-              else if (state is AdminSignIn) {
-              riveHelper.addSuccessController();
-              await Future.delayed(const Duration(seconds: 2));
-            riveHelper.dispose();
-  if (!context.mounted) return;
-  context.pushNamedAndRemoveUntil(
-    Routes.adminHome, // make sure this route exists
-    predicate: (route) => false,
-  );
-}
-
             },
             builder: (context, state) {
               return Column(
