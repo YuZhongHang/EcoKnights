@@ -237,7 +237,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///C:/flutter/src/flutter/packages/flutter",
+      "rootUri": "file:///C:/src/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -285,13 +285,13 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_test",
+      "rootUri": "file:///C:/src/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_web_plugins",
+      "rootUri": "file:///C:/src/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -300,6 +300,12 @@
       "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/gap-3.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "google_fonts",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-6.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
     },
     {
       "name": "google_identity_services_web",
@@ -579,7 +585,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///C:/flutter/src/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///C:/src/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -736,7 +742,7 @@
   ],
   "generator": "pub",
   "generatorVersion": "3.9.0",
-  "flutterRoot": "file:///C:/flutter/src/flutter",
-  "flutterVersion": "3.35.2",
+  "flutterRoot": "file:///C:/src/flutter",
+  "flutterVersion": "3.35.1",
   "pubCache": "file:///C:/Users/User/AppData/Local/Pub/Cache"
 }
