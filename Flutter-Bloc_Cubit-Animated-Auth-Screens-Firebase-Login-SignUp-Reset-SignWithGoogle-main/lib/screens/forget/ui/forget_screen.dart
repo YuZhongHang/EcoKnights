@@ -10,6 +10,7 @@ import '../../../core/widgets/progress_indicaror.dart';
 import '../../../core/widgets/terms_and_conditions_text.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../theming/styles.dart';
+import '../../../theming/colors.dart';
 import 'widgets/password_reset.dart';
 
 class ForgetScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.lightYellow,
       body: SafeArea(
         child: Padding(
           padding:
