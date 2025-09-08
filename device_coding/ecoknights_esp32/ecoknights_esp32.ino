@@ -64,6 +64,9 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 8 * 3600; // GMT+8 for Malaysia
 const int   daylightOffset_sec = 0;
 
+unsigned long lastUpdate = 0;
+const long interval = 1000; // update every 1 second
+
 // ----------------- Setup -----------------
 void setup() {
   Serial.begin(115200);
@@ -102,15 +105,39 @@ void setup() {
 
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+  if (obtainTime()) {
+    Serial.println("Time synced successfully!");
+  } else {
+    Serial.println("Failed to obtain time");
+  }
+}
+
+bool obtainTime() {
+  struct tm timeinfo;
+  int retry = 0;
+  const int maxRetries = 30; // ~30s max
+  while (!getLocalTime(&timeinfo) && retry < maxRetries) {
+    Serial.println("Waiting for NTP time sync...");
+    delay(1000);
+    retry++;
+  }
+  return retry < maxRetries;
 }
 
 // ----------------- Loop -----------------
 void loop() {
-  // ----- Timestamp Read -----
   struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
+  // ----- Timestamp Read -----
+  if (!getLocalTime(&timeinfo)) {
+    // set default "0000-00-00 00:00:00"
+    // to avoid error
+    timeinfo.tm_year = 0;
+    timeinfo.tm_mon  = 0;
+    timeinfo.tm_mday = 0;
+    timeinfo.tm_hour = 0;
+    timeinfo.tm_min  = 0;
+    timeinfo.tm_sec  = 0;
   }
 
   // ----- MQ-135 Read -----
