@@ -59,7 +59,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Safety timeout - if still loading after 20 seconds, force navigation
     _safetyTimer = Timer(const Duration(seconds: 20), () {
       if (mounted) {
-        debugPrint('DEBUG: Safety timeout reached, forcing navigation to login');
+        debugPrint(
+            'DEBUG: Safety timeout reached, forcing navigation to login');
         _navigateToLogin();
       }
     });
@@ -74,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       // Check if user is authenticated
       User? firebaseUser = FirebaseAuth.instance.currentUser;
-      
+
       if (firebaseUser == null) {
         debugPrint('DEBUG: No Firebase user found');
         _navigateToLogin();
@@ -100,9 +101,9 @@ class _SplashScreenState extends State<SplashScreen>
             .doc(firebaseUser.uid)
             .get()
             .timeout(const Duration(seconds: 10));
-            
+
         debugPrint('DEBUG: Document exists: ${doc.exists}');
-        
+
         if (doc.exists && doc.data() != null) {
           userProfile = UserModel.fromFirestore(doc);
           debugPrint('DEBUG: UserModel created from document');
@@ -114,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
         debugPrint('DEBUG: Direct Firestore error: $e');
         userProfile = null;
       }
-      
+
       if (userProfile == null) {
         debugPrint('DEBUG: User profile is null or timeout occurred');
         _navigateToLogin();
@@ -122,7 +123,8 @@ class _SplashScreenState extends State<SplashScreen>
       }
 
       // FIXED: Correct string interpolation syntax
-      debugPrint('DEBUG: User profile loaded, role: ${userProfile.isAdmin ? "admin" : "user"}');
+      debugPrint(
+          'DEBUG: User profile loaded, role: ${userProfile.isAdmin ? "admin" : "user"}');
 
       // Don't await updateLastLogin to avoid blocking navigation
       FirestoreService.updateLastLogin().catchError((e) {
@@ -147,38 +149,37 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToLogin() {
-  if (mounted) {
-    _safetyTimer?.cancel();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-      }
-    });
+    if (mounted) {
+      _safetyTimer?.cancel();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
+        }
+      });
+    }
   }
-}
 
-void _navigateToHome() {
-  if (mounted) {
-    _safetyTimer?.cancel();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(Routes.home);
-      }
-    });
+  void _navigateToHome() {
+    if (mounted) {
+      _safetyTimer?.cancel();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(Routes.home);
+        }
+      });
+    }
   }
-}
 
-void _navigateToAdminHome() {
-  if (mounted) {
-    _safetyTimer?.cancel();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(Routes.adminHome);
-      }
-    });
+  void _navigateToAdminHome() {
+    if (mounted) {
+      _safetyTimer?.cancel();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed(Routes.adminHome);
+        }
+      });
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -223,12 +224,12 @@ void _navigateToAdminHome() {
                         color: Colors.white,
                       ),
                     ),
-                    
+
                     SizedBox(height: 24.h),
-                    
+
                     // App Name
                     Text(
-                      'AuthBloc',
+                      'EcoKnights',
                       style: TextStyle(
                         fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
@@ -236,25 +237,25 @@ void _navigateToAdminHome() {
                         letterSpacing: 2,
                       ),
                     ),
-                    
+
                     SizedBox(height: 8.h),
-                    
+
                     // App Tagline
                     Text(
-                      'Secure Authentication System',
+                      'Air Quality Monitoring System',
                       style: TextStyle(
                         fontSize: 16.sp,
                         color: Colors.blue.shade600,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    
+
                     SizedBox(height: 40.h),
-                    
+
                     // Loading Indicator
                     SizedBox(
-                      width: 40.w,
-                      height: 40.h,
+                      width: 35.w,
+                      height: 35.h,
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor: AlwaysStoppedAnimation<Color>(
@@ -262,9 +263,9 @@ void _navigateToAdminHome() {
                         ),
                       ),
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     Text(
                       'Loading...',
                       style: TextStyle(

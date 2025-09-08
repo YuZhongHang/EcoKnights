@@ -15,14 +15,63 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Add listeners to both controllers for real-time validation
+    _oldPassController.addListener(_validateForm);
+    _newPassController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    // Trigger validation when either field changes
+    if (_formKey.currentState != null) {
+      _formKey.currentState!.validate();
+    }
+  }
+
+  @override
   void dispose() {
+    _oldPassController.removeListener(_validateForm);
+    _newPassController.removeListener(_validateForm);
     _oldPassController.dispose();
     _newPassController.dispose();
     super.dispose();
   }
 
   Future<void> _changePassword() async {
-    if (!_formKey.currentState!.validate()) return;
+    // CRITICAL: Force validation and check result
+    final isValid = _formKey.currentState?.validate() ?? false;
+    
+    print("Form validation result: $isValid");
+    print("Old password: '${_oldPassController.text.trim()}'");
+    print("New password: '${_newPassController.text.trim()}'");
+    
+    if (!isValid) {
+      print("Form validation failed - stopping execution");
+      return;
+    }
+
+    // Extra safety check with detailed logging
+    final oldPass = _oldPassController.text.trim();
+    final newPass = _newPassController.text.trim();
+    
+    if (oldPass == newPass) {
+      print("BLOCKED: Passwords are identical after trim");
+      _showMessage('New password cannot be the same as old password.');
+      return;
+    }
+    
+    if (oldPass.isEmpty) {
+      print("BLOCKED: Old password is empty");
+      _showMessage('Please enter your old password.');
+      return;
+    }
+    
+    if (newPass.isEmpty) {
+      print("BLOCKED: New password is empty");
+      _showMessage('Please enter a new password.');
+      return;
+    }
 
     setState(() => _isLoading = true);
     final user = FirebaseAuth.instance.currentUser;
@@ -34,24 +83,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     }
 
     try {
-      // Reauthenticate with old password
+      print("Attempting to reauthenticate user");
       final cred = EmailAuthProvider.credential(
         email: user.email!,
-        password: _oldPassController.text.trim(),
+        password: oldPass,
       );
       await user.reauthenticateWithCredential(cred);
 
-      // Update password
-      await user.updatePassword(_newPassController.text.trim());
+      print("Attempting to update password");
+      await user.updatePassword(newPass);
       _showMessage('Password changed successfully!');
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
+      print("Firebase Auth Error: ${e.code} - ${e.message}");
       if (e.code == 'wrong-password') {
         _showMessage('Old password is incorrect.');
+      } else if (e.code == 'weak-password') {
+        _showMessage('New password is too weak.');
       } else {
         _showMessage('Error: ${e.message}');
       }
     } catch (e) {
+      print("Unexpected error: $e");
       _showMessage('Unexpected error: $e');
     } finally {
       setState(() => _isLoading = false);
@@ -59,7 +112,43 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   void _showMessage(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: msg.contains('successfully') ? Colors.green : Colors.red,
+      )
+    );
+  }
+
+  String? _validateOldPassword(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Enter old password';
+    }
+    return null;
+  }
+
+  String? _validateNewPassword(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Enter new password';
+    }
+    
+    final trimmedValue = value.trim();
+    
+    if (trimmedValue.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(trimmedValue)) {
+      return 'Include at least 1 special character';
+    }
+    
+    // CRITICAL: Check against old password
+    final oldPassword = _oldPassController.text.trim();
+    if (oldPassword.isNotEmpty && trimmedValue == oldPassword) {
+      return 'New password cannot be the same as old password';
+    }
+    
+    return null;
   }
 
   @override
@@ -72,6 +161,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             padding: const EdgeInsets.all(16),
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   TextFormField(
@@ -82,8 +172,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock),
                     ),
-                    validator: (v) =>
-                        (v == null || v.isEmpty) ? 'Enter old password' : null,
+                    validator: _validateOldPassword,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
@@ -94,15 +183,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
-                    validator: (v) {
-                      if (v == null || v.isEmpty) return 'Enter new password';
-                      if (v.length < 8)
-                        return 'Password must be at least 8 characters';
-                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(v)) {
-                        return 'Include at least 1 special character';
-                      }
-                      return null;
-                    },
+                    validator: _validateNewPassword,
                   ),
                   const SizedBox(height: 30),
                   SizedBox(
@@ -117,8 +198,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Change Password',
-                              style: TextStyle(fontSize: 16)),
+                          : const Text(
+                              'Change Password',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     ),
                   ),
                 ],

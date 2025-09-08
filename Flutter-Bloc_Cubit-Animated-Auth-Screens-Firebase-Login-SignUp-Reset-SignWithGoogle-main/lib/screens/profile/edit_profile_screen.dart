@@ -22,14 +22,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   File? _image;
   bool _isLoading = false;
-  bool _isUploadingImage = false;
 
   String _selectedCountryCode = '+60'; // default MY
 
   // TODO: Replace with your Cloudinary credentials
   static const String CLOUDINARY_CLOUD_NAME = 'dlonnxqqz';
   static const String CLOUDINARY_UPLOAD_PRESET = 'flutter_profile_pics';
-  static const String CLOUDINARY_UPLOAD_URL = 
+  static const String CLOUDINARY_UPLOAD_URL =
       'https://api.cloudinary.com/v1_1/$CLOUDINARY_CLOUD_NAME/image/upload';
 
   static const Map<String, String> _countryCodes = {
@@ -173,23 +172,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<String?> _uploadImageToCloudinary(File imageFile) async {
-    setState(() => _isUploadingImage = true);
-    
     try {
-      final request = http.MultipartRequest('POST', Uri.parse(CLOUDINARY_UPLOAD_URL));
-      
+      final request =
+          http.MultipartRequest('POST', Uri.parse(CLOUDINARY_UPLOAD_URL));
+
       request.fields['upload_preset'] = CLOUDINARY_UPLOAD_PRESET;
-      request.fields['folder'] = 'profile_images'; // Optional: organize in folders
-      
-      request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
-      
+      request.fields['folder'] =
+          'profile_images'; // Optional: organize in folders
+
+      request.files
+          .add(await http.MultipartFile.fromPath('file', imageFile.path));
+
       final response = await request.send();
-      
+
       if (response.statusCode == 200) {
         final responseData = await response.stream.toBytes();
         final responseString = String.fromCharCodes(responseData);
         final jsonMap = json.decode(responseString);
-        
+
         return jsonMap['secure_url']; // This is the image URL
       } else {
         throw Exception('Failed to upload image: ${response.statusCode}');
@@ -202,8 +202,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       }
       return null;
-    } finally {
-      setState(() => _isUploadingImage = false);
     }
   }
 
@@ -277,17 +275,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userData['photoURL'] = user.photoURL!;
       }
 
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-        userData, 
-        SetOptions(merge: true)
-      );
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(userData, SetOptions(merge: true));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('✅ Profile updated successfully!')),
         );
-        // Clear the selected image after successful upload
-        setState(() => _image = null);
+        setState(() => _image = null); // clear local image
       }
     } catch (e) {
       if (mounted) {
@@ -299,61 +296,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-  
+
   Widget _buildProfileImage(User? user) {
-  final double size = 120; // diameter of profile picture
+    final double size = 120; // diameter of profile picture
 
-  Widget imageWidget;
+    Widget imageWidget;
 
-  if (_image != null) {
-    imageWidget = Image.file(
-      _image!,
-      width: size,
-      height: size,
-      fit: BoxFit.cover, // cover fills but keeps aspect ratio
-    );
-  } else if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
-    imageWidget = Image.network(
-      user.photoURL!,
-      width: size,
-      height: size,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          width: size,
-          height: size,
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
-        );
-      },
-    );
-  } else {
-    imageWidget = Container(
-      width: size,
-      height: size,
-      color: Colors.grey.shade200,
-      child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
-    );
+    if (_image != null) {
+      imageWidget = Image.file(
+        _image!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover, // cover fills but keeps aspect ratio
+      );
+    } else if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
+      imageWidget = Image.network(
+        user.photoURL!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: size,
+            height: size,
+            color: Colors.grey.shade200,
+            child:
+                const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
+          );
+        },
+      );
+    } else {
+      imageWidget = Container(
+        width: size,
+        height: size,
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.camera_alt, size: 40, color: Colors.blueGrey),
+      );
+    }
+    return ClipOval(child: imageWidget);
   }
-
-  return Stack(
-    children: [
-      ClipOval(child: imageWidget),
-      if (_isUploadingImage)
-        Positioned.fill(
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.black54,
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
-        ),
-    ],
-  );
-}
 
   @override
   Widget build(BuildContext context) {
@@ -361,130 +342,133 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Profile')),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  const SizedBox(height: 20),
-                  GestureDetector(
-                    onTap: _isUploadingImage ? null : _pickImage,
-                    child: Center(child:_buildProfileImage(user)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: _isLoading ? null : _pickImage,
+                child: Center(child: _buildProfileImage(user)),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tap to change profile picture',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                initialValue: user?.email ?? '',
+                enabled: false,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
+                  prefixIconConstraints: BoxConstraints(
+                    minWidth: 72,
+                    minHeight: 48,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap to change profile picture',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                  initialValue: user?.email ?? '',
-                  enabled: false, // make it non-editable
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                    prefixIconConstraints: BoxConstraints(
-                      minWidth: 72,
-                      minHeight: 48,
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 12,
-                    ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
                   ),
                 ),
-                const SizedBox(height: 20),
-
-                  TextFormField(
-                    controller: _nameController,
-                    textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                      prefixIconConstraints: BoxConstraints(
-                        minWidth: 72,
-                        minHeight: 48,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 12,
-                      ),
-                    ),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Enter your name';
-                      }
-                      return null;
-                    },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _nameController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
+                  prefixIconConstraints: BoxConstraints(
+                    minWidth: 72,
+                    minHeight: 48,
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: 'Phone Number',
-                      border: const OutlineInputBorder(),
-                      prefixIcon: InkWell(
-                        onTap: _openCountryPicker,
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 72,
-                          child: Text(
-                            _selectedCountryCode,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
+                  ),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Enter your name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  border: const OutlineInputBorder(),
+                  prefixIcon: InkWell(
+                    onTap: _openCountryPicker,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: 72,
+                      child: Text(
+                        _selectedCountryCode,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 12,
-                      ),
                     ),
-                    validator: (value) {
-                      final v = (value ?? '').trim();
-                      if (v.isEmpty) return 'Enter phone number';
-                      if (!RegExp(r'^\d{7,15}$').hasMatch(v)) {
-                        return 'Enter 7–15 digits';
-                      }
-                      return null;
-                    },
                   ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: (_isLoading || _isUploadingImage) ? null : _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: (_isLoading || _isUploadingImage)
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Save Profile',
-                            style: TextStyle(fontSize: 18)),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
                   ),
-                ],
+                ),
+                validator: (value) {
+                  final v = (value ?? '').trim();
+                  if (v.isEmpty) return 'Enter phone number';
+                  if (!RegExp(r'^\d{7,15}$').hasMatch(v)) {
+                    return 'Enter 7-15 digits';
+                  }
+                  return null;
+                },
               ),
-            ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                color: Colors.white, strokeWidth: 2),
+                          ),
+                          SizedBox(width: 12),
+                          Text('Saving...', style: TextStyle(fontSize: 18)),
+                        ],
+                      )
+                    : const Text('Save Profile',
+                        style: TextStyle(fontSize: 18)),
+              ),
+            ],
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.black45,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-        ],
+        ),
       ),
     );
   }
