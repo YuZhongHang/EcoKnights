@@ -64,6 +64,22 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 8 * 3600; // GMT+8 for Malaysia
 const int   daylightOffset_sec = 0;
 
+// ---------- Time variables Initialization ----------
+unsigned long lastUpdate = 0;
+const long interval = 1000; // update every 1 second
+
+unsigned long lastDustRead = 0; 
+float dust_density = 0;
+unsigned long lastDHTRead = 0;
+float humidity = 0, temperature = 0;
+
+// Timing rules:
+// - Main loop refresh: every 1s
+// - Dust sensor: every 2s
+// - DHT22: every 2s
+// - MQ-135: every 1s
+
+
 // ----------------- Setup -----------------
 void setup() {
   Serial.begin(115200);
@@ -71,7 +87,7 @@ void setup() {
   pinMode(DUST_PIN, INPUT);
   pinMode(DUST_LED_PIN, OUTPUT);
 
-  dht.begin(); // Initialize DHT22
+  dht.begin();
 
   // OLED init
   Wire.begin(25, 26); // SDA, SCL
@@ -102,132 +118,155 @@ void setup() {
 
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+  if (obtainTime()) {
+    Serial.println("Time synced successfully!");
+  } else {
+    Serial.println("Failed to obtain time");
+  }
+}
+
+bool obtainTime() {
+  struct tm timeinfo;
+  int retry = 0;
+  const int maxRetries = 30; // ~30s max
+  while (!getLocalTime(&timeinfo) && retry < maxRetries) {
+    Serial.println("Waiting for NTP time sync...");
+    delay(1000);
+    retry++;
+  }
+  return retry < maxRetries;
 }
 
 // ----------------- Loop -----------------
 void loop() {
-  // ----- Timestamp Read -----
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
+  if (millis() - lastUpdate >= interval) {
+    lastUpdate = millis();
+
+    struct tm timeinfo;
+    // ----- Timestamp Read -----
+    if (!getLocalTime(&timeinfo)) {
+      // set default "0000-00-00 00:00:00"
+      timeinfo.tm_year = 0;
+      timeinfo.tm_mon  = 0;
+      timeinfo.tm_mday = 0;
+      timeinfo.tm_hour = 0;
+      timeinfo.tm_min  = 0;
+      timeinfo.tm_sec  = 0;
+    }
+
+    // ----- MQ-135 Read -----
+    int mq_raw = analogRead(MQ135_PIN);
+    float mq_resistance = MQRead(MQ135_PIN);
+    float co2_ppm = MQGetGasPercentage(mq_resistance / Ro, GAS_CO2);
+    String airQuality = getAirQualityLevel(co2_ppm);
+
+    // ----- Dust Sensor Read (only every 2 sec) -----
+    if (millis() - lastDustRead > 2000) {
+      digitalWrite(DUST_LED_PIN, HIGH); 
+      delayMicroseconds(280);
+      int dust_raw = analogRead(DUST_PIN);
+      digitalWrite(DUST_LED_PIN, LOW); 
+      delayMicroseconds(9680); 
+
+      float voltage = dust_raw * (3.3 / 4095.0);
+      dust_density = 0.17 * voltage * 5.0 * 1000 - 0.1 * 1000;
+      if (dust_density < 0) dust_density = 0;
+
+      lastDustRead = millis();  // update timer
+    }
+
+    // ----- DHT22 Read (only every 2 sec) -----
+    if (millis() - lastDHTRead > 2000) {
+      humidity = dht.readHumidity();
+      temperature = dht.readTemperature();
+      if (isnan(humidity) || isnan(temperature)) {
+        Serial.println("Failed to read DHT22!");
+        humidity = 0;
+        temperature = 0;
+      }
+      lastDHTRead = millis();
+    }
+
+    // ----- Serial Output -----
+    Serial.print("CO2: "); Serial.print((int)co2_ppm); 
+    Serial.print(" PPM | Quality: "); Serial.print(airQuality);
+    Serial.print(" | Temp: "); Serial.print(temperature); 
+    Serial.print(" C | Humidity: "); Serial.print(humidity);
+    Serial.print(" % | Dust: "); Serial.print(dust_density); Serial.println(" mg/m³");
+
+    // ---- Timestamp Output ----
+    Serial.printf("%04d-%02d-%02d %02d:%02d:%02d\n",
+                  timeinfo.tm_year + 1900,
+                  timeinfo.tm_mon + 1,
+                  timeinfo.tm_mday,
+                  timeinfo.tm_hour,
+                  timeinfo.tm_min,
+                  timeinfo.tm_sec);
+
+    // ----- OLED Output -----
+    display.clearDisplay();
+    display.setTextSize(1);
+
+    // Draw sensor boxes
+    display.drawRect(0, 0, 64, 26, SSD1306_WHITE);    // CO2
+    display.drawRect(64, 0, 64, 26, SSD1306_WHITE);   // Temp
+    display.drawRect(0, 26, 64, 26, SSD1306_WHITE);   // Humi
+    display.drawRect(64, 26, 64, 26, SSD1306_WHITE);  // Dust
+
+    // ---- CO2 ----
+    display.setCursor(5, 2);
+    display.print("CO2");
+    char co2Str[10];
+    sprintf(co2Str, "%d ppm", (int)co2_ppm);
+    int16_t x1, y1; uint16_t w, h;
+    display.getTextBounds(co2Str, 0, 0, &x1, &y1, &w, &h);
+    int16_t cx = (64 - w) / 2;
+    display.setCursor(cx, 12);
+    display.print(co2Str);
+
+    // ---- Temp ----
+    display.setCursor(70, 2);
+    display.print("Temp");
+    char tempStr[10];
+    sprintf(tempStr, "%d C", (int)temperature);
+    display.getTextBounds(tempStr, 0, 0, &x1, &y1, &w, &h);
+    cx = 64 + (64 - w) / 2;
+    display.setCursor(cx, 12);
+    display.print(tempStr);
+
+    // ---- Humi ----
+    display.setCursor(5, 28);
+    display.print("Humi");
+    char humiStr[10];
+    sprintf(humiStr, "%d %%", (int)humidity);
+    display.getTextBounds(humiStr, 0, 0, &x1, &y1, &w, &h);
+    cx = (64 - w) / 2;
+    display.setCursor(cx, 38);
+    display.print(humiStr);
+
+    // ---- Dust ----
+    display.setCursor(70, 28);
+    display.print("Dust");
+    char dustStr[12];
+    sprintf(dustStr, "%d mg", (int)dust_density);
+    display.getTextBounds(dustStr, 0, 0, &x1, &y1, &w, &h);
+    cx = 64 + (64 - w) / 2;
+    display.setCursor(cx, 38);
+    display.print(dustStr);
+
+    // ---- Timestamp ----
+    char timeString[25];
+    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
+    display.getTextBounds(timeString, 0, 0, &x1, &y1, &w, &h);
+    cx = (SCREEN_WIDTH - w) / 2;
+    display.setCursor(cx, 56);
+    display.print(timeString);
+
+    display.display();
   }
-
-  // ----- MQ-135 Read -----
-  int mq_raw = analogRead(MQ135_PIN);
-  float mq_resistance = MQRead(MQ135_PIN);
-  float co2_ppm = MQGetGasPercentage(mq_resistance / Ro, GAS_CO2);
-  String airQuality = getAirQualityLevel(co2_ppm);
-
-  // ----- Dust Sensor Read -----
-  digitalWrite(DUST_LED_PIN, HIGH); // Turn on IR LED
-  delayMicroseconds(280);
-  int dust_raw = analogRead(DUST_PIN); // Read ADC
-  digitalWrite(DUST_LED_PIN, LOW); // Turn off IR LED
-  delayMicroseconds(9680); // Wait for next cycle
-
-  float voltage = dust_raw * (3.3 / 4095.0);
-  float dust_density = 0.17 * voltage * 5.0 * 1000 - 0.1 * 1000; // Adjust for 5V VCC
-  if(dust_density < 0) dust_density = 0;
-
-  // ----- DHT22 Read -----
-  float humidity = dht.readHumidity();
-  float temperature = dht.readTemperature();
-  if (isnan(humidity) || isnan(temperature)) {
-    Serial.println("Failed to read DHT22!");
-    humidity = 0;
-    temperature = 0;
-  }
-
-  // ----- Serial Output -----
-  Serial.print("CO2: "); Serial.print((int)co2_ppm); 
-  Serial.print(" PPM | Quality: "); Serial.print(airQuality);
-  Serial.print(" | Temp: "); Serial.print(temperature); 
-  Serial.print(" C | Humidity: "); Serial.print(humidity);
-  Serial.print(" % | Dust: "); Serial.print(dust_density); Serial.println(" mg/m³");
-
-  // ---- Timestamp Output ----
-  Serial.printf("%04d-%02d-%02d %02d:%02d:%02d\n",
-                timeinfo.tm_year + 1900,
-                timeinfo.tm_mon + 1,
-                timeinfo.tm_mday,
-                timeinfo.tm_hour,
-                timeinfo.tm_min,
-                timeinfo.tm_sec);
-
-  // ----- OLED Output -----
-  display.clearDisplay();
-  display.setTextSize(1);
-
-  // Draw sensor boxes (x, y, w, h)
-  display.drawRect(0, 0, 64, 26, SSD1306_WHITE);    // Box 1 (CO2)
-  display.drawRect(64, 0, 64, 26, SSD1306_WHITE);   // Box 2 (Temp)
-  display.drawRect(0, 26, 64, 26, SSD1306_WHITE);   // Box 3 (Humi)
-  display.drawRect(64, 26, 64, 26, SSD1306_WHITE);  // Box 4 (Dust)
-
-  // ---- CO2 ----
-  display.setCursor(5, 2);
-  display.print("CO2");
-
-  char co2Str[10];
-  sprintf(co2Str, "%d ppm", (int)co2_ppm);
-
-  int16_t x1, y1;
-  uint16_t w, h;
-  display.getTextBounds(co2Str, 0, 0, &x1, &y1, &w, &h);
-  int16_t cx = (64 - w) / 2;
-  display.setCursor(cx, 12);
-  display.print(co2Str);
-
-  // ---- Temp ----
-  display.setCursor(70, 2);
-  display.print("Temp");
-
-  char tempStr[10];
-  sprintf(tempStr, "%d C", (int)temperature);
-
-  display.getTextBounds(tempStr, 0, 0, &x1, &y1, &w, &h);
-  cx = 64 + (64 - w) / 2;
-  display.setCursor(cx, 12);
-  display.print(tempStr);
-
-  // ---- Humi ----
-  display.setCursor(5, 28);
-  display.print("Humi");
-
-  char humiStr[10];
-  sprintf(humiStr, "%d %%", (int)humidity);
-
-  display.getTextBounds(humiStr, 0, 0, &x1, &y1, &w, &h);
-  cx = (64 - w) / 2;
-  display.setCursor(cx, 38);
-  display.print(humiStr);
-
-  // ---- Dust ----
-  display.setCursor(70, 28);
-  display.print("Dust");
-
-  char dustStr[12];
-  sprintf(dustStr, "%d mg", (int)dust_density);
-
-  display.getTextBounds(dustStr, 0, 0, &x1, &y1, &w, &h);
-  cx = 64 + (64 - w) / 2;
-  display.setCursor(cx, 38);
-  display.print(dustStr);
-
-  // ---- Timestamp (bottom center) ----
-  char timeString[25]; 
-  strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
-
-  display.getTextBounds(timeString, 0, 0, &x1, &y1, &w, &h);
-  cx = (SCREEN_WIDTH - w) / 2;
-  display.setCursor(cx, 56);
-  display.print(timeString);
-
-  delay(1000);
-  display.display();
-
 }
+
 
 // ----------------- MQ-135 Functions -----------------
 float MQCalibration(int mq_pin) {

@@ -15,6 +15,7 @@ import '../../../helpers/rive_controller.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../routing/routes.dart';
 import '../../../theming/styles.dart';
+import '../../../theming/colors.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -30,6 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.lightYellow,
       body: SafeArea(
         child: Padding(
           padding:
