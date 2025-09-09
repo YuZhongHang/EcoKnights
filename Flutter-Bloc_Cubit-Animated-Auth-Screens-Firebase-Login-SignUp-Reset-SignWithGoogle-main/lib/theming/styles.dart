@@ -12,6 +12,19 @@ class TextStyles {
     color: ColorsManager.mainBlue,
   );
 
+  static TextStyle adminDashboardTitle = const TextStyle(
+    fontFamily: 'Georgia',
+    color: ColorsManager.lightYellow,
+    fontSize: 20, 
+    fontWeight: FontWeight.w600,
+  );
+  static TextStyle adminDashboardCardTitle = const TextStyle(
+    fontFamily: 'Georgia',
+    color: ColorsManager.lightYellow,
+    fontSize: 30,
+    fontWeight: FontWeight.w700,
+  );
+
   static TextStyle font14Blue400Weight = GoogleFonts.nunitoSans(
     fontSize: 14.sp,
     fontWeight: FontWeight.w400,

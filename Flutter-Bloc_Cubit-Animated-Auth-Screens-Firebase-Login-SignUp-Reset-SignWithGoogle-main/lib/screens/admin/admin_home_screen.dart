@@ -2,10 +2,13 @@ import 'package:auth_bloc/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
 import 'admin_user_management.dart';
 import '../profile/edit_profile_screen.dart';
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -192,10 +195,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
+        title: Text('Admin Dashboard', style: TextStyles.adminDashboardTitle,),
+        backgroundColor: ColorsManager.gray,
+        foregroundColor: ColorsManager.lightYellow,
         elevation: 2,
         actions: [
           IconButton(
@@ -243,37 +247,33 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Colors.red, Colors.redAccent],
+            colors: [ColorsManager.gray, ColorsManager.mainBlue],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(Icons.admin_panel_settings,
-                size: 48, color: Colors.white),
+                size: 48, color: ColorsManager.lightYellow),
             const SizedBox(height: 16),
             Text(
               'Welcome, ${currentUser?.username ?? 'Admin'}!',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: TextStyles.adminDashboardCardTitle,
             ),
             const SizedBox(height: 8),
             const Text(
               'You have administrator privileges to manage the system',
-              style: TextStyle(fontSize: 16, color: Colors.white70),
+              style: TextStyle(fontSize: 16, color: ColorsManager.lightYellow),
             ),
             if (currentUser?.email != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Logged in as: ${currentUser!.email}',
-                style: const TextStyle(fontSize: 14, color: Colors.white60),
+                style: const TextStyle(fontSize: 14, color: ColorsManager.lightYellow),
               ),
             ],
           ],
@@ -286,9 +286,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'User Statistics',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyles.adminDashboardTitle,
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -300,13 +300,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           mainAxisSpacing: 12,
           children: [
             _buildStatCard('Total Users', '${userStats['total'] ?? 0}',
-                Icons.people, Colors.blue),
+                Icons.people, ColorsManager.lightYellow),
             _buildStatCard('Active Users', '${userStats['active'] ?? 0}',
-                Icons.verified_user, Colors.green),
+                Icons.verified_user, ColorsManager.lightYellow),
             _buildStatCard('Inactive Users', '${userStats['inactive'] ?? 0}',
-                Icons.person_off, Colors.orange),
+                Icons.person_off, ColorsManager.lightYellow),
             _buildStatCard('Admins', '${userStats['admins'] ?? 0}',
-                Icons.admin_panel_settings, Colors.red),
+                Icons.admin_panel_settings, ColorsManager.lightYellow),
           ],
         ),
       ],
@@ -318,6 +318,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Card(
       elevation: 3,
       child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [ColorsManager.greyGreen, ColorsManager.gray],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -329,13 +337,13 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: color,
+                color: ColorsManager.lightYellow,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: const TextStyle(fontSize: 12, color: ColorsManager.lightYellow),
               textAlign: TextAlign.center,
             ),
           ],
@@ -348,9 +356,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Quick Actions',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyles.adminDashboardTitle,
         ),
         const SizedBox(height: 12),
         Row(
@@ -361,8 +369,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 icon: const Icon(Icons.people),
                 label: const Text('Manage Users'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                  backgroundColor: ColorsManager.greyGreen,
+                  foregroundColor: ColorsManager.darkBlue,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
@@ -374,8 +382,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 icon: const Icon(Icons.refresh),
                 label: const Text('Refresh Data'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                  backgroundColor: ColorsManager.greyGreen,
+                  foregroundColor: ColorsManager.darkBlue,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
@@ -390,9 +398,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Admin Tools',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyles.adminDashboardTitle,
         ),
         const SizedBox(height: 12),
         GridView.builder(
@@ -411,19 +419,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               elevation: 3,
               child: InkWell(
                 onTap: action.onTap,
-                borderRadius: BorderRadius.circular(8),
                 child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    ),
+                  borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(action.icon, size: 36, color: action.color),
+                      Icon(action.icon, size: 36, color: ColorsManager.lightYellow),
                       const SizedBox(height: 8),
                       Text(
                         action.title,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: ColorsManager.lightYellow,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -431,7 +447,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       Text(
                         action.subtitle,
                         style:
-                            const TextStyle(fontSize: 10, color: Colors.grey),
+                            const TextStyle(fontSize: 10, color: ColorsManager.gray93Color),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

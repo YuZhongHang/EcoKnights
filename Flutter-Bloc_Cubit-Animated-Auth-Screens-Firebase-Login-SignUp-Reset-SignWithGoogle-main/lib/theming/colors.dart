@@ -10,4 +10,5 @@ class ColorsManager {
   static const Color mediumLightShadeOfGray = Color(0xFF9E9E9E);
   static const Color coralRed = Color(0xFFFF4C5E);
   static const Color lightYellow = Color(0xFFE2E1CF);
+  static const Color greyGreen = Color(0xFFAFBB98);
 }
