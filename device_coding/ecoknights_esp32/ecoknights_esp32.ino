@@ -21,7 +21,7 @@
 #include "DHT.h"
 #include <WiFi.h>
 #include "time.h"
-
+#include "BluetoothSerial.h"
 
 // ----------------- Firebase Setup -----------------
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
@@ -54,7 +54,6 @@ DHT dht(DHT_PIN, DHT_TYPE);
 #define DUST_PIN 32   // Analog pin for GP2Y1010AU0F
 #define DUST_LED_PIN 33 // Control pin for dust sensor LED
 
-
 // --------------- Wifi Setup ---------------
 const char* ssid     = "OPPO Mr Fish"; //Wifi_SSID
 const char* password = "mrfishmrfish"; // Wifi_Password
@@ -79,6 +78,9 @@ float humidity = 0, temperature = 0;
 // - DHT22: every 2s
 // - MQ-135: every 1s
 
+// ----------------- Bluetooth Setup -----------------
+BluetoothSerial SerialBT;  // Create Bluetooth object
+String btName;
 
 // ----------------- Setup -----------------
 void setup() {
@@ -108,6 +110,18 @@ void setup() {
   Serial.println(" kohm");
   Serial.println("Sensor ready!");
 
+  // ---- Generate Unique ID from ESP32 MAC ----
+  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
+  char uniqueID[13];                   // 12 hex chars + null terminator
+  sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
+
+  // ---- Create Bluetooth name using ID ----
+  btName = "EcoKnights_" + String(uniqueID);
+  SerialBT.begin(btName);  // Start Bluetooth with unique name
+
+  Serial.println("Bluetooth Started with name: " + btName);
+  
+  
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -129,7 +143,7 @@ void setup() {
 bool obtainTime() {
   struct tm timeinfo;
   int retry = 0;
-  const int maxRetries = 30; // ~30s max
+  const int maxRetries = 300; // ~300s max
   while (!getLocalTime(&timeinfo) && retry < maxRetries) {
     Serial.println("Waiting for NTP time sync...");
     delay(1000);
@@ -140,6 +154,11 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
+  // send a test message over Bluetooth
+  if (SerialBT.hasClient()) {
+    SerialBT.println("Hello from " + String("EcoKnights device!"));
+  }
+
   if (millis() - lastUpdate >= interval) {
     lastUpdate = millis();
 
@@ -189,6 +208,7 @@ void loop() {
     }
 
     // ----- Serial Output -----
+    Serial.print(btName + ": –> ");
     Serial.print("CO2: "); Serial.print((int)co2_ppm); 
     Serial.print(" PPM | Quality: "); Serial.print(airQuality);
     Serial.print(" | Temp: "); Serial.print(temperature); 
