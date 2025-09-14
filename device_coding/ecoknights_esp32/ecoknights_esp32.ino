@@ -109,7 +109,8 @@ void setup() {
   Serial.print(Ro);
   Serial.println(" kohm");
   Serial.println("Sensor ready!");
-  display.print("Sensor ready!");
+  display.println("Sensor ready!");
+  display.display();
 
   // ---- Generate Unique ID from ESP32 MAC ----
   uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
@@ -121,18 +122,23 @@ void setup() {
   SerialBT.begin(btName);  // Start Bluetooth with unique name
 
   Serial.println("Bluetooth Started with name: " + btName);
-  display.print("Bluetooth Started with name: " + btName);
+  display.println("Bluetooth Started with name: " + btName);
+  display.display();
   
   
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println("Waiting for Wifi...");
-    display.print("Waiting for Wifi...");
+    display.clearDisplay();
+    display.println("Waiting for Wifi...");
+    display.display();
   }
   Serial.print(ssid);
   Serial.println("WiFi connected");
-  display.print("WiFi connected");
+  display.clearDisplay();
+  display.println("WiFi connected");
+  display.display();
 
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
@@ -161,7 +167,9 @@ void loop() {
   // send a test message over Bluetooth
   if (SerialBT.hasClient()) {
     SerialBT.println("Hello from " + String("EcoKnights device!"));
+    display.clearDisplay();
     display.print("Hello from " + String("EcoKnights device!"));
+    display.display();
   }
 
   if (millis() - lastUpdate >= interval) {
