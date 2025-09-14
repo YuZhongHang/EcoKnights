@@ -161,7 +161,7 @@ void loop() {
   // send a test message over Bluetooth
   if (SerialBT.hasClient()) {
     SerialBT.println("Hello from " + String("EcoKnights device!"));
-    display.println("Hello from " + String("EcoKnights device!");
+    display.print("Hello from " + String("EcoKnights device!"));
   }
 
   if (millis() - lastUpdate >= interval) {
