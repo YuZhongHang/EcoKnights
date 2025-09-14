@@ -7,6 +7,14 @@ class FirestoreService {
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
   static final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Future<void> registerDevice(String uniqueId, String userId) async {
+    await _db.collection("devices").doc(uniqueId).set({
+      "uniqueId": uniqueId,
+      "owner": userId,
+      "createdAt": FieldValue.serverTimestamp(),
+    });
+  }
+
   // Users collection reference
   static CollectionReference get _usersCollection => _db.collection('users');
 
@@ -23,7 +31,7 @@ class FirestoreService {
   static Future<void> createOrUpdateUser(UserModel user) async {
     try {
       await _usersCollection.doc(user.uid).set(user.toFirestore());
-      
+
       // Clear cache if updating current user
       if (user.uid == _auth.currentUser?.uid) {
         _clearCache();
@@ -34,12 +42,15 @@ class FirestoreService {
   }
 
   // Get user by ID with optional caching
-  static Future<UserModel?> getUserById(String uid, {bool useCache = false}) async {
+  static Future<UserModel?> getUserById(
+    String uid, {
+    bool useCache = false,
+  }) async {
     try {
       // Use cache for current user if enabled and valid
-      if (useCache && 
-          uid == _auth.currentUser?.uid && 
-          _currentUserCache != null && 
+      if (useCache &&
+          uid == _auth.currentUser?.uid &&
+          _currentUserCache != null &&
           _cacheTimestamp != null &&
           DateTime.now().difference(_cacheTimestamp!) < _cacheValidDuration) {
         return _currentUserCache;
@@ -48,13 +59,13 @@ class FirestoreService {
       DocumentSnapshot doc = await _usersCollection.doc(uid).get();
       if (doc.exists) {
         final user = UserModel.fromFirestore(doc);
-        
+
         // Cache current user data
         if (uid == _auth.currentUser?.uid) {
           _currentUserCache = user;
           _cacheTimestamp = DateTime.now();
         }
-        
+
         return user;
       }
       return null;
@@ -70,7 +81,9 @@ class FirestoreService {
   }
 
   // Get current user profile with caching
-  static Future<UserModel?> getCurrentUserProfile({bool useCache = true}) async {
+  static Future<UserModel?> getCurrentUserProfile({
+    bool useCache = true,
+  }) async {
     User? firebaseUser = _auth.currentUser;
     if (firebaseUser == null) return null;
 
@@ -134,7 +147,8 @@ class FirestoreService {
   }
 
   // Enhanced search users with multiple fields and fuzzy matching
-  static Future<List<UserModel>> searchUsers(String searchTerm, {
+  static Future<List<UserModel>> searchUsers(
+    String searchTerm, {
     int limit = 50,
     List<String> searchFields = const ['email', 'username', 'phoneNumber'],
   }) async {
@@ -143,7 +157,7 @@ class FirestoreService {
       if (!isAdmin) {
         throw Exception('Access denied: Admin privileges required');
       }
-      
+
       if (searchTerm.isEmpty) {
         return await getAllUsers(limit: limit);
       }
@@ -234,8 +248,8 @@ class FirestoreService {
   // Helper method for client-side search matching
   static bool _userMatchesSearch(UserModel user, String searchTermLower) {
     return user.email.toLowerCase().contains(searchTermLower) ||
-           user.username.toLowerCase().contains(searchTermLower) ||
-           (user.phoneNumber?.toLowerCase().contains(searchTermLower) ?? false);
+        user.username.toLowerCase().contains(searchTermLower) ||
+        (user.phoneNumber?.toLowerCase().contains(searchTermLower) ?? false);
   }
 
   // Update user with optimistic updates and rollback on failure
@@ -248,7 +262,7 @@ class FirestoreService {
 
       // Get original user data for potential rollback
       UserModel? originalUser = await getUserById(user.uid);
-      
+
       // Update in Firestore
       await _usersCollection.doc(user.uid).update(user.toFirestore());
 
@@ -270,11 +284,14 @@ class FirestoreService {
   }
 
   // Helper to identify what fields were changed
-  static Map<String, dynamic> _getUpdatedFields(UserModel? original, UserModel updated) {
+  static Map<String, dynamic> _getUpdatedFields(
+    UserModel? original,
+    UserModel updated,
+  ) {
     if (original == null) return {'all': 'new_user'};
-    
+
     Map<String, dynamic> changes = {};
-    
+
     if (original.username != updated.username) {
       changes['username'] = {'from': original.username, 'to': updated.username};
     }
@@ -285,9 +302,12 @@ class FirestoreService {
       changes['isActive'] = {'from': original.isActive, 'to': updated.isActive};
     }
     if (original.phoneNumber != updated.phoneNumber) {
-      changes['phoneNumber'] = {'from': original.phoneNumber, 'to': updated.phoneNumber};
+      changes['phoneNumber'] = {
+        'from': original.phoneNumber,
+        'to': updated.phoneNumber,
+      };
     }
-    
+
     return changes;
   }
 
@@ -321,7 +341,9 @@ class FirestoreService {
         updatedAt: DateTime.now(), // Fixed: Use DateTime instead of Timestamp
       );
 
-      await _usersCollection.doc(firebaseUser.uid).update(updatedUser.toFirestore());
+      await _usersCollection
+          .doc(firebaseUser.uid)
+          .update(updatedUser.toFirestore());
       _clearCache(); // Clear cache after update
     } catch (e) {
       throw Exception('Failed to update user profile: $e');
@@ -499,7 +521,10 @@ class FirestoreService {
       }
 
       QuerySnapshot querySnapshot = await _usersCollection
-          .where('role', whereIn: [UserRole.admin.name, UserRole.superAdmin.name])
+          .where(
+            'role',
+            whereIn: [UserRole.admin.name, UserRole.superAdmin.name],
+          )
           .orderBy('createdAt', descending: true)
           .get();
 
@@ -528,13 +553,16 @@ class FirestoreService {
   }
 
   // Update email verification status
-  static Future<void> updateEmailVerificationStatus(String uid, bool isVerified) async {
+  static Future<void> updateEmailVerificationStatus(
+    String uid,
+    bool isVerified,
+  ) async {
     try {
       await _usersCollection.doc(uid).update({
         'isEmailVerified': isVerified,
         'updatedAt': Timestamp.now(),
       });
-      
+
       // Clear cache if updating current user
       if (uid == _auth.currentUser?.uid) {
         _clearCache();
@@ -554,7 +582,7 @@ class FirestoreService {
 
       // Get all users in one query for better performance
       QuerySnapshot allUsersQuery = await _usersCollection.get();
-      
+
       final stats = <String, int>{
         'total': 0,
         'active': 0,
@@ -574,19 +602,20 @@ class FirestoreService {
         try {
           final user = UserModel.fromFirestore(doc);
           stats['total'] = stats['total']! + 1;
-          
+
           // Active/Inactive
           if (user.isActive) {
             stats['active'] = stats['active']! + 1;
           } else {
             stats['inactive'] = stats['inactive']! + 1;
           }
-          
+
           // Roles - Fixed: Added all UserRole cases
           switch (user.role) {
             case UserRole.superAdmin:
               stats['superAdmins'] = stats['superAdmins']! + 1;
-              stats['admins'] = stats['admins']! + 1; // Super admins are also admins
+              stats['admins'] =
+                  stats['admins']! + 1; // Super admins are also admins
               break;
             case UserRole.admin:
               stats['admins'] = stats['admins']! + 1;
@@ -598,14 +627,14 @@ class FirestoreService {
               stats['users'] = stats['users']! + 1;
               break;
           }
-          
+
           // Email verification
           if (user.isEmailVerified) {
             stats['verified'] = stats['verified']! + 1;
           } else {
             stats['unverified'] = stats['unverified']! + 1;
           }
-          
+
           // Recently active (last 30 days) - Fixed: Check for null and convert properly
           if (user.lastLoginAt != null) {
             DateTime lastLoginDateTime;
@@ -616,7 +645,7 @@ class FirestoreService {
             } else {
               continue; // Skip if we can't convert
             }
-            
+
             if (lastLoginDateTime.isAfter(thirtyDaysAgo)) {
               stats['recentlyActive'] = stats['recentlyActive']! + 1;
             }
@@ -636,7 +665,10 @@ class FirestoreService {
 
   // Log admin actions with more context
   static Future<void> _logAdminAction(
-      String action, String targetUserId, Map<String, dynamic> details) async {
+    String action,
+    String targetUserId,
+    Map<String, dynamic> details,
+  ) async {
     try {
       String? adminId = _auth.currentUser?.uid;
       if (adminId == null) return;
@@ -652,7 +684,8 @@ class FirestoreService {
         'targetUserId': targetUserId,
         'timestamp': Timestamp.now(),
         'details': details,
-        'userAgent': 'Flutter App', // You could enhance this with actual device info
+        'userAgent':
+            'Flutter App', // You could enhance this with actual device info
       });
     } catch (e) {
       // Log error but don't throw - don't break the main operation
@@ -684,19 +717,22 @@ class FirestoreService {
         query = query.where('action', isEqualTo: action);
       }
       if (startDate != null) {
-        query = query.where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate));
+        query = query.where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+        );
       }
       if (endDate != null) {
-        query = query.where('timestamp', isLessThanOrEqualTo: Timestamp.fromDate(endDate));
+        query = query.where(
+          'timestamp',
+          isLessThanOrEqualTo: Timestamp.fromDate(endDate),
+        );
       }
 
       QuerySnapshot querySnapshot = await query.limit(limit).get();
 
       return querySnapshot.docs
-          .map((doc) => {
-                'id': doc.id,
-                ...doc.data() as Map<String, dynamic>,
-              })
+          .map((doc) => {'id': doc.id, ...doc.data() as Map<String, dynamic>})
           .toList();
     } catch (e) {
       throw Exception('Failed to get admin logs: $e');
@@ -705,7 +741,9 @@ class FirestoreService {
 
   // Get admin logs for specific admin (super admin only)
   static Future<List<Map<String, dynamic>>> getAdminLogsByAdmin(
-      String adminId, {int limit = 100}) async {
+    String adminId, {
+    int limit = 100,
+  }) async {
     try {
       bool isSuperAdmin = await isCurrentUserSuperAdmin();
       if (!isSuperAdmin) {
@@ -745,7 +783,9 @@ class FirestoreService {
   }
 
   // Batch update users
-  static Future<void> batchUpdateUsers(Map<String, Map<String, dynamic>> updates) async {
+  static Future<void> batchUpdateUsers(
+    Map<String, Map<String, dynamic>> updates,
+  ) async {
     try {
       bool isSuperAdmin = await isCurrentUserSuperAdmin();
       if (!isSuperAdmin) {

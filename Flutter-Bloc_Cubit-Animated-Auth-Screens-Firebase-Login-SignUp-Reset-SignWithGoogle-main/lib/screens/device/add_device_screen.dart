@@ -7,7 +7,7 @@ class AddDeviceScreen extends StatefulWidget {
   final DocumentSnapshot? existingData;
 
   const AddDeviceScreen({Key? key, this.deviceId, this.existingData})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _AddDeviceScreenState createState() => _AddDeviceScreenState();
@@ -104,7 +104,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               ElevatedButton(
                 onPressed: _saveDevice,
                 child: Text(
-                    widget.deviceId != null ? "Update Device" : "Add Device"),
+                  widget.deviceId != null ? "Update Device" : "Add Device",
+                ),
               ),
             ],
           ),

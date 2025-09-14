@@ -19,6 +19,9 @@ import '../../../theming/colors.dart';
 import '../../device/add_device_screen.dart';
 import '../../device/data_history_screen.dart';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
+import '../../../services/bluetooth_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -38,8 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.account_circle,
-                color: ColorsManager.mainBlue, size: 28),
+            icon: const Icon(
+              Icons.account_circle,
+              color: ColorsManager.mainBlue,
+              size: 28,
+            ),
             onPressed: () {
               context.pushNamed(Routes.profileScreen);
             },
@@ -47,18 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: OfflineBuilder(
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          final bool connected = connectivity != ConnectivityResult.none;
-          return connected ? _homePage(context, user) : const BuildNoInternet();
-        },
+        connectivityBuilder:
+            (
+              BuildContext context,
+              ConnectivityResult connectivity,
+              Widget child,
+            ) {
+              final bool connected = connectivity != ConnectivityResult.none;
+              return connected
+                  ? _homePage(context, user)
+                  : const BuildNoInternet();
+            },
         child: const Center(
-          child: CircularProgressIndicator(
-            color: ColorsManager.mainBlue,
-          ),
+          child: CircularProgressIndicator(color: ColorsManager.mainBlue),
         ),
       ),
     );
@@ -84,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(
-                          color: ColorsManager.mainBlue),
+                        color: ColorsManager.mainBlue,
+                      ),
                     );
                   }
 
@@ -93,19 +101,64 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    // Show Add Device button
-                    return Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AddDeviceScreen()),
+                    return StreamBuilder<List<fbp.ScanResult>>(
+                      stream: MyBluetoothService().scanForDevices(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
                           );
-                        },
-                        icon: const Icon(Icons.devices),
-                        label: const Text("Link a new device"),
-                      ),
+                        }
+
+                        final devices = snapshot.data!
+                            .whereType<fbp.ScanResult>() // ✅ Ensure type safety
+                            .where(
+                              (d) => d.device.name.startsWith("EcoDevice_"),
+                            )
+                            .toList();
+
+                        if (devices.isEmpty) {
+                          return const Center(
+                            child: Text("No ESP32 devices found"),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: devices.length,
+                          itemBuilder: (context, index) {
+                            final result = devices[index];
+                            return Card(
+                              child: ListTile(
+                                title: Text(result.device.name),
+                                subtitle: Text(result.device.id.id),
+                                trailing: ElevatedButton(
+                                  child: const Text("Send WiFi"),
+                                  onPressed: () async {
+                                    // Example WiFi creds (later: use a dialog to enter)
+                                    String ssid = "MyHomeWiFi";
+                                    String password = "MySecret123";
+
+                                    final device = await MyBluetoothService()
+                                        .connectToDevice(result);
+                                    await MyBluetoothService()
+                                        .sendWifiCredentials(
+                                          device,
+                                          ssid,
+                                          password,
+                                        );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("WiFi sent to ESP32"),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     );
                   }
 
@@ -120,7 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       return Card(
                         margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 4),
+                          vertical: 8,
+                          horizontal: 4,
+                        ),
                         child: ListTile(
                           title: Text(device['deviceName']),
                           subtitle: Text("WiFi: ${device['wifiName']}"),
@@ -128,8 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit,
-                                    color: ColorsManager.mainBlue),
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: ColorsManager.mainBlue,
+                                ),
                                 onPressed: () {
                                   Navigator.pushReplacement(
                                     context,
@@ -143,15 +200,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.history,
-                                    color: ColorsManager.mainBlue),
+                                icon: const Icon(
+                                  Icons.history,
+                                  color: ColorsManager.mainBlue,
+                                ),
                                 onPressed: () {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => DataHistoryScreen(
-                                        deviceId: deviceId,
-                                      ),
+                                      builder: (context) =>
+                                          DataHistoryScreen(deviceId: deviceId),
                                     ),
                                   );
                                 },

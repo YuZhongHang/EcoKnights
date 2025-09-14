@@ -34,18 +34,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: ColorsManager.lightYellow,
       body: OfflineBuilder(
-        connectivityBuilder: (
-          BuildContext context,
-          ConnectivityResult connectivity,
-          Widget child,
-        ) {
-          final bool connected = connectivity != ConnectivityResult.none;
-          return connected ? _loginPage(context) : const BuildNoInternet();
-        },
+        connectivityBuilder:
+            (
+              BuildContext context,
+              ConnectivityResult connectivity,
+              Widget child,
+            ) {
+              final bool connected = connectivity != ConnectivityResult.none;
+              return connected ? _loginPage(context) : const BuildNoInternet();
+            },
         child: const Center(
-          child: CircularProgressIndicator(
-            color: ColorsManager.mainBlue,
-          ),
+          child: CircularProgressIndicator(color: ColorsManager.mainBlue),
         ),
       ),
     );
@@ -54,8 +53,12 @@ class _LoginScreenState extends State<LoginScreen> {
   SafeArea _loginPage(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding:
-            EdgeInsets.only(left: 30.w, right: 30.w, bottom: 15.h, top: 5.h),
+        padding: EdgeInsets.only(
+          left: 30.w,
+          right: 30.w,
+          bottom: 15.h,
+          top: 5.h,
+        ),
         child: SingleChildScrollView(
           child: BlocConsumer<AuthCubit, AuthState>(
             buildWhen: (previous, current) => previous != current,
@@ -117,10 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Login',
-                          style: TextStyles.font24Blue700Weight,
-                        ),
+                        Text('Login', style: TextStyles.font24Blue700Weight),
                         Gap(2.h),
                         Text(
                           "Login To Continue Using The App",

@@ -32,6 +32,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "bluez",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/bluez-0.8.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "boolean_selector",
       "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2",
       "packageUri": "lib/",
@@ -237,11 +243,7 @@
     },
     {
       "name": "flutter",
-<<<<<<< Updated upstream
-      "rootUri": "file:///C:/src/flutter/packages/flutter",
-=======
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter",
->>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -250,6 +252,42 @@
       "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_bloc-8.1.6",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_blue_plus",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus-1.36.6",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_blue_plus_android",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus_android-7.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_blue_plus_darwin",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus_darwin-7.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_blue_plus_linux",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus_linux-7.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_blue_plus_platform_interface",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus_platform_interface-7.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flutter_blue_plus_web",
+      "rootUri": "file:///C:/Users/User/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_blue_plus_web-7.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "flutter_cache_manager",
@@ -289,21 +327,13 @@
     },
     {
       "name": "flutter_test",
-<<<<<<< Updated upstream
-      "rootUri": "file:///C:/src/flutter/packages/flutter_test",
-=======
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_test",
->>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
-<<<<<<< Updated upstream
-      "rootUri": "file:///C:/src/flutter/packages/flutter_web_plugins",
-=======
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_web_plugins",
->>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -597,11 +627,7 @@
     },
     {
       "name": "sky_engine",
-<<<<<<< Updated upstream
-      "rootUri": "file:///C:/src/flutter/bin/cache/pkg/sky_engine",
-=======
       "rootUri": "file:///C:/flutter/src/flutter/bin/cache/pkg/sky_engine",
->>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -758,12 +784,7 @@
   ],
   "generator": "pub",
   "generatorVersion": "3.9.0",
-<<<<<<< Updated upstream
-  "flutterRoot": "file:///C:/src/flutter",
-  "flutterVersion": "3.35.1",
-=======
   "flutterRoot": "file:///C:/flutter/src/flutter",
   "flutterVersion": "3.35.2",
->>>>>>> Stashed changes
   "pubCache": "file:///C:/Users/User/AppData/Local/Pub/Cache"
 }
