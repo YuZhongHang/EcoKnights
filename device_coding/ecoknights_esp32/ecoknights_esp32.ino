@@ -21,7 +21,11 @@
 #include "DHT.h"
 #include <WiFi.h>
 #include "time.h"
-#include "BluetoothSerial.h"
+
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLE2902.h>
 
 // ----------------- Firebase Setup -----------------
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
@@ -79,8 +83,15 @@ float humidity = 0, temperature = 0;
 // - MQ-135: every 1s
 
 // ----------------- Bluetooth Setup -----------------
-BluetoothSerial SerialBT;  // Create Bluetooth object
+BLEServer *pServer;
+BLEService *pService;
+BLECharacteristic *pCharacteristic;
 String btName;
+
+#define SERVICE_UUID        "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+#define CHARACTERISTIC_UUID "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+
+
 
 // ----------------- OLED Display Setup Msg -----------------
 void oledPrint(String msg) {
@@ -130,7 +141,30 @@ void setup() {
 
   // ---- Create Bluetooth name using ID ----
   btName = "EcoKnights_" + String(uniqueID);
-  SerialBT.begin(btName);  // Start Bluetooth with unique name
+
+  // Initialize BLE device
+  BLEDevice::init(btName);   // Name of ESP32 device
+
+  // Create BLE Server
+  pServer = BLEDevice::createServer();
+  pService = pServer->createService(SERVICE_UUID);
+
+  // Create Characteristic (data channel)
+  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+                                         CHARACTERISTIC_UUID,
+                                         BLECharacteristic::PROPERTY_READ   |
+                                         BLECharacteristic::PROPERTY_WRITE  |
+                                         BLECharacteristic::PROPERTY_NOTIFY
+                                       );
+
+  pCharacteristic->setValue("Hello from ESP32");
+  pService->start();
+
+  // Start advertising (make device discoverable)
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->start();
+  Serial.println("BLE started, waiting for client...");
 
   Serial.println("Bluetooth: " + btName);
   oledPrint("Bluetooth: " + btName);
@@ -154,13 +188,6 @@ void setup() {
   } else {
     Serial.println("Failed to obtain time");
     oledPrint("Failed to obtain time");
-  }
-
-  // send a test message over Bluetooth
-  if (SerialBT.hasClient()) {
-    SerialBT.println("Hello from EcoKnights device!");
-    Serial.println("Hello from EcoKnights device!");
-    oledPrint("Hello from EcoKnights device!");
   }
   
   delay(3000);
