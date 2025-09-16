@@ -82,6 +82,15 @@ float humidity = 0, temperature = 0;
 BluetoothSerial SerialBT;  // Create Bluetooth object
 String btName;
 
+// ----------------- OLED Display Setup Msg -----------------
+void oledPrint(String msg) {
+  delay(2000);
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println(msg);
+  display.display();
+}
+
 // ----------------- Setup -----------------
 void setup() {
   Serial.begin(115200);
@@ -92,6 +101,7 @@ void setup() {
   dht.begin();
 
   // OLED init
+  delay(500); // delay for a while let OLED power stabilize
   Wire.begin(25, 26); // SDA, SCL
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -109,8 +119,7 @@ void setup() {
   Serial.print(Ro);
   Serial.println(" kohm");
   Serial.println("Sensor ready!");
-  display.println("Sensor ready!");
-  display.display();
+  oledPrint("Sensor ready!");
 
   // ---- Generate Unique ID from ESP32 MAC ----
   uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
@@ -121,33 +130,38 @@ void setup() {
   btName = "EcoKnights_" + String(uniqueID);
   SerialBT.begin(btName);  // Start Bluetooth with unique name
 
-  Serial.println("Bluetooth Started with name: " + btName);
-  display.println("Bluetooth Started with name: " + btName);
-  display.display();
+  Serial.println("Bluetooth: " + btName);
+  oledPrint("Bluetooth: " + btName);
   
   
   WiFi.begin(ssid, password);
+  oledPrint("Waiting for Wifi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println("Waiting for Wifi...");
-    display.clearDisplay();
-    display.println("Waiting for Wifi...");
-    display.display();
   }
-  Serial.print(ssid);
-  Serial.println("WiFi connected");
-  display.clearDisplay();
-  display.println("WiFi connected");
-  display.display();
+  Serial.println(ssid + String("\nWiFi connected"));
+  oledPrint(ssid + String("\nWiFi connected"));
 
   // init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
   if (obtainTime()) {
     Serial.println("Time synced successfully!");
+    oledPrint("Time synced successfully!");
   } else {
     Serial.println("Failed to obtain time");
+    oledPrint("Failed to obtain time");
   }
+
+  // send a test message over Bluetooth
+  if (SerialBT.hasClient()) {
+    SerialBT.println("Hello from EcoKnights device!");
+    Serial.println("Hello from EcoKnights device!");
+    oledPrint("Hello from EcoKnights device!");
+  }
+  
+  delay(3000);
 }
 
 bool obtainTime() {
@@ -155,6 +169,7 @@ bool obtainTime() {
   int retry = 0;
   const int maxRetries = 300; // ~300s max
   while (!getLocalTime(&timeinfo) && retry < maxRetries) {
+    oledPrint("Waiting for NTP time sync...");
     Serial.println("Waiting for NTP time sync...");
     delay(1000);
     retry++;
@@ -164,13 +179,7 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
-  // send a test message over Bluetooth
-  if (SerialBT.hasClient()) {
-    SerialBT.println("Hello from " + String("EcoKnights device!"));
-    display.clearDisplay();
-    display.print("Hello from " + String("EcoKnights device!"));
-    display.display();
-  }
+  
 
   if (millis() - lastUpdate >= interval) {
     lastUpdate = millis();
