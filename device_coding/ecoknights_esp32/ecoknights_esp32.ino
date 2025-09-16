@@ -101,12 +101,14 @@ void setup() {
   dht.begin();
 
   // OLED init
-  delay(500); // delay for a while let OLED power stabilize
+  delay(3000); // delay for a while let OLED power stabilize
   Wire.begin(25, 26); // SDA, SCL
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
+  while(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("SSD1306 allocation failed, retrying...");
+    delay(500);
   }
+
+  Serial.println("OLED initialized successfully!");
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
 
