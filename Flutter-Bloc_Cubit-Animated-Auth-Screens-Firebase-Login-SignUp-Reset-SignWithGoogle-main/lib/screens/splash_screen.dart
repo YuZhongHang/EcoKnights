@@ -1,5 +1,6 @@
 // screens/splash/splash_screen.dart
 import 'dart:async';
+import 'package:auth_bloc/theming/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -191,7 +192,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
+      backgroundColor: ColorsManager.lightYellow,
       body: Center(
         child: AnimatedBuilder(
           animation: _animationController,
@@ -203,63 +204,21 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // App Logo
-                    Container(
-                      width: 120.w,
-                      height: 120.h,
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade600,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.3),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.security,
-                        size: 60.sp,
-                        color: Colors.white,
-                      ),
+                    Image.asset(
+                    'assets/images/ecoKnights_logo.jpg',
+                    width: 250.w,
+                    height: 250.h,
+                    fit: BoxFit.contain,
                     ),
-
-                    SizedBox(height: 24.h),
-
-                    // App Name
-                    Text(
-                      'EcoKnights',
-                      style: TextStyle(
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade800,
-                        letterSpacing: 2,
-                      ),
-                    ),
-
-                    SizedBox(height: 8.h),
-
-                    // App Tagline
-                    Text(
-                      'Air Quality Monitoring System',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.blue.shade600,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-
-                    SizedBox(height: 40.h),
 
                     // Loading Indicator
                     SizedBox(
                       width: 35.w,
-                      height: 35.h,
+                      height: 30.h,
                       child: CircularProgressIndicator(
                         strokeWidth: 3,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.blue.shade600,
+                          ColorsManager.gray,
                         ),
                       ),
                     ),
@@ -270,7 +229,7 @@ class _SplashScreenState extends State<SplashScreen>
                       'Loading...',
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: Colors.blue.shade600,
+                        color: ColorsManager.gray,
                       ),
                     ),
                   ],
