@@ -102,6 +102,30 @@ void oledPrint(String msg) {
   display.display();
 }
 
+// ----------------- Reading Wifi Credential From App -----------------
+class WifiCredentialsCallback: public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *pCharacteristic) {
+    String value = pCharacteristic->getValue(); 
+
+    if (value.length() > 0) {
+        Serial.println("Received over BLE: " + value);
+
+        // Expecting format: "SSID|PASSWORD"
+        int delimiter = value.indexOf('|');
+        if (delimiter != -1) {
+            String ssid = value.substring(0, delimiter);
+            String password = value.substring(delimiter + 1);
+
+            Serial.println("Parsed SSID: " + ssid);
+            Serial.println("Parsed Password: " + password);
+
+            WiFi.begin(ssid.c_str(), password.c_str());
+          }
+      }
+  }
+};
+
+
 // ----------------- Setup -----------------
 void setup() {
   Serial.begin(115200);
@@ -150,20 +174,27 @@ void setup() {
   pService = pServer->createService(SERVICE_UUID);
 
   // Create Characteristic (data channel)
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
+  pCharacteristic = pService->createCharacteristic(
                                          CHARACTERISTIC_UUID,
                                          BLECharacteristic::PROPERTY_READ   |
                                          BLECharacteristic::PROPERTY_WRITE  |
                                          BLECharacteristic::PROPERTY_NOTIFY
                                        );
 
-  pCharacteristic->setValue("Hello from ESP32");
+  // Set callback for incoming writes
+  pCharacteristic->setCallbacks(new WifiCredentialsCallback());
+  pCharacteristic->setValue("Ready");
   pService->start();
 
   // Start advertising (make device discoverable)
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->start();
+  Serial.print("Service UUID: ");
+  Serial.println(String(SERVICE_UUID));
+  Serial.print("Characteristic UUID: ");
+  Serial.println(String(CHARACTERISTIC_UUID));
+
   Serial.println("BLE started, waiting for client...");
 
   Serial.println("Bluetooth: " + btName);
