@@ -1,9 +1,12 @@
+import 'package:auth_bloc/theming/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
 import 'package:flutter/foundation.dart';
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
 
 class AdminUserManagement extends StatefulWidget {
   const AdminUserManagement({super.key});
@@ -422,8 +425,11 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: const Text("Admin - Manage Users"),
+        title: Text("Manage Users", style: TextStyles.adminDashboardTitle,),
+        backgroundColor: ColorsManager.gray,
+        foregroundColor: ColorsManager.lightYellow,
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -452,9 +458,22 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search users...',
+                labelStyle: const TextStyle(color: ColorsManager.lightYellow), // Label text color
                 hintText: 'Search by username, email, or phone',
-                prefixIcon: const Icon(Icons.search),
-                border: const OutlineInputBorder(),
+                hintStyle: const TextStyle(color: ColorsManager.greyGreen),  // Hint text color
+                prefixIcon: const Icon(Icons.search, color: ColorsManager.lightYellow),
+                border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                borderSide: const BorderSide(color: ColorsManager.gray), // Border color
+                ),
+                enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: ColorsManager.gray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0), // Border when focused
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -550,32 +569,48 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                   itemCount: filteredUsers.length,
                   itemBuilder: (context, index) {
                     final user = filteredUsers[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                              user.isAdmin ? Colors.red : Colors.blue,
-                          child: Icon(
-                            user.isAdmin
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4), 
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Card(
+                        color: Colors.transparent, 
+                        shadowColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor:
+                            user.isAdmin ? ColorsManager.mainBlue : ColorsManager.lightYellow,
+                            child: Icon(
+                              user.isAdmin
                                 ? Icons.admin_panel_settings
                                 : Icons.person,
-                            color: Colors.white,
+                            color: 
+                              user.isAdmin ? Colors.white : ColorsManager.darkBlue,
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          user.username,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: user.isActive ? Colors.black : Colors.grey,
+                          title: Text(
+                            user.username,
+                            style: TextStyles.adminManageUser.copyWith (
+                              color: user.isActive ? ColorsManager.darkBlue : ColorsManager.lightYellow,
+                              )
                           ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                             Text(
-                                "${user.email} • ${user.phoneNumber ?? 'No phone'}"),
+                                "${user.email} • ${user.phoneNumber ?? 'No phone'}",
+                                style: TextStyle(
+                                  color: ColorsManager.mainBlue
+                                )
+                                ),
                             Row(
                               children: [
                                 Container(
@@ -583,13 +618,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                                       horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
                                     color:
-                                        user.isAdmin ? Colors.red : Colors.blue,
+                                        user.isAdmin ? ColorsManager.mainBlue : ColorsManager.lightYellow,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     user.role.name,
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: 
+                                        user.isAdmin ? Colors.white : ColorsManager.darkBlue,
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -602,13 +638,15 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                                   decoration: BoxDecoration(
                                     color: user.isActive
                                         ? Colors.green
-                                        : Colors.red,
+                                        : ColorsManager.lightYellow,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     user.isActive ? 'Active' : 'Inactive',
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: user.isActive
+                                      ? Colors.white
+                                      : ColorsManager.darkBlue,
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -622,18 +660,19 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              icon: const Icon(Icons.edit, color: ColorsManager.lightYellow),
                               onPressed: () => _showEditDialog(user),
                               tooltip: 'Edit User',
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
+                              icon: const Icon(Icons.delete, color: ColorsManager.zhYellow),
                               onPressed: () => _deleteUser(user),
                               tooltip: 'Delete User',
                             ),
                           ],
                         ),
                       ),
+                      )
                     );
                   },
                 );
