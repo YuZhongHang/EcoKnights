@@ -24,6 +24,12 @@ class TextStyles {
     fontSize: 30,
     fontWeight: FontWeight.w700,
   );
+  static TextStyle adminManageUser = const TextStyle(
+    fontFamily: 'Georgia',
+    fontSize: 15, 
+    
+    fontWeight: FontWeight.w600,
+  );
 
   static TextStyle font14Blue400Weight = GoogleFonts.nunitoSans(
     fontSize: 14.sp,
