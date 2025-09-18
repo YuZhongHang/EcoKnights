@@ -21,6 +21,7 @@ import '../../device/data_history_screen.dart';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import '../../../services/bluetooth_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +31,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    var scan = await Permission.bluetoothScan.status;
+    var connect = await Permission.bluetoothConnect.status;
+    var location = await Permission.location.status;
+  }
+
+  Future<void> _requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location,
+    ].request();
+
+    statuses.forEach((perm, status) {
+      if (status.isPermanentlyDenied) {
+        // Open settings if user blocked it forever
+        openAppSettings();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -53,17 +82,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: OfflineBuilder(
-        connectivityBuilder:
-            (
-              BuildContext context,
-              ConnectivityResult connectivity,
-              Widget child,
-            ) {
-              final bool connected = connectivity != ConnectivityResult.none;
-              return connected
-                  ? _homePage(context, user)
-                  : const BuildNoInternet();
-            },
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          return connected ? _homePage(context, user) : const BuildNoInternet();
+        },
         child: const Center(
           child: CircularProgressIndicator(color: ColorsManager.mainBlue),
         ),
@@ -111,16 +137,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         final devices = snapshot.data!
-                            .whereType<fbp.ScanResult>() // ✅ Ensure type safety
+                            .whereType<fbp.ScanResult>()
                             .where(
-                              (d) => d.device.name.startsWith("EcoDevice_"),
-                            )
+                                (d) => d.device.name.startsWith("EcoKnights_"))
                             .toList();
 
                         if (devices.isEmpty) {
                           return const Center(
                             child: Text("No ESP32 devices found"),
                           );
+                        }
+
+                        for (var d in snapshot.data!) {
+                          debugPrint(
+                              "📡 Found: '${d.device.name}' (${d.device.id.id})");
                         }
 
                         return ListView.builder(
@@ -131,26 +161,82 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: ListTile(
                                 title: Text(result.device.name),
                                 subtitle: Text(result.device.id.id),
-                                trailing: ElevatedButton(
-                                  child: const Text("Send WiFi"),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.wifi,
+                                      color: ColorsManager.mainBlue),
                                   onPressed: () async {
-                                    // Example WiFi creds (later: use a dialog to enter)
-                                    String ssid = "MyHomeWiFi";
-                                    String password = "MySecret123";
+                                    await result.device.connect();
 
-                                    final device = await MyBluetoothService()
-                                        .connectToDevice(result);
-                                    await MyBluetoothService()
-                                        .sendWifiCredentials(
-                                          device,
-                                          ssid,
-                                          password,
+                                    final ssidController =
+                                        TextEditingController();
+                                    final passwordController =
+                                        TextEditingController();
+
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              "Enter WiFi Credentials"),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              TextField(
+                                                controller: ssidController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                        labelText: "SSID"),
+                                              ),
+                                              TextField(
+                                                controller: passwordController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                        labelText: "Password"),
+                                                obscureText: true,
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text("Cancel"),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                            ElevatedButton(
+                                              child: const Text("Send"),
+                                              onPressed: () async {
+                                                final ssid =
+                                                    ssidController.text.trim();
+                                                final password =
+                                                    passwordController.text
+                                                        .trim();
+
+                                                if (ssid.isNotEmpty &&
+                                                    password.isNotEmpty) {
+                                                  final device =
+                                                      await MyBluetoothService()
+                                                          .connectToDevice(
+                                                              result);
+                                                  await MyBluetoothService()
+                                                      .sendWifiCredentials(
+                                                    device,
+                                                    ssid,
+                                                    password,
+                                                  );
+
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(
+                                                            "WiFi sent: $ssid")),
+                                                  );
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                            ),
+                                          ],
                                         );
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("WiFi sent to ESP32"),
-                                      ),
+                                      },
                                     );
                                   },
                                 ),

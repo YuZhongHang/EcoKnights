@@ -75,77 +75,74 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithEmail({
-  required String email,
-  required String password,
-}) async {
-  try {
-    if (!isClosed) emit(AuthLoading());
+    required String email,
+    required String password,
+  }) async {
+    try {
+      if (!isClosed) emit(AuthLoading());
 
-    // Sign in with Firebase Auth
-    final credential = await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    final user = credential.user;
-    if (user == null) {
-      if (!isClosed) emit(AuthError("User not found"));
-      return;
-    }
-
-    // Load or create Firestore user profile
-    final userProfile = await _getOrCreateUserProfile(user);
-    if (userProfile == null) {
-      if (!isClosed) emit(AuthError("Failed to load user profile"));
-      return;
-    }
-
-    // Update last login timestamp
-    await _updateLastLogin(userProfile.uid);
-
-    // Check if account is active
-    if (!userProfile.isActive) {
-      await _auth.signOut();
-      if (!isClosed) {
-        emit(AuthError(
-          'Your account has been deactivated. Please contact support.',
-        ));
+      // Sign in with Firebase Auth
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        if (!isClosed) emit(AuthError("User not found"));
+        return;
       }
-      return;
-    }
 
-    // 🔑 Role-based login
-    if (userProfile.isAdmin) {
-      debugPrint('✅ Admin login from Firestore role');
-      emit(AdminSignIn(user: userProfile));
-    } else {
-      debugPrint('✅ Normal user login');
-      emit(UserSignIn(user: userProfile));
-    }
-  } on FirebaseAuthException catch (e) {
-    String errorMessage;
-    switch (e.code) {
-      case 'user-not-found':
-        errorMessage = 'No user found for that email.';
-        break;
-      case 'wrong-password':
-        errorMessage = 'Wrong password provided for that user.';
-        break;
-      case 'invalid-email':
-        errorMessage = 'The email address is invalid.';
-        break;
-      default:
-        errorMessage = 'Authentication error: ${e.message}';
-    }
-    if (!isClosed) emit(AuthError(errorMessage));
-  } catch (e) {
-    if (!isClosed) {
-      emit(AuthError("An unexpected error occurred: $e"));
+      // Load or create Firestore user profile
+      final userProfile = await _getOrCreateUserProfile(user);
+      if (userProfile == null) {
+        if (!isClosed) emit(AuthError("Failed to load user profile"));
+        return;
+      }
+
+      // Update last login timestamp
+      await _updateLastLogin(userProfile.uid);
+
+      // Check if account is active
+      if (!userProfile.isActive) {
+        await _auth.signOut();
+        if (!isClosed) {
+          emit(AuthError(
+            'Your account has been deactivated. Please contact support.',
+          ));
+        }
+        return;
+      }
+
+      // 🔑 Role-based login
+      if (userProfile.isAdmin) {
+        debugPrint('✅ Admin login from Firestore role');
+        emit(AdminSignIn(user: userProfile));
+      } else {
+        debugPrint('✅ Normal user login');
+        emit(UserSignIn(user: userProfile));
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found for that email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided for that user.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'The email address is invalid.';
+          break;
+        default:
+          errorMessage = 'Authentication error: ${e.message}';
+      }
+      if (!isClosed) emit(AuthError(errorMessage));
+    } catch (e) {
+      if (!isClosed) {
+        emit(AuthError("An unexpected error occurred: $e"));
+      }
     }
   }
-}
-
-
-
 
   Future<void> signInWithGoogle() async {
     if (isClosed) return;
@@ -183,8 +180,9 @@ class AuthCubit extends Cubit<AuthState> {
       if (authResult.additionalUserInfo?.isNewUser == true) {
         // Delete the user account so they can register properly
         await user.delete();
-        if (!isClosed)
+        if (!isClosed) {
           emit(IsNewUser(googleUser: googleUser, credential: credential));
+        }
         return;
       }
 
@@ -293,43 +291,43 @@ class AuthCubit extends Cubit<AuthState> {
 
   // Helper method to get or create user profile
   Future<UserModel?> _getOrCreateUserProfile(User firebaseUser) async {
-  try {
-    debugPrint('🔍 Getting user profile for: ${firebaseUser.uid}');
+    try {
+      debugPrint('🔍 Getting user profile for: ${firebaseUser.uid}');
 
-    final docSnapshot =
-        await _firestore.collection('users').doc(firebaseUser.uid).get();
+      final docSnapshot =
+          await _firestore.collection('users').doc(firebaseUser.uid).get();
 
-    if (docSnapshot.exists && docSnapshot.data() != null) {
-      debugPrint('✅ User profile found in Firestore');
-      return UserModel.fromFirestore(docSnapshot);
+      if (docSnapshot.exists && docSnapshot.data() != null) {
+        debugPrint('✅ User profile found in Firestore');
+        return UserModel.fromFirestore(docSnapshot);
+      }
+
+      // 🚨 Only create default user for *new signups*
+      // For admin, you should manually insert doc in Firestore first
+      debugPrint(
+          '📝 Creating new user profile in Firestore (default user role)');
+      final userModel = UserModel.create(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        username: firebaseUser.displayName ??
+            firebaseUser.email?.split('@').first ??
+            'User',
+        role: UserRole.user,
+        isEmailVerified: firebaseUser.emailVerified,
+        photoURL: firebaseUser.photoURL,
+      );
+
+      await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .set(userModel.toFirestore());
+
+      return userModel;
+    } catch (e) {
+      debugPrint('❌ Error getting/creating user profile: $e');
+      return null;
     }
-
-    // 🚨 Only create default user for *new signups*
-    // For admin, you should manually insert doc in Firestore first
-    debugPrint('📝 Creating new user profile in Firestore (default user role)');
-    final userModel = UserModel.create(
-      uid: firebaseUser.uid,
-      email: firebaseUser.email ?? '',
-      username: firebaseUser.displayName ??
-          firebaseUser.email?.split('@').first ??
-          'User',
-      role: UserRole.user,
-      isEmailVerified: firebaseUser.emailVerified,
-      photoURL: firebaseUser.photoURL,
-    );
-
-    await _firestore
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .set(userModel.toFirestore());
-
-    return userModel;
-  } catch (e) {
-    debugPrint('❌ Error getting/creating user profile: $e');
-    return null;
   }
-}
-
 
   // Helper method to update last login
   Future<void> _updateLastLogin(String uid) async {

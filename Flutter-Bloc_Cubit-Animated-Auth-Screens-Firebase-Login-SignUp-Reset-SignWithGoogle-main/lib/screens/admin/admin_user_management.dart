@@ -84,7 +84,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
           user.username.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           user.email.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           (user.phoneNumber
-                  ?.toLowerCase()
+                  .toLowerCase()
                   .contains(_searchQuery.toLowerCase()) ??
               false);
 

@@ -261,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       final local = _phoneController.text.trim().replaceAll(RegExp(r'\D'), '');
-      final fullPhone = '${_selectedCountryCode}$local';
+      final fullPhone = '$_selectedCountryCode$local';
 
       Map<String, dynamic> userData = {
         'username': newName,
@@ -298,7 +298,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildProfileImage(User? user) {
-    final double size = 120; // diameter of profile picture
+    const double size = 120; // diameter of profile picture
 
     Widget imageWidget;
 
