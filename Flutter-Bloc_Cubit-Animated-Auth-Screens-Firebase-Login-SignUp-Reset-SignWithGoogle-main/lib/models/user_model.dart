@@ -110,12 +110,15 @@ class UserModel {
     };
 
     if (createdAt != null) data['createdAt'] = Timestamp.fromDate(createdAt!);
-    if (lastLoginAt != null)
+    if (lastLoginAt != null) {
       data['lastLoginAt'] = Timestamp.fromDate(lastLoginAt!);
-    if (deactivatedAt != null)
+    }
+    if (deactivatedAt != null) {
       data['deactivatedAt'] = Timestamp.fromDate(deactivatedAt!);
-    if (reactivatedAt != null)
+    }
+    if (reactivatedAt != null) {
       data['reactivatedAt'] = Timestamp.fromDate(reactivatedAt!);
+    }
     if (photoURL != null) data['photoURL'] = photoURL;
     if (metadata != null) data['metadata'] = metadata;
     if (permissions != null) data['permissions'] = permissions;

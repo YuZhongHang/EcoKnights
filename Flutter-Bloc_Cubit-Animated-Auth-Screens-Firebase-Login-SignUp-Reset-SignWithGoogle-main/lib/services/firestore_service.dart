@@ -249,7 +249,7 @@ class FirestoreService {
   static bool _userMatchesSearch(UserModel user, String searchTermLower) {
     return user.email.toLowerCase().contains(searchTermLower) ||
         user.username.toLowerCase().contains(searchTermLower) ||
-        (user.phoneNumber?.toLowerCase().contains(searchTermLower) ?? false);
+        (user.phoneNumber.toLowerCase().contains(searchTermLower) ?? false);
   }
 
   // Update user with optimistic updates and rollback on failure

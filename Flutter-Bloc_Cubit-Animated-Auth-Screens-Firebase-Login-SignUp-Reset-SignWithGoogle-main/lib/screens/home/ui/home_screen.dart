@@ -138,8 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         final devices = snapshot.data!
                             .whereType<fbp.ScanResult>()
-                            .where(
-                                (d) => d.device.name.startsWith("EcoKnights_"))
+                            .where((d) =>
+                                d.device.platformName.startsWith("EcoKnights_"))
                             .toList();
 
                         if (devices.isEmpty) {
