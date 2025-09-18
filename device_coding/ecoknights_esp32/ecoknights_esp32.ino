@@ -86,6 +86,7 @@ float humidity = 0, temperature = 0;
 BLEServer *pServer;
 BLEService *pService;
 BLECharacteristic *pCharacteristic;
+BLEAdvertising *pAdvertising;
 String btName;
 
 #define SERVICE_UUID        "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
@@ -101,6 +102,17 @@ void oledPrint(String msg) {
   display.println(msg);
   display.display();
 }
+// Callback to restart advertising after disconnect
+class MyServerCallbacks : public BLEServerCallbacks {
+  void onConnect(BLEServer* pServer) override {
+    Serial.println("BLE Client Connected");
+  }
+
+  void onDisconnect(BLEServer* pServer) override {
+    Serial.println("BLE Client Disconnected. Restarting advertising...");
+    pServer->startAdvertising(); // restart advertising
+  }
+};
 
 // ----------------- Reading Wifi Credential From App -----------------
 class WifiCredentialsCallback: public BLECharacteristicCallbacks {
@@ -183,12 +195,14 @@ void setup() {
 
   // Set callback for incoming writes
   pCharacteristic->setCallbacks(new WifiCredentialsCallback());
-  pCharacteristic->setValue("Ready");
+  pCharacteristic->setValue("Ready");  
   pService->start();
 
   // Start advertising (make device discoverable)
-  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setMinInterval(32);  
+  pAdvertising->setMaxInterval(48);
   pAdvertising->start();
   Serial.print("Service UUID: ");
   Serial.println(String(SERVICE_UUID));
@@ -239,7 +253,8 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
-  
+    // Ensure BLE keeps advertising (in case it stopped unexpectedly)
+    pAdvertising->start();
 
   if (millis() - lastUpdate >= interval) {
     lastUpdate = millis();
