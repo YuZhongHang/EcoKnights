@@ -273,7 +273,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               const SizedBox(height: 8),
               Text(
                 'Logged in as: ${currentUser!.email}',
-                style: const TextStyle(fontSize: 14, color: ColorsManager.lightYellow),
+                style: const TextStyle(fontSize: 14, color: ColorsManager.greyGreen),
               ),
             ],
           ],
