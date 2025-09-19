@@ -92,7 +92,10 @@ String btName;
 #define SERVICE_UUID        "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
 #define CHARACTERISTIC_UUID "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 
-
+// ----------------- Wifi Setup -----------------
+bool wifiConnected = false;
+String wifiSSID = "";
+String wifiPASS = "";
 
 // ----------------- OLED Display Setup Msg -----------------
 void oledPrint(String msg) {
@@ -116,26 +119,54 @@ class MyServerCallbacks : public BLEServerCallbacks {
 
 // ----------------- Reading Wifi Credential From App -----------------
 class WifiCredentialsCallback: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-    String value = pCharacteristic->getValue(); 
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    String value = pCharacteristic->getValue();
 
     if (value.length() > 0) {
-        Serial.println("Received over BLE: " + value);
+      Serial.println("Received over BLE: " + value);
 
-        // Expecting format: "SSID|PASSWORD"
-        int delimiter = value.indexOf('|');
-        if (delimiter != -1) {
-            String ssid = value.substring(0, delimiter);
-            String password = value.substring(delimiter + 1);
+      // Expecting format: "SSID|PASSWORD"
+      int delimiter = value.indexOf('|');
+      if (delimiter != -1) {
+        wifiSSID = value.substring(0, delimiter);
+        wifiPASS = value.substring(delimiter + 1);
 
-            Serial.println("Parsed SSID: " + ssid);
-            Serial.println("Parsed Password: " + password);
+        Serial.println("Parsed SSID: " + wifiSSID);
+        Serial.println("Parsed Password: " + wifiPASS);
 
-            WiFi.begin(ssid.c_str(), password.c_str());
+        WiFi.begin(wifiSSID.c_str(), wifiPASS.c_str());
+        oledPrint("Connecting WiFi...");
+
+        unsigned long startAttempt = millis();
+        bool success = false;
+        while (millis() - startAttempt < 15000) { // 15s timeout
+          if (WiFi.status() == WL_CONNECTED) {
+            success = true;
+            break;
           }
+          delay(500);
+          Serial.print(".");
+        }
+        Serial.println();
+
+        if (success) {
+          wifiConnected = true;
+          pCharacteristic->setValue("OK");
+          pCharacteristic->notify();
+          Serial.println("WiFi connected!");
+          oledPrint("WiFi connected!");
+        } else {
+          wifiConnected = false;
+          pCharacteristic->setValue("FAIL");
+          pCharacteristic->notify();
+          Serial.println("WiFi connect FAIL");
+          oledPrint("WiFi FAIL, retry via BLE");
+        }
       }
+    }
   }
 };
+
 
 
 // ----------------- Setup -----------------
@@ -180,62 +211,53 @@ void setup() {
 
   // Initialize BLE device
   BLEDevice::init(btName);   // Name of ESP32 device
-
-  // Create BLE Server
   pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+
+  // ---------------- WiFi Service ----------------
   pService = pServer->createService(SERVICE_UUID);
 
-  // Create Characteristic (data channel)
+  // Create Characteristic (WiFi credentials channel)
   pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ   |
-                                         BLECharacteristic::PROPERTY_WRITE  |
-                                         BLECharacteristic::PROPERTY_NOTIFY
-                                       );
+      CHARACTERISTIC_UUID,
+      BLECharacteristic::PROPERTY_READ   |
+      BLECharacteristic::PROPERTY_WRITE  |
+      BLECharacteristic::PROPERTY_NOTIFY
+  );
 
-  // Set callback for incoming writes
+  // Set callback for incoming writes (SSID|Password)
   pCharacteristic->setCallbacks(new WifiCredentialsCallback());
-  pCharacteristic->setValue("Ready");  
+  pCharacteristic->setValue("Ready");
   pService->start();
 
-  // Start advertising (make device discoverable)
+  // ---------------- Advertising ----------------
   pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
-  pAdvertising->setMinInterval(32);  
+  pAdvertising->setMinInterval(32);
   pAdvertising->setMaxInterval(48);
   pAdvertising->start();
-  Serial.print("Service UUID: ");
-  Serial.println(String(SERVICE_UUID));
-  Serial.print("Characteristic UUID: ");
-  Serial.println(String(CHARACTERISTIC_UUID));
 
   Serial.println("BLE started, waiting for client...");
-
-  Serial.println("Bluetooth: " + btName);
-  oledPrint("Bluetooth: " + btName);
+  Serial.print("Service UUID: ");
+  Serial.println(SERVICE_UUID);
+  Serial.print("Characteristic UUID: ");
+  Serial.println(CHARACTERISTIC_UUID);  
   
-  
-  WiFi.begin(ssid, password);
-  oledPrint("Waiting for Wifi...");
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.println("Waiting for Wifi...");
-  }
-  Serial.println(ssid + String("\nWiFi connected"));
-  oledPrint(ssid + String("\nWiFi connected"));
-
-  // init and get the time
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-
-  if (obtainTime()) {
-    Serial.println("Time synced successfully!");
-    oledPrint("Time synced successfully!");
-  } else {
-    Serial.println("Failed to obtain time");
-    oledPrint("Failed to obtain time");
-  }
+  obtainWifi();
   
   delay(3000);
+}
+
+bool obtainWifi() {
+  int retry = 0;
+  const int maxRetries = 300; // ~300s max
+  while (!(WiFi.status() == WL_CONNECTED) && retry < maxRetries) {
+    Serial.println("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
+    oledPrint("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
+    delay(1500);
+    retry++;
+  }
+  return retry < maxRetries;
 }
 
 bool obtainTime() {
@@ -253,8 +275,20 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
-    // Ensure BLE keeps advertising (in case it stopped unexpectedly)
-    pAdvertising->start();
+
+  // Once WiFi is connected for the first time, sync NTP
+  static bool ntpDone = false;
+  if (!ntpDone) {
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    if (obtainTime()) {
+      Serial.println("Time synced successfully!");
+      oledPrint("Time synced successfully!");
+    } else {
+      Serial.println("Failed to obtain time");
+      oledPrint("NTP sync failed");
+    }
+    ntpDone = true;
+  }
 
   if (millis() - lastUpdate >= interval) {
     lastUpdate = millis();
