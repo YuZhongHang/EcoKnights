@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../profile/edit_profile_screen.dart';
 import 'change_password_screen.dart'; // New page
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,30 +34,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await FirebaseAuth.instance.signOut();
     if (mounted) {
       Navigator.of(context)
-          .pushReplacementNamed('/login'); // Replace with your login route
+          .pushReplacementNamed('/login'); // Login route
     }
   }
 
   Widget _buildButton(String text, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Container(
+      width: 200,
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [ColorsManager.greyGreen, ColorsManager.gray], 
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(200, 50),
+          backgroundColor: Colors.transparent, // Make button transparent
+          shadowColor: Colors.transparent,     // Remove shadow to show gradient
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: Text(text, style: const TextStyle(fontSize: 16)),
+        child: Text(
+          text,
+          style: GoogleFonts.nunitoSans (fontSize: 16, color: ColorsManager.lightYellow),
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      backgroundColor: ColorsManager.lightYellow,
+      appBar: AppBar(title: Text('Profile', style: TextStyles.profileScreenTitle,),
+        backgroundColor: ColorsManager.greyGreen,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue), 
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Center(
         child: Column(
           children: [
@@ -72,12 +98,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             Text(
               user?.displayName ?? 'No Name',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontFamily: 'Georgia', color: ColorsManager.mainBlue, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
               user?.email ?? 'No Email',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              style: GoogleFonts.nunitoSans(
+                fontSize: 16,
+                color: ColorsManager.gray,
+              ),
             ),
             const SizedBox(height: 30),
             // Buttons
