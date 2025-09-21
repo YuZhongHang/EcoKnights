@@ -1,3 +1,4 @@
+import 'package:auth_bloc/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +26,20 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("Home", style: TextStyles.font24Blue700Weight),
         backgroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon:
+                const Icon(Icons.account_circle, color: ColorsManager.mainBlue),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: OfflineBuilder(
         connectivityBuilder: (BuildContext context,
@@ -43,13 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 20.h),
               Expanded(
-                child: StreamBuilder<QuerySnapshot>(
+                child: StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('users')
                       .doc(user?.uid)
-                      .collection('devices')
-                      .orderBy('updatedAt', descending: true)
-                      .limit(1) // Only fetch one device
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,21 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
 
-                    final devices = snapshot.data?.docs ?? [];
+                    final userData =
+                        snapshot.data?.data() as Map<String, dynamic>?;
+                    final device = userData?['device'];
 
-                    if (devices.isEmpty) {
-                      // No device connected
+                    if (device == null) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.devices, size: 80, color: Colors.grey),
                             SizedBox(height: 20.h),
-                            Text(
-                              "No device connected",
-                              style: TextStyle(
-                                  fontSize: 18.sp, fontWeight: FontWeight.bold),
-                            ),
+                            Text("No device connected",
+                                style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold)),
                             SizedBox(height: 10.h),
                             ElevatedButton.icon(
                               icon: const Icon(Icons.add),
@@ -96,10 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
 
-                    // Device exists, show dashboard
-                    final device = devices.first;
-                    final deviceName = device['deviceName'] ?? 'Unknown';
-                    final deviceId = device.id;
+                    final deviceId = device['deviceId'];
+                    final deviceName = device['deviceName'];
 
                     return Center(
                       child: Card(
@@ -112,18 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                deviceName,
-                                style: TextStyle(
-                                    fontSize: 22.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                              Text(deviceName,
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      fontWeight: FontWeight.bold)),
                               SizedBox(height: 8.h),
-                              Text(
-                                "ID: $deviceId",
-                                style: TextStyle(
-                                    fontSize: 16.sp, color: Colors.grey[600]),
-                              ),
+                              Text("ID: $deviceId",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.grey[600])),
                               SizedBox(height: 16.h),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -131,12 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Icon(Icons.circle,
                                       color: Colors.green, size: 16),
                                   SizedBox(width: 8.w),
-                                  const Text(
-                                    "Connected",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green),
-                                  ),
+                                  const Text("Connected",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green)),
                                 ],
                               ),
                               SizedBox(height: 20.h),
@@ -146,12 +151,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red),
                                 onPressed: () async {
+                                  final uid = user!.uid;
                                   await FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(user?.uid)
                                       .collection('devices')
                                       .doc(deviceId)
                                       .delete();
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(uid)
+                                      .update({'device': FieldValue.delete()});
                                 },
                               ),
                             ],
