@@ -221,7 +221,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
+                child: SafeArea(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildWelcomeSection(),
@@ -235,6 +236,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ),
               ),
             ),
+          ),
     );
   }
 
@@ -290,6 +292,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           'User Statistics',
           style: TextStyles.adminDashboardTitle,
         ),
+<<<<<<< Updated upstream
         const SizedBox(height: 12),
         GridView.count(
           shrinkWrap: true,
@@ -309,6 +312,30 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 Icons.admin_panel_settings, ColorsManager.lightYellow),
           ],
         ),
+=======
+        SizedBox(
+  height: 220, // adjust as needed
+  child: GridView.count(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    crossAxisCount: 2,
+    childAspectRatio: 1.5,
+    crossAxisSpacing: 12,
+    mainAxisSpacing: 12,
+    children: [
+      _buildStatCard('Total Users', '${userStats['total'] ?? 0}',
+          Icons.people, Colors.blue),
+      _buildStatCard('Active Users', '${userStats['active'] ?? 0}',
+          Icons.verified_user, Colors.green),
+      _buildStatCard('Inactive Users', '${userStats['inactive'] ?? 0}',
+          Icons.person_off, Colors.orange),
+      _buildStatCard('Admins', '${userStats['admins'] ?? 0}',
+          Icons.admin_panel_settings, Colors.red),
+    ],
+  ),
+)
+
+>>>>>>> Stashed changes
       ],
     );
   }
@@ -318,6 +345,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Card(
       elevation: 3,
       child: Container(
+<<<<<<< Updated upstream
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [ColorsManager.greyGreen, ColorsManager.gray],
@@ -327,6 +355,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         padding: const EdgeInsets.all(16),
+=======
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+>>>>>>> Stashed changes
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
