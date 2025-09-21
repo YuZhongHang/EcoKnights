@@ -19,17 +19,18 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "DHT.h"
-#include <WiFi.h>
-#include "time.h"
-
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-#include <BLE2902.h>
 
 // ----------------- Firebase Setup -----------------
+#include <Firebase_ESP_Client.h>
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
+#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
+#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q" // It is unsafe if leaked, we use this bcs it is just a prototpying
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -59,6 +60,7 @@ DHT dht(DHT_PIN, DHT_TYPE);
 #define DUST_LED_PIN 33 // Control pin for dust sensor LED
 
 // NTP server and timezone
+#include "time.h"
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 8 * 3600; // GMT+8 for Malaysia
 const int   daylightOffset_sec = 0;
@@ -79,6 +81,10 @@ float humidity = 0, temperature = 0;
 // - MQ-135: every 1s
 
 // ----------------- Bluetooth Setup -----------------
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLE2902.h>
 BLEServer *pServer;
 BLEService *pService;
 BLECharacteristic *pCharacteristic;
@@ -89,6 +95,7 @@ String btName;
 #define CHARACTERISTIC_UUID "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 
 // ----------------- Wifi Setup -----------------
+#include <WiFi.h>
 bool wifiConnected = false;
 String wifiSSID = "";
 String wifiPASS = "";
@@ -263,6 +270,13 @@ void loop() {
             Serial.println("WiFi connected!");
             oledPrint("WiFi connected!");
             connected = true;
+
+            config.api_key = API_KEY;
+            config.database_url = DATABASE_URL;
+            config.signer.tokens.legacy_token = DATABASE_SECRET;
+
+            Firebase.begin(&config, nullptr);
+            Firebase.reconnectWiFi(true);
           } else {
             wifiConnected = false;
             pCharacteristic->setValue("FAIL");
@@ -413,6 +427,32 @@ void loop() {
     display.print(timeString);
 
     display.display();
+
+    // --------------- Push Data To Real-Time Firebase ---------------
+    if (Firebase.ready() && WiFi.status() == WL_CONNECTED) {
+      String path = "/devices/" + btName + "/readings";
+
+      // Prepare JSON object
+      FirebaseJson json;
+      json.set("co2", (int)co2_ppm);
+      json.set("temperature", temperature);
+      json.set("humidity", humidity);
+      json.set("dust", dust_density);
+      json.set("airQuality", airQuality);
+
+      // Add timestamp
+      char timeString[25];
+      strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
+      json.set("timestamp", timeString);
+
+      // Save as latest
+      Firebase.RTDB.setJSON(&fbdo, path + "/latest", &json);
+
+      // Push as historical
+      Firebase.RTDB.pushJSON(&fbdo, path + "/history", &json);
+
+      Serial.println("Data sent to Firebase!");
+    }
   }
 }
 
