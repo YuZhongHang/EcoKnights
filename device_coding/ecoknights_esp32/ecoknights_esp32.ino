@@ -232,15 +232,12 @@ void setup() {
 }
 
 bool obtainWifi() {
-  int retry = 0;
-  const int maxRetries = 300; // ~300s max
-  while (!(WiFi.status() == WL_CONNECTED) && retry < maxRetries) {
+  while (!(WiFi.status() == WL_CONNECTED)) {
     Serial.println("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
     oledPrint("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
     delay(1500);
-    retry++;
   }
-  return retry < maxRetries;
+  return true;
 }
 
 bool obtainTime() {
