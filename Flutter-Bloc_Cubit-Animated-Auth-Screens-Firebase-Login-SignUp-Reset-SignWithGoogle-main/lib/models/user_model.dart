@@ -19,9 +19,7 @@ class UserModel {
   final List<String>? permissions;
 
   /// 🔹 Convenience getters for role checks
-  bool get isAdmin => role == UserRole.admin || role == UserRole.superAdmin;
-  bool get isSuperAdmin => role == UserRole.superAdmin;
-  bool get isModerator => role == UserRole.moderator;
+  bool get isAdmin => role == UserRole.admin;
   bool get isUser => role == UserRole.user;
 
   UserModel({
@@ -173,9 +171,7 @@ class UserModel {
 // Existing UserRole stays the same
 enum UserRole {
   user('User'),
-  moderator('Moderator'),
-  admin('Admin'),
-  superAdmin('Super Admin');
+  admin('Admin');
 
   const UserRole(this.displayName);
   final String displayName;
@@ -183,13 +179,8 @@ enum UserRole {
   static UserRole fromString(String? roleString) {
     if (roleString == null) return UserRole.user;
     switch (roleString.toLowerCase().trim()) {
-      case 'moderator':
-        return UserRole.moderator;
       case 'admin':
         return UserRole.admin;
-      case 'superadmin':
-      case 'super_admin':
-        return UserRole.superAdmin;
       default:
         return UserRole.user;
     }

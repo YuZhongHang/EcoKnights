@@ -96,11 +96,6 @@ class FirestoreService {
     return user?.isAdmin ?? false;
   }
 
-  // Check if current user is super admin with caching
-  static Future<bool> isCurrentUserSuperAdmin({bool useCache = true}) async {
-    UserModel? user = await getCurrentUserProfile(useCache: useCache);
-    return user?.role == UserRole.superAdmin;
-  }
 
   // ADMIN FUNCTIONS
 
@@ -447,11 +442,6 @@ class FirestoreService {
   // Update user role with additional validation
   static Future<void> updateUserRole(String uid, UserRole newRole) async {
     try {
-      bool isSuperAdmin = await isCurrentUserSuperAdmin();
-      if (!isSuperAdmin) {
-        throw Exception('Access denied: Super Admin privileges required');
-      }
-
       // Don't allow changing own role
       if (uid == _auth.currentUser?.uid) {
         throw Exception('Cannot change your own role');
@@ -523,7 +513,7 @@ class FirestoreService {
       QuerySnapshot querySnapshot = await _usersCollection
           .where(
             'role',
-            whereIn: [UserRole.admin.name, UserRole.superAdmin.name],
+            whereIn: [UserRole.admin.name],
           )
           .orderBy('createdAt', descending: true)
           .get();
@@ -589,8 +579,6 @@ class FirestoreService {
         'inactive': 0,
         'admins': 0,
         'users': 0,
-        'superAdmins': 0,
-        'moderators': 0, // Added moderators
         'verified': 0,
         'unverified': 0,
         'recentlyActive': 0, // Last 30 days
@@ -612,16 +600,8 @@ class FirestoreService {
 
           // Roles - Fixed: Added all UserRole cases
           switch (user.role) {
-            case UserRole.superAdmin:
-              stats['superAdmins'] = stats['superAdmins']! + 1;
-              stats['admins'] =
-                  stats['admins']! + 1; // Super admins are also admins
-              break;
             case UserRole.admin:
               stats['admins'] = stats['admins']! + 1;
-              break;
-            case UserRole.moderator:
-              stats['moderators'] = stats['moderators']! + 1;
               break;
             case UserRole.user:
               stats['users'] = stats['users']! + 1;
@@ -685,7 +665,7 @@ class FirestoreService {
         'timestamp': Timestamp.now(),
         'details': details,
         'userAgent':
-            'Flutter App', // You could enhance this with actual device info
+            'Ecoknight', // You could enhance this with actual device info
       });
     } catch (e) {
       // Log error but don't throw - don't break the main operation
@@ -739,77 +719,7 @@ class FirestoreService {
     }
   }
 
-  // Get admin logs for specific admin (super admin only)
-  static Future<List<Map<String, dynamic>>> getAdminLogsByAdmin(
-    String adminId, {
-    int limit = 100,
-  }) async {
-    try {
-      bool isSuperAdmin = await isCurrentUserSuperAdmin();
-      if (!isSuperAdmin) {
-        throw Exception('Access denied: Super Admin privileges required');
-      }
 
-      return await getAdminLogs(limit: limit, adminId: adminId);
-    } catch (e) {
-      throw Exception('Failed to get admin logs by admin: $e');
-    }
-  }
-
-  // Batch operations with transaction support
-  static Future<void> batchCreateUsers(List<UserModel> users) async {
-    try {
-      bool isSuperAdmin = await isCurrentUserSuperAdmin();
-      if (!isSuperAdmin) {
-        throw Exception('Access denied: Super Admin privileges required');
-      }
-
-      // Use transactions for better consistency
-      await _db.runTransaction((transaction) async {
-        for (UserModel user in users) {
-          DocumentReference docRef = _usersCollection.doc(user.uid);
-          transaction.set(docRef, user.toFirestore());
-        }
-      });
-
-      // Log the action
-      await _logAdminAction('batch_create_users', 'multiple', {
-        'userCount': users.length,
-        'userEmails': users.map((u) => u.email).toList(),
-      });
-    } catch (e) {
-      throw Exception('Failed to batch create users: $e');
-    }
-  }
-
-  // Batch update users
-  static Future<void> batchUpdateUsers(
-    Map<String, Map<String, dynamic>> updates,
-  ) async {
-    try {
-      bool isSuperAdmin = await isCurrentUserSuperAdmin();
-      if (!isSuperAdmin) {
-        throw Exception('Access denied: Super Admin privileges required');
-      }
-
-      await _db.runTransaction((transaction) async {
-        for (String uid in updates.keys) {
-          DocumentReference docRef = _usersCollection.doc(uid);
-          transaction.update(docRef, {
-            ...updates[uid]!,
-            'updatedAt': Timestamp.now(),
-          });
-        }
-      });
-
-      await _logAdminAction('batch_update_users', 'multiple', {
-        'userCount': updates.length,
-        'updatedUsers': updates.keys.toList(),
-      });
-    } catch (e) {
-      throw Exception('Failed to batch update users: $e');
-    }
-  }
 
   // Health check - verify service is working
   static Future<bool> healthCheck() async {
