@@ -58,10 +58,6 @@ DHT dht(DHT_PIN, DHT_TYPE);
 #define DUST_PIN 32   // Analog pin for GP2Y1010AU0F
 #define DUST_LED_PIN 33 // Control pin for dust sensor LED
 
-// --------------- Wifi Setup ---------------
-const char* ssid     = "OPPO Mr Fish"; //Wifi_SSID
-const char* password = "mrfishmrfish"; // Wifi_Password
-
 // NTP server and timezone
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 8 * 3600; // GMT+8 for Malaysia
@@ -117,6 +113,8 @@ class MyServerCallbacks : public BLEServerCallbacks {
   }
 };
 
+bool success = false;
+bool connected = false;
 // ----------------- Reading Wifi Credential From App -----------------
 class WifiCredentialsCallback: public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
@@ -138,7 +136,6 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
         oledPrint("Connecting WiFi...");
 
         unsigned long startAttempt = millis();
-        bool success = false;
         while (millis() - startAttempt < 15000) { // 15s timeout
           if (WiFi.status() == WL_CONNECTED) {
             success = true;
@@ -148,20 +145,6 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
           Serial.print(".");
         }
         Serial.println();
-
-        if (success) {
-          wifiConnected = true;
-          pCharacteristic->setValue("OK");
-          pCharacteristic->notify();
-          Serial.println("WiFi connected!");
-          oledPrint("WiFi connected!");
-        } else {
-          wifiConnected = false;
-          pCharacteristic->setValue("FAIL");
-          pCharacteristic->notify();
-          Serial.println("WiFi connect FAIL");
-          oledPrint("WiFi FAIL, retry via BLE");
-        }
       }
     }
   }
@@ -275,6 +258,24 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
+  if(success && !connected){
+  if (success) {
+            wifiConnected = true;
+            pCharacteristic->setValue("OK");
+            pCharacteristic->notify();
+            Serial.println("WiFi connected!");
+            oledPrint("WiFi connected!");
+            connected = true;
+          } else {
+            wifiConnected = false;
+            pCharacteristic->setValue("FAIL");
+            pCharacteristic->notify();
+            Serial.println("WiFi connect FAIL");
+            oledPrint("WiFi FAIL, retry via BLE");
+            obtainWifi();
+    }
+  } 
+  
 
   // Once WiFi is connected for the first time, sync NTP
   static bool ntpDone = false;
