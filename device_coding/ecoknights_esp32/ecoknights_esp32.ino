@@ -257,7 +257,7 @@ bool obtainTime() {
 
 // ----------------- Loop -----------------
 void loop() {
-  if(success && !connected){
+  if(!connected){
   if (success) {
             wifiConnected = true;
             pCharacteristic->setValue("OK");
@@ -279,7 +279,7 @@ void loop() {
             Serial.println("WiFi connect FAIL");
             oledPrint("WiFi FAIL, retry via BLE");
             obtainWifi();
-    }
+          }
   } 
   
 

@@ -115,24 +115,47 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       fbp.ScanResult result, fbp.BluetoothCharacteristic targetChar) async {
     final ssidController = TextEditingController();
     final passwordController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
 
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Connect to WiFi'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: ssidController,
-              decoration: const InputDecoration(labelText: 'SSID'),
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-          ],
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: ssidController,
+                decoration: const InputDecoration(
+                  labelText: 'SSID',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "SSID can't be empty";
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Password can't be empty";
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -141,11 +164,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
           ),
           ElevatedButton(
             onPressed: () async {
+              // ✅ Run validation
+              if (!_formKey.currentState!.validate()) return;
+
               final ssid = ssidController.text.trim();
               final password = passwordController.text.trim();
-              if (ssid.isEmpty || password.isEmpty) return;
-
               final creds = "$ssid|$password";
+
               await targetChar.write(creds.codeUnits, withoutResponse: false);
               Navigator.pop(context); // close dialog
 
@@ -223,16 +248,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       Navigator.pop(context, true);
     } else {
       final data = snapshot.data()!;
-      debugPrint("📦 Found existing Firestore doc: $data");
 
       if (data['ownerUid'] != user.uid) {
-        debugPrint("❌ Device already owned by ${data['ownerUid']}");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Device already owned by another user!')),
         );
       } else {
-        debugPrint("⚠️ You already own this device.");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('You already own this device.')),
         );
