@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -154,7 +157,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Change Password')),
+      backgroundColor: ColorsManager.lightYellow,
+      appBar: AppBar(title: Text('Change Password', style: TextStyles.profileScreenTitle,),
+      backgroundColor: ColorsManager.greyGreen,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue), 
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Stack(
         children: [
           Padding(
@@ -167,10 +177,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   TextFormField(
                     controller: _oldPassController,
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Old Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
+                      labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.gray),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: ColorsManager.gray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.zhYellow), // <-- your custom color
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.zhYellow, width: 2.0), // <-- your custom color
+                      ),
+                      prefixIcon: Icon(Icons.lock, color: ColorsManager.gray,),
+                      errorStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.zhYellow, 
+                        fontSize: 14,// custom font size
+                      ),
                     ),
                     validator: _validateOldPassword,
                   ),
@@ -178,29 +207,58 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   TextFormField(
                     controller: _newPassController,
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'New Password',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline),
+                      labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.gray),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: ColorsManager.gray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.zhYellow), // <-- your custom color
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.zhYellow, width: 2.0), // <-- your custom color
+                      ),
+                      prefixIcon: Icon(Icons.lock_outline, color: ColorsManager.gray,),
+                      errorStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.zhYellow,
+                        fontSize: 14,// custom font size
+                      ),
                     ),
                     validator: _validateNewPassword,
                   ),
                   const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
+                  Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  ),
+                borderRadius: BorderRadius.circular(10),
+                ),
+                child: ElevatedButton(
                       onPressed: _isLoading ? null : _changePassword,
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent, // Make button background transparent
+                        shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          ? const CircularProgressIndicator(color: ColorsManager.mainBlue)
+                          : Text(
                               'Change Password',
-                              style: TextStyle(fontSize: 16),
+                              style: GoogleFonts.nunitoSans (fontSize: 16, color: ColorsManager.lightYellow),
                             ),
                     ),
                   ),
