@@ -122,92 +122,110 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Connect to WiFi'),
-        content: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: ssidController,
-                decoration: const InputDecoration(
-                  labelText: 'SSID',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "SSID can't be empty";
-                  }
-                  return null;
-                },
+      builder: (_) {
+        bool _obscurePassword = true;
+
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Connect to WiFi'),
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: ssidController,
+                    decoration: const InputDecoration(
+                      labelText: 'SSID',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "SSID can't be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Password can't be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return "Password can't be empty";
-                  }
-                  return null;
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (!_formKey.currentState!.validate()) return;
+
+                  final ssid = ssidController.text.trim();
+                  final password = passwordController.text.trim();
+                  final creds = "$ssid|$password";
+
+                  await targetChar.write(creds.codeUnits,
+                      withoutResponse: false);
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'WiFi credentials sent! Waiting for response...')),
+                  );
+
+                  await targetChar.setNotifyValue(true);
+
+                  targetChar.lastValueStream.listen((value) {
+                    final response = String.fromCharCodes(value);
+                    debugPrint("ESP32 replied: $response");
+
+                    if (response == "OK") {
+                      _claimDevice(result.device);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('WiFi connected successfully!')),
+                      );
+                    } else if (response == "FAIL") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content:
+                                Text('WiFi connection failed! Please retry.')),
+                      );
+                    }
+                  });
                 },
+                child: const Text('Connect'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              // ✅ Run validation
-              if (!_formKey.currentState!.validate()) return;
-
-              final ssid = ssidController.text.trim();
-              final password = passwordController.text.trim();
-              final creds = "$ssid|$password";
-
-              await targetChar.write(creds.codeUnits, withoutResponse: false);
-              Navigator.pop(context); // close dialog
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content:
-                        Text('WiFi credentials sent! Waiting for response...')),
-              );
-
-              // Enable notifications
-              await targetChar.setNotifyValue(true);
-
-              targetChar.lastValueStream.listen((value) {
-                final response = String.fromCharCodes(value);
-                debugPrint("ESP32 replied: $response");
-
-                if (response == "OK") {
-                  _claimDevice(result.device);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('WiFi connected successfully!')),
-                  );
-                } else if (response == "FAIL") {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('WiFi connection failed! Please retry.')),
-                  );
-                }
-              });
-            },
-            child: const Text('Connect'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -247,15 +265,14 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       debugPrint("✅ Device successfully claimed!");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Device successfully claimed!',
-            style: GoogleFonts.nunitoSans(
-              color: ColorsManager.darkBlue,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          )
-        ),
+            content: Text(
+          'Device successfully claimed!',
+          style: GoogleFonts.nunitoSans(
+            color: ColorsManager.darkBlue,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        )),
       );
       Navigator.pop(context, true);
     } else {
@@ -264,29 +281,27 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       if (data['ownerUid'] != user.uid) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: ColorsManager.lightYellow,
-            content: Text(
-              'Device already owned by another user!',
-              style: GoogleFonts.nunitoSans(
-                color: ColorsManager.darkBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            )
-          ),
+              backgroundColor: ColorsManager.lightYellow,
+              content: Text(
+                'Device already owned by another user!',
+                style: GoogleFonts.nunitoSans(
+                  color: ColorsManager.darkBlue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              )),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'You already own this device.',
-              style: GoogleFonts.nunitoSans(
-                color: ColorsManager.darkBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            )
-          ),
+              content: Text(
+            'You already own this device.',
+            style: GoogleFonts.nunitoSans(
+              color: ColorsManager.darkBlue,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          )),
         );
       }
     }
@@ -300,10 +315,10 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         title: Text(
           "Add Device",
           style: TextStyles.addDeviceScreenTitle,
-          ),
+        ),
         actions: [
           IconButton(
-            icon:  Icon(Icons.refresh, color: ColorsManager.darkBlue),
+            icon: Icon(Icons.refresh, color: ColorsManager.darkBlue),
             onPressed: scanDevices,
           ),
         ],
