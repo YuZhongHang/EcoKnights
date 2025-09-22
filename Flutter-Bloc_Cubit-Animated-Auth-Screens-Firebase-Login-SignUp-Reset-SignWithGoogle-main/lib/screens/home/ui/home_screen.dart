@@ -221,12 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       color: ColorsManager.darkBlue,
                                       fontFamily: 'Georgia',
-                                      fontSize: 18.sp,
+                                      fontSize: 20.sp,
                                       fontWeight: FontWeight.bold)),
                                 SizedBox(height: 8.h),
                                 Text("ID: $deviceId",
                                     style: GoogleFonts.nunitoSans (
-                                        fontSize: 16.sp,
+                                        fontSize: 14.sp,
                                         color: ColorsManager.gray)),
                                 SizedBox(height: 16.h),
                                 Row(
