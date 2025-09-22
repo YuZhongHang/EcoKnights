@@ -75,7 +75,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         return;
       }
 
-      final deviceId = result.device.name;
+      final deviceId = result.device.id.id;
       final deviceRef =
           FirebaseFirestore.instance.collection('devices').doc(deviceId);
       final snapshot = await deviceRef.get();
@@ -185,18 +185,24 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
   Future<void> _claimDevice(fbp.BluetoothDevice device) async {
     final user = FirebaseAuth.instance.currentUser;
-    debugPrint("Current user: ${user?.uid}");
+    debugPrint("🔎 Current user: ${user?.uid}");
     if (user == null) return;
 
-    final deviceId = device.name; // Use unique Bluetooth ID
+    final deviceId = device.id.id;
+    debugPrint("📡 Using deviceId: $deviceId");
+    debugPrint("📡 Advertised device name: ${device.name}");
+
     final deviceRef =
         FirebaseFirestore.instance.collection('devices').doc(deviceId);
+
     final snapshot = await deviceRef.get();
+    debugPrint("📦 Firestore snapshot exists? ${snapshot.exists}");
 
     if (!snapshot.exists) {
-      // Claim device for this user
+      debugPrint("📦 Creating new device document for $deviceId...");
       await deviceRef.set({
         'ownerUid': user.uid,
+        'deviceId': deviceId,
         'deviceName': device.name,
         'claimedAt': FieldValue.serverTimestamp(),
         'status': 'active',
@@ -210,19 +216,23 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         }
       }, SetOptions(merge: true));
 
+      debugPrint("✅ Device successfully claimed!");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Device successfully claimed!')),
       );
-
-      Navigator.pop(context, true); // Back to HomeScreen
+      Navigator.pop(context, true);
     } else {
       final data = snapshot.data()!;
+      debugPrint("📦 Found existing Firestore doc: $data");
+
       if (data['ownerUid'] != user.uid) {
+        debugPrint("❌ Device already owned by ${data['ownerUid']}");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Device already owned by another user!')),
         );
       } else {
+        debugPrint("⚠️ You already own this device.");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('You already own this device.')),
         );
