@@ -75,7 +75,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         return;
       }
 
-      final deviceId = result.device.id.id;
+      final deviceId = result.device.name;
       final deviceRef =
           FirebaseFirestore.instance.collection('devices').doc(deviceId);
       final snapshot = await deviceRef.get();
@@ -188,7 +188,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     debugPrint("Current user: ${user?.uid}");
     if (user == null) return;
 
-    final deviceId = device.id.id; // Use unique Bluetooth ID
+    final deviceId = device.name; // Use unique Bluetooth ID
     final deviceRef =
         FirebaseFirestore.instance.collection('devices').doc(deviceId);
     final snapshot = await deviceRef.get();

@@ -21,16 +21,11 @@
 #include "DHT.h"
 
 // ----------------- Firebase Setup -----------------
-#include <Firebase_ESP_Client.h>
-#include "addons/TokenHelper.h"
-#include "addons/RTDBHelper.h"
+#include <HTTPClient.h>
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
+String ID_TOKEN = "your-firebase-id-token"; // device login token
 #define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
-#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q" // It is unsafe if leaked, we use this bcs it is just a prototpying
-FirebaseData fbdo;
-FirebaseAuth auth;
-FirebaseConfig config;
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -161,7 +156,7 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
 
 // ----------------- Setup -----------------
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(460800);
   pinMode(MQ135_PIN, INPUT);
   pinMode(DUST_PIN, INPUT);
   pinMode(DUST_LED_PIN, OUTPUT);
