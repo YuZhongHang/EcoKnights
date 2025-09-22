@@ -22,10 +22,12 @@
 
 // ----------------- Firebase Setup -----------------
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <WiFiClientSecure.h>
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
-String ID_TOKEN = "your-firebase-id-token"; // device login token
-#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
+// #define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
+String FIREBASE_DEVICE_ID = "44:1D:64:F6:19:6E";
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -152,6 +154,17 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
   }
 };
 
+String generateDeviceID() {
+  // ---- Generate Unique ID from ESP32 MAC ----
+  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
+  char uniqueID[13];                   // 12 hex chars + null terminator
+  sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
+
+  // ---- Create Bluetooth name using ID ----
+  String deviceID = "EcoKnights_" + String(uniqueID);
+  return deviceID;
+}
+
 
 
 // ----------------- Setup -----------------
@@ -171,28 +184,16 @@ void setup() {
     delay(500);
   }
 
-  Serial.println("OLED initialized successfully!");
+  Serial.println("\nOLED initialized successfully!");
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
 
   Serial.println("Ecoknight Air Quality + Dust + Temp/Humidity Monitor");
-  Serial.println("Calibrating MQ-135 sensor...");
-  
-  // Calibrate MQ-135
-  Ro = MQCalibration(MQ135_PIN);
-  Serial.print("Calibration completed. Ro = ");
-  Serial.print(Ro);
-  Serial.println(" kohm");
-  Serial.println("Sensor ready!");
+
+  Serial.println("Sensor ready!\n");
   oledPrint("Sensor ready!");
 
-  // ---- Generate Unique ID from ESP32 MAC ----
-  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
-  char uniqueID[13];                   // 12 hex chars + null terminator
-  sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
-
-  // ---- Create Bluetooth name using ID ----
-  btName = "EcoKnights_" + String(uniqueID);
+  btName = generateDeviceID();
 
   // Initialize BLE device
   BLEDevice::init(btName);   // Name of ESP32 device
@@ -222,21 +223,17 @@ void setup() {
   pAdvertising->setMaxInterval(48);
   pAdvertising->start();
 
-  Serial.println("BLE started, waiting for client...");
-  Serial.print("Service UUID: ");
-  Serial.println(SERVICE_UUID);
-  Serial.print("Characteristic UUID: ");
-  Serial.println(CHARACTERISTIC_UUID);  
-  
   obtainWifi();
   
   delay(3000);
 }
 
 bool obtainWifi() {
+  Serial.print("Bluetooth: " + btName + "\nWaiting WiFi via BLE");
+  oledPrint("Bluetooth: " + btName + "\nWaiting WiFi via BLE");
   while (!(WiFi.status() == WL_CONNECTED)) {
-    Serial.println("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
-    oledPrint("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
+    Serial.print(".");
+    display.print(".");
     delay(1500);
   }
   return true;
@@ -246,12 +243,15 @@ bool obtainTime() {
   struct tm timeinfo;
   int retry = 0;
   const int maxRetries = 300; // ~300s max
+  oledPrint("Waiting for NTP time sync.");
+  Serial.print("Waiting for NTP time sync");
   while (!getLocalTime(&timeinfo) && retry < maxRetries) {
-    oledPrint("Waiting for NTP time sync...");
-    Serial.println("Waiting for NTP time sync...");
+    display.print(".");
+    Serial.print(".");
     delay(1000);
     retry++;
   }
+  Serial.print("\n");
   return retry < maxRetries;
 }
 
@@ -265,13 +265,6 @@ void loop() {
             Serial.println("WiFi connected!");
             oledPrint("WiFi connected!");
             connected = true;
-
-            config.api_key = API_KEY;
-            config.database_url = DATABASE_URL;
-            config.signer.tokens.legacy_token = DATABASE_SECRET;
-
-            Firebase.begin(&config, nullptr);
-            Firebase.reconnectWiFi(true);
           } else {
             wifiConnected = false;
             pCharacteristic->setValue("FAIL");
@@ -422,32 +415,8 @@ void loop() {
     display.print(timeString);
 
     display.display();
-
-    // --------------- Push Data To Real-Time Firebase ---------------
-    if (Firebase.ready() && WiFi.status() == WL_CONNECTED) {
-      String path = "/devices/" + btName + "/readings";
-
-      // Prepare JSON object
-      FirebaseJson json;
-      json.set("co2", (int)co2_ppm);
-      json.set("temperature", temperature);
-      json.set("humidity", humidity);
-      json.set("dust", dust_density);
-      json.set("airQuality", airQuality);
-
-      // Add timestamp
-      char timeString[25];
-      strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
-      json.set("timestamp", timeString);
-
-      // Save as latest
-      Firebase.RTDB.setJSON(&fbdo, path + "/latest", &json);
-
-      // Push as historical
-      Firebase.RTDB.pushJSON(&fbdo, path + "/history", &json);
-
-      Serial.println("Data sent to Firebase!");
-    }
+    
+    sendToFirestore((int)co2_ppm, temperature, humidity, dust_density);
   }
 }
 
@@ -494,4 +463,83 @@ String getAirQualityLevel(float co2_ppm) {
   else if (co2_ppm < 1000) return "Fair";
   else if (co2_ppm < 1500) return "Poor";
   else return "Very Poor";
+}
+
+String getISOTime() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    return "1970-01-01T00:00:00Z";
+  }
+
+  char buf[30];
+  strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &timeinfo);
+  return String(buf);
+}
+
+void sendToFirestore(int co2, float temp, float humi, float dust) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi not connected!");
+    return;
+  }
+
+  WiFiClientSecure client;
+  client.setInsecure();  // ✅ this is valid now
+
+  HTTPClient http;
+
+  // ---------- Update latest ----------
+  String url = "https://firestore.googleapis.com/v1/projects/";
+  url += FIREBASE_PROJECT_ID;
+  url += "/databases/(default)/documents/devices/";
+  url += FIREBASE_DEVICE_ID;
+  url += "/latest?key=";
+  url += API_KEY;
+
+  if (http.begin(client, url)) {   // ✅ use client here
+    http.addHeader("Content-Type", "application/json");
+
+    StaticJsonDocument<512> latest;
+    latest["fields"]["co2"]["integerValue"] = co2;
+    latest["fields"]["temperature"]["doubleValue"] = temp;
+    latest["fields"]["humidity"]["doubleValue"] = humi;
+    latest["fields"]["dust"]["doubleValue"] = dust;
+    latest["fields"]["timestamp"]["timestampValue"] = getISOTime();
+
+    String body;
+    serializeJson(latest, body);
+
+    int httpCode = http.PATCH(body);  // Update latest
+    Serial.printf("Latest update code: %d\n", httpCode);
+    Serial.println(http.getString());
+    http.end();
+  }
+
+  // ---------- Add history ----------
+  url = "https://firestore.googleapis.com/v1/projects/";
+  url += FIREBASE_PROJECT_ID;
+  url += "/databases/(default)/documents/devices/";
+  url += FIREBASE_DEVICE_ID;
+  url += "/history?key=";
+  url += API_KEY;
+
+  if (http.begin(client, url)) {
+    http.addHeader("Content-Type", "application/json");
+
+    StaticJsonDocument<512> hist;
+    hist["fields"]["co2"]["integerValue"] = co2;
+    hist["fields"]["temperature"]["doubleValue"] = temp;
+    hist["fields"]["humidity"]["doubleValue"] = humi;
+    hist["fields"]["dust"]["doubleValue"] = dust;
+    hist["fields"]["timestamp"]["timestampValue"] = getISOTime();
+
+    String body;
+    serializeJson(hist, body);
+
+    int httpCode = http.POST(body);  // Insert new doc in history
+    Serial.printf("History add code: %d\n", httpCode);
+    Serial.println(http.getString());
+    http.end();
+  }
+
+  Serial.println("Data sent to Firebase!\n");
 }
