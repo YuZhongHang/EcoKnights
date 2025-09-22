@@ -102,17 +102,31 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        backgroundColor: ColorsManager.lightYellow,
+        title: const Text(
+          'Confirm Logout', 
+          style: TextStyle (
+            fontFamily: 'Georgia',
+            color: ColorsManager.mainBlue,
+          ) ,
+        ),
+        content: Text (
+          'Are you sure you want to logout?',
+          style: GoogleFonts.nunitoSans(
+            color: ColorsManager.gray, 
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue,),),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: ColorsManager.mainBlue),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+            child: Text('Logout', style: GoogleFonts.nunitoSans (color: ColorsManager.lightYellow,),),
           ),
         ],
       ),
