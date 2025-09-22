@@ -9,6 +9,7 @@ import 'admin_user_management.dart';
 import '../profile/edit_profile_screen.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -265,15 +266,21 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               style: TextStyles.adminDashboardCardTitle,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'You have administrator privileges to manage the system',
-              style: TextStyle(fontSize: 16, color: ColorsManager.lightYellow),
+              style: GoogleFonts.nunitoSans (
+                fontSize: 16, 
+                color: ColorsManager.lightYellow
+                ),
             ),
             if (currentUser?.email != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Logged in as: ${currentUser!.email}',
-                style: const TextStyle(fontSize: 14, color: ColorsManager.greyGreen),
+                style: GoogleFonts.nunitoSans (
+                  fontSize: 14, 
+                  color: ColorsManager.greyGreen
+                ),
               ),
             ],
           ],
@@ -360,31 +367,71 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           'Quick Actions',
           style: TextStyles.adminDashboardTitle,
         ),
+
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _navigateToUserManagement,
-                icon: const Icon(Icons.people),
-                label: const Text('Manage Users'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.greyGreen,
-                  foregroundColor: ColorsManager.darkBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container (
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  ),
+                borderRadius: BorderRadius.circular(30),
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: _navigateToUserManagement,
+                  icon: const Icon(Icons.people, color: ColorsManager.lightYellow),
+                  label: Text (
+                    'Manage Users', 
+                    style: GoogleFonts.nunitoSans(
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: ColorsManager.lightYellow, // Wrap inside TextStyle
+                      ),
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent, // Make button transparent
+                    shadowColor: Colors.transparent,     // Remove shadow to show gradient
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
                 ),
               ),
             ),
+
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _loadAdminData,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Refresh Data'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.greyGreen,
-                  foregroundColor: ColorsManager.darkBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container (
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  ),
+                borderRadius: BorderRadius.circular(30),
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: _loadAdminData,
+                  icon: const Icon(Icons.refresh, color: ColorsManager.lightYellow),
+                  label: Text(
+                    'Refresh Data',
+                    style: GoogleFonts.nunitoSans (
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: ColorsManager.lightYellow, // Wrap inside TextStyle
+                      ),
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent, // Make button transparent
+                    shadowColor: Colors.transparent,     // Remove shadow to show gradient
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
                 ),
               ),
             ),
@@ -436,8 +483,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       const SizedBox(height: 8),
                       Text(
                         action.title,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: GoogleFonts.nunitoSans (
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: ColorsManager.lightYellow,
                         ),
@@ -447,7 +494,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       Text(
                         action.subtitle,
                         style:
-                            const TextStyle(fontSize: 10, color: ColorsManager.gray93Color),
+                            GoogleFonts.nunitoSans (fontSize: 10, color: ColorsManager.gray93Color),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
