@@ -21,13 +21,18 @@
 #include "DHT.h"
 
 // ----------------- Firebase Setup -----------------
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-#include <WiFiClientSecure.h>
+#include <FirebaseESP32.h>
+#include <addons/TokenHelper.h>
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
-// #define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
 String FIREBASE_DEVICE_ID = "44:1D:64:F6:19:6E";
+FirebaseData fbdo;       // Firebase object for read/write
+FirebaseAuth auth;
+FirebaseConfig config;    // Configuration object
+
+String ID_TOKEN = "your-firebase-id-token"; // device login token
+#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/";
+#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q";
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -265,6 +270,12 @@ void loop() {
             Serial.println("WiFi connected!");
             oledPrint("WiFi connected!");
             connected = true;
+            config.api_key = API_KEY;
+            config.database_url = DATABASE_URL;
+            config.signer.tokens.legacy_token = DATABASE_SECRET;
+            auth.token.uid = ""; // optional if anonymous
+            Firebase.begin(&config, &auth);
+            Firebase.reconnectWiFi(true);
           } else {
             wifiConnected = false;
             pCharacteristic->setValue("FAIL");
@@ -274,7 +285,6 @@ void loop() {
             obtainWifi();
           }
   } 
-  
 
   // Once WiFi is connected for the first time, sync NTP
   static bool ntpDone = false;
@@ -416,7 +426,41 @@ void loop() {
 
     display.display();
     
-    sendToFirestore((int)co2_ppm, temperature, humidity, dust_density);
+     // --------------- Push Data To Real-Time Firebase ---------------
+    if (Firebase.ready() && WiFi.status() == WL_CONNECTED) {
+      String path = "/devices/" + btName + "/readings";
+
+      // Prepare JSON object
+      FirebaseJson json;
+      json.set("co2", (int)co2_ppm);
+      json.set("temperature", temperature);
+      json.set("humidity", humidity);
+      json.set("dust", dust_density);
+      json.set("airQuality", airQuality);
+
+      // Add timestamp
+      char timeString[25];
+      strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
+      json.set("timestamp", timeString);
+
+      // Write latest
+      if (Firebase.setJSON(fbdo, path + "/latest", json)) {
+        Serial.println("Latest data sent!");
+      } else {
+        Serial.println("Failed to send latest:");
+        Serial.println(fbdo.errorReason());
+      }
+
+      // Push to history
+      if (Firebase.pushJSON(fbdo, path + "/history", json)) {
+        Serial.println("History data pushed!");
+      } else {
+        Serial.println("Failed to push history:");
+        Serial.println(fbdo.errorReason());
+      }
+
+      Serial.println("Data sent to Firebase!");
+    }
   }
 }
 
@@ -465,81 +509,4 @@ String getAirQualityLevel(float co2_ppm) {
   else return "Very Poor";
 }
 
-String getISOTime() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    return "1970-01-01T00:00:00Z";
-  }
 
-  char buf[30];
-  strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &timeinfo);
-  return String(buf);
-}
-
-void sendToFirestore(int co2, float temp, float humi, float dust) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi not connected!");
-    return;
-  }
-
-  WiFiClientSecure client;
-  client.setInsecure();  // ✅ this is valid now
-
-  HTTPClient http;
-
-  // ---------- Update latest ----------
-  String url = "https://firestore.googleapis.com/v1/projects/";
-  url += FIREBASE_PROJECT_ID;
-  url += "/databases/(default)/documents/devices/";
-  url += FIREBASE_DEVICE_ID;
-  url += "/latest?key=";
-  url += API_KEY;
-
-  if (http.begin(client, url)) {   // ✅ use client here
-    http.addHeader("Content-Type", "application/json");
-
-    StaticJsonDocument<512> latest;
-    latest["fields"]["co2"]["integerValue"] = co2;
-    latest["fields"]["temperature"]["doubleValue"] = temp;
-    latest["fields"]["humidity"]["doubleValue"] = humi;
-    latest["fields"]["dust"]["doubleValue"] = dust;
-    latest["fields"]["timestamp"]["timestampValue"] = getISOTime();
-
-    String body;
-    serializeJson(latest, body);
-
-    int httpCode = http.PATCH(body);  // Update latest
-    Serial.printf("Latest update code: %d\n", httpCode);
-    Serial.println(http.getString());
-    http.end();
-  }
-
-  // ---------- Add history ----------
-  url = "https://firestore.googleapis.com/v1/projects/";
-  url += FIREBASE_PROJECT_ID;
-  url += "/databases/(default)/documents/devices/";
-  url += FIREBASE_DEVICE_ID;
-  url += "/history?key=";
-  url += API_KEY;
-
-  if (http.begin(client, url)) {
-    http.addHeader("Content-Type", "application/json");
-
-    StaticJsonDocument<512> hist;
-    hist["fields"]["co2"]["integerValue"] = co2;
-    hist["fields"]["temperature"]["doubleValue"] = temp;
-    hist["fields"]["humidity"]["doubleValue"] = humi;
-    hist["fields"]["dust"]["doubleValue"] = dust;
-    hist["fields"]["timestamp"]["timestampValue"] = getISOTime();
-
-    String body;
-    serializeJson(hist, body);
-
-    int httpCode = http.POST(body);  // Insert new doc in history
-    Serial.printf("History add code: %d\n", httpCode);
-    Serial.println(http.getString());
-    http.end();
-  }
-
-  Serial.println("Data sent to Firebase!\n");
-}
