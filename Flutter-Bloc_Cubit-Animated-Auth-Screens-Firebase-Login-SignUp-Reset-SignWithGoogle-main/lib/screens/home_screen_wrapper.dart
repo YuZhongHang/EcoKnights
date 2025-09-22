@@ -154,8 +154,6 @@ class HomeScreenWrapper extends StatelessWidget {
               print('UserModel.isAdmin: ${userModel.isAdmin}');
               print(
                   'Role == UserRole.admin: ${userModel.role == UserRole.admin}');
-              print(
-                  'Role == UserRole.superAdmin: ${userModel.role == UserRole.superAdmin}');
               print('================================');
 
               // Route to appropriate screen based on role
