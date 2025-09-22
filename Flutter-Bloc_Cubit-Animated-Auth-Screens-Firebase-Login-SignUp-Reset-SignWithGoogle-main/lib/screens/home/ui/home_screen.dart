@@ -110,11 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-<<<<<<< Updated upstream
-              Text("Device", style: TextStyles.font24Blue700Weight),
-=======
               _buildWelcomeSection(user),
->>>>>>> Stashed changes
               SizedBox(height: 20.h),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot>(
@@ -150,19 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 18.sp,
                                     color: ColorsManager.darkBlue)),
                             SizedBox(height: 10.h),
-<<<<<<< Updated upstream
-                            ElevatedButton.icon(
-                              icon: const Icon(Icons.add),
-                              label: const Text("Add Device"),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const AddDeviceScreen()),
-                                );
-                              },
-                            ),
-=======
                             Container(
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
@@ -202,7 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             )
->>>>>>> Stashed changes
                           ],
                         ),
                       );
@@ -212,66 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     final deviceName = device['deviceName'];
 
                     return Center(
-<<<<<<< Updated upstream
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        elevation: 4,
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(24.w),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(deviceName,
-                                  style: TextStyle(
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold)),
-                              SizedBox(height: 8.h),
-                              Text("ID: $deviceId",
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey[600])),
-                              SizedBox(height: 16.h),
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.wifi),
-                                label: const Text(
-                                  "Reconnect",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                ),
-                                onPressed: () async {
-                                  await _reconnectAndShowWifiDialog(
-                                      deviceId, deviceName);
-                                },
-                              ),
-                              SizedBox(height: 12.h),
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.power_settings_new),
-                                label: const Text(
-                                  "Disconnect / Remove",
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
-                                onPressed: () async {
-                                  final uid = user!.uid;
-                                  await FirebaseFirestore.instance
-                                      .collection('devices')
-                                      .doc(deviceId)
-                                      .delete();
-                                  await FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(uid)
-                                      .update({'device': FieldValue.delete()});
-                                },
-                              ),
-                            ],
-=======
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 260),
                         child: Card(
@@ -349,7 +271,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
->>>>>>> Stashed changes
                           ),
                         ),
                       ),
