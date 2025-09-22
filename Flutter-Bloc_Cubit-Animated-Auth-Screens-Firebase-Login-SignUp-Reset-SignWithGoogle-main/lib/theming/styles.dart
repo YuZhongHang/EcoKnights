@@ -18,6 +18,12 @@ class TextStyles {
     fontSize: 20, 
     fontWeight: FontWeight.w600,
   );
+  static TextStyle profileScreenTitle = const TextStyle(
+    fontFamily: 'Georgia',
+    color: ColorsManager.mainBlue,
+    fontSize: 20, 
+    fontWeight: FontWeight.w600,
+  );
   static TextStyle adminDashboardCardTitle = const TextStyle(
     fontFamily: 'Georgia',
     color: ColorsManager.lightYellow,
@@ -27,7 +33,6 @@ class TextStyles {
   static TextStyle adminManageUser = const TextStyle(
     fontFamily: 'Georgia',
     fontSize: 15, 
-    
     fontWeight: FontWeight.w600,
   );
 
