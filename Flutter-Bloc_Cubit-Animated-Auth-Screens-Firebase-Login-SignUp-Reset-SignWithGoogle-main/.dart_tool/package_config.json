@@ -261,7 +261,11 @@
     },
     {
       "name": "flutter",
+<<<<<<< Updated upstream
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter",
+=======
+      "rootUri": "file:///C:/src/flutter/packages/flutter",
+>>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -351,13 +355,21 @@
     },
     {
       "name": "flutter_test",
+<<<<<<< Updated upstream
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_test",
+=======
+      "rootUri": "file:///C:/src/flutter/packages/flutter_test",
+>>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
       "name": "flutter_web_plugins",
+<<<<<<< Updated upstream
       "rootUri": "file:///C:/flutter/src/flutter/packages/flutter_web_plugins",
+=======
+      "rootUri": "file:///C:/src/flutter/packages/flutter_web_plugins",
+>>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
@@ -705,7 +717,11 @@
     },
     {
       "name": "sky_engine",
+<<<<<<< Updated upstream
       "rootUri": "file:///C:/flutter/src/flutter/bin/cache/pkg/sky_engine",
+=======
+      "rootUri": "file:///C:/src/flutter/bin/cache/pkg/sky_engine",
+>>>>>>> Stashed changes
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
