@@ -10,6 +10,58 @@ import '../../../core/widgets/no_internet.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+Widget _buildWelcomeSection(User? user) {
+  return Card(
+    elevation: 4,
+    child: Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [ColorsManager.gray, ColorsManager.mainBlue],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.home, // Changed from admin icon
+            size: 48,
+            color: ColorsManager.lightYellow,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Welcome, ${user?.displayName ?? 'User'}!', // Changed text
+            style: TextStyles.adminDashboardCardTitle,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Glad to have you back.', // 👈 Friendlier subtitle
+            style: GoogleFonts.nunitoSans(
+              fontSize: 16,
+              color: ColorsManager.lightYellow,
+            ),
+          ),
+          if (user?.email != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Logged in as: ${user!.email}', // 👈 Still useful
+              style: GoogleFonts.nunitoSans(
+                fontSize: 14,
+                color: ColorsManager.darkBlue,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,14 +78,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
-        title: Text("Home", style: TextStyles.font24Blue700Weight),
-        backgroundColor: Colors.white,
+        title: Text(
+          "Home", 
+          style: TextStyles.userHomeScreenTitle,
+        ),
+        backgroundColor: ColorsManager.greyGreen,
         elevation: 0,
         actions: [
           IconButton(
             icon:
-                const Icon(Icons.account_circle, color: ColorsManager.mainBlue),
+                const Icon(Icons.account_circle, color: ColorsManager.darkBlue, size: 30),
             onPressed: () {
               Navigator.push(
                 context,
@@ -54,7 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+<<<<<<< Updated upstream
               Text("Device", style: TextStyles.font24Blue700Weight),
+=======
+              _buildWelcomeSection(user),
+>>>>>>> Stashed changes
               SizedBox(height: 20.h),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot>(
@@ -83,13 +143,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.devices, size: 80, color: Colors.grey),
+                            Icon(Icons.devices, size: 80, color: ColorsManager.darkBlue),
                             SizedBox(height: 20.h),
                             Text("No device connected",
-                                style: TextStyle(
+                                style: GoogleFonts.nunitoSans (
                                     fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold)),
+                                    color: ColorsManager.darkBlue)),
                             SizedBox(height: 10.h),
+<<<<<<< Updated upstream
                             ElevatedButton.icon(
                               icon: const Icon(Icons.add),
                               label: const Text("Add Device"),
@@ -101,6 +162,47 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                             ),
+=======
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                  ColorsManager.gray,
+                                  ColorsManager.mainBlue, 
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(30), 
+                              ),
+                              child: ElevatedButton.icon(
+                                icon: const Icon(Icons.add, color: ColorsManager.darkBlue), // Change icon color
+                                label: const Text(
+                                  "Add Device",
+                                  style: TextStyle(
+                                    color: ColorsManager.darkBlue, // Text color
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AddDeviceScreen(),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,  // Make button transparent
+                                  shadowColor: Colors.transparent,      // Remove shadow
+                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            )
+>>>>>>> Stashed changes
                           ],
                         ),
                       );
@@ -110,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final deviceName = device['deviceName'];
 
                     return Center(
+<<<<<<< Updated upstream
                       child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.r),
@@ -168,6 +271,85 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               ),
                             ],
+=======
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 260),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          elevation: 4,
+                          clipBehavior: Clip.antiAlias, // Important: clips child to the card's border
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(24.w),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  ColorsManager.lightYellow,
+                                  ColorsManager.grayYellow, 
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(deviceName,
+                                    style: TextStyle(
+                                      color: ColorsManager.darkBlue,
+                                      fontFamily: 'Georgia',
+                                      fontSize: 22.sp,
+                                      fontWeight: FontWeight.bold)),
+                                SizedBox(height: 8.h),
+                                Text("ID: $deviceId",
+                                    style: GoogleFonts.nunitoSans (
+                                        fontSize: 16.sp,
+                                        color: ColorsManager.gray)),
+                                SizedBox(height: 16.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.circle,
+                                        color: Colors.green, size: 16),
+                                    SizedBox(width: 8.w),
+                                    const Text("Connected",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green)),
+                                  ],
+                                ),
+                                SizedBox(height: 20.h),
+                                ElevatedButton.icon(
+                                  icon: const Icon(Icons.power_settings_new, color: ColorsManager.darkBlue),
+                                  label: Text(
+                                    "Disconnect / Remove",
+                                    style: GoogleFonts.nunitoSans(
+                                      textStyle: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            ColorsManager.darkBlue, // Wrap inside TextStyle
+                                      ),
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: ColorsManager.zhYellow),
+                                  onPressed: () async {
+                                    final uid = user!.uid;
+                                    await FirebaseFirestore.instance
+                                        .collection('devices')
+                                        .doc(deviceId)
+                                        .delete();
+                                    await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(uid)
+                                        .update({'device': FieldValue.delete()});
+                                  },
+                                ),
+                              ],
+                            ),
+>>>>>>> Stashed changes
                           ),
                         ),
                       ),
