@@ -12,4 +12,5 @@ class ColorsManager {
   static const Color lightYellow = Color(0xFFE2E1CF);
   static const Color greyGreen = Color(0xFFAFBB98);
   static const Color zhYellow = Color(0xFFDAA112);
+  static const Color grayYellow = Color(0xFFCECDB9);
 }

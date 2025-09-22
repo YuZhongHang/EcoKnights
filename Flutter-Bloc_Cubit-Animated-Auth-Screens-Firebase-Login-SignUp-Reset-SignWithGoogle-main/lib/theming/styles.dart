@@ -18,6 +18,12 @@ class TextStyles {
     fontSize: 20, 
     fontWeight: FontWeight.w600,
   );
+  static TextStyle userHomeScreenTitle = const TextStyle(
+    fontFamily: 'Georgia',
+    color: ColorsManager.darkBlue,
+    fontSize: 30, 
+    fontWeight: FontWeight.w600,
+  );
   static TextStyle profileScreenTitle = const TextStyle(
     fontFamily: 'Georgia',
     color: ColorsManager.mainBlue,
@@ -34,6 +40,11 @@ class TextStyles {
     fontFamily: 'Georgia',
     fontSize: 15, 
     fontWeight: FontWeight.w600,
+  );
+  static TextStyle userMainScreenSubtitle = GoogleFonts.nunitoSans(
+    fontSize: 16.sp,
+    fontWeight: FontWeight.w600,
+    color: ColorsManager.darkBlue,
   );
 
   static TextStyle font14Blue400Weight = GoogleFonts.nunitoSans(
