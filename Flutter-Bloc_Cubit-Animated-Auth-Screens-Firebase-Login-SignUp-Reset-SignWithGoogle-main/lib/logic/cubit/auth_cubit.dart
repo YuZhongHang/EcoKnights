@@ -145,81 +145,76 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithGoogle() async {
-    if (isClosed) return;
-    emit(AuthLoading());
+  if (isClosed) return;
+  emit(AuthLoading());
 
-    try {
-      debugPrint('🔐 Starting Google sign in');
+  try {
+    debugPrint('🔐 Starting Google sign in');
 
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        if (!isClosed) emit(AuthError('Google Sign In cancelled'));
-        return;
-      }
+    // Always force account chooser
+    await _googleSignIn.signOut();
 
-      // Get Google auth details
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      // Create a credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      final user = authResult.user;
-
-      if (user == null) {
-        if (!isClosed) emit(AuthError('Google sign in failed'));
-        return;
-      }
-
-      // Check if this is a new user
-      if (authResult.additionalUserInfo?.isNewUser == true) {
-        // Delete the user account so they can register properly
-        await user.delete();
-        if (!isClosed) {
-          emit(IsNewUser(googleUser: googleUser, credential: credential));
-        }
-        return;
-      }
-
-      debugPrint('✅ Google auth successful for: ${user.uid}');
-
-      // Get or create user profile
-      final userProfile = await _getOrCreateUserProfile(user);
-      if (userProfile == null) {
-        if (!isClosed) emit(AuthError("Failed to load user profile"));
-        return;
-      }
-
-      // Update last login
-      await _updateLastLogin(userProfile.uid);
-
-      // Check if user is active
-      if (!userProfile.isActive) {
-        await _auth.signOut();
-        if (!isClosed) {
-          emit(AuthError(
-              'Your account has been deactivated. Please contact support.'));
-        }
-        return;
-      }
-
-      // Emit appropriate state based on role
-      if (isClosed) return;
-      if (userProfile.isAdmin) {
-        emit(AdminSignIn(user: userProfile));
-      } else {
-        emit(UserSignIn(user: userProfile));
-      }
-    } catch (e) {
-      debugPrint('❌ Google sign in error: $e');
-      if (!isClosed) emit(AuthError(_getErrorMessage(e)));
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) {
+      if (!isClosed) emit(AuthError('Google Sign In cancelled'));
+      return;
     }
+
+    // Get Google auth details
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    // Create Firebase credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Authenticate with Firebase
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    final user = authResult.user;
+
+    if (user == null) {
+      if (!isClosed) emit(AuthError('Google sign in failed'));
+      return;
+    }
+
+    // ✅ Handle new users automatically
+    final userProfile = await _getOrCreateUserProfile(user);
+    if (userProfile == null) {
+      if (!isClosed) emit(AuthError("Failed to load user profile"));
+      return;
+    }
+
+    // Update last login
+    await _updateLastLogin(userProfile.uid);
+
+    // Check if account is active
+    if (!userProfile.isActive) {
+      await _auth.signOut();
+      if (!isClosed) {
+        emit(AuthError('Your account has been deactivated. Please contact support.'));
+      }
+      return;
+    }
+
+    // ✅ Role-based emit
+    if (isClosed) return;
+    if (userProfile.isAdmin) {
+      emit(AdminSignIn(user: userProfile));
+    } else {
+      emit(UserSignIn(user: userProfile));
+    }
+
+    debugPrint('✅ Google auth successful for: ${user.uid}');
+  } catch (e) {
+    debugPrint('❌ Google sign in error: $e');
+    if (!isClosed) emit(AuthError(_getErrorMessage(e)));
   }
+}
+
+
 
   Future<void> signOut() async {
     if (isClosed) return;
