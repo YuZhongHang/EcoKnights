@@ -221,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       color: ColorsManager.darkBlue,
                                       fontFamily: 'Georgia',
-                                      fontSize: 22.sp,
+                                      fontSize: 18.sp,
                                       fontWeight: FontWeight.bold)),
                                 SizedBox(height: 8.h),
                                 Text("ID: $deviceId",
