@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({Key? key}) : super(key: key);
@@ -243,7 +246,16 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
       debugPrint("✅ Device successfully claimed!");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Device successfully claimed!')),
+        SnackBar(
+          content: Text(
+            'Device successfully claimed!',
+            style: GoogleFonts.nunitoSans(
+              color: ColorsManager.darkBlue,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        ),
       );
       Navigator.pop(context, true);
     } else {
@@ -251,12 +263,30 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
       if (data['ownerUid'] != user.uid) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Device already owned by another user!')),
+          SnackBar(
+            backgroundColor: ColorsManager.lightYellow,
+            content: Text(
+              'Device already owned by another user!',
+              style: GoogleFonts.nunitoSans(
+                color: ColorsManager.darkBlue,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You already own this device.')),
+          SnackBar(
+            content: Text(
+              'You already own this device.',
+              style: GoogleFonts.nunitoSans(
+                color: ColorsManager.darkBlue,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          ),
         );
       }
     }
@@ -265,11 +295,15 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
-        title: const Text("Add Device"),
+        title: Text(
+          "Add Device",
+          style: TextStyles.addDeviceScreenTitle,
+          ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon:  Icon(Icons.refresh, color: ColorsManager.darkBlue),
             onPressed: scanDevices,
           ),
         ],
