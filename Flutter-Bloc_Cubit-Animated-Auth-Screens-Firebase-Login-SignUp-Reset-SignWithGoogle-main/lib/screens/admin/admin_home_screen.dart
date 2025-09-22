@@ -212,7 +212,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return Scaffold(
       backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: Text('Admin Dashboard', style: TextStyles.adminDashboardTitle,),
+        title: Text(
+          'Admin Dashboard',
+          style: TextStyles.adminDashboardTitle,
+        ),
         backgroundColor: ColorsManager.gray,
         foregroundColor: ColorsManager.lightYellow,
         elevation: 2,
@@ -240,8 +243,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildWelcomeSection(),
-                    const SizedBox(height: 24),
-                    _buildStatsSection(),
                     const SizedBox(height: 24),
                     _buildQuickActionsSection(),
                     const SizedBox(height: 24),
@@ -282,55 +283,20 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             const SizedBox(height: 8),
             Text(
               'You have administrator privileges to manage the system',
-              style: GoogleFonts.nunitoSans (
-                fontSize: 16, 
-                color: ColorsManager.lightYellow
-                ),
+              style: GoogleFonts.nunitoSans(
+                  fontSize: 16, color: ColorsManager.lightYellow),
             ),
             if (currentUser?.email != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Logged in as: ${currentUser!.email}',
-                style: GoogleFonts.nunitoSans (
-                  fontSize: 14, 
-                  color: ColorsManager.greyGreen
-                ),
+                style: GoogleFonts.nunitoSans(
+                    fontSize: 14, color: ColorsManager.greyGreen),
               ),
             ],
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildStatsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'User Statistics',
-          style: TextStyles.adminDashboardTitle,
-        ),
-        const SizedBox(height: 12),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          childAspectRatio: 1.5,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          children: [
-            _buildStatCard('Total Users', '${userStats['total'] ?? 0}',
-                Icons.people, ColorsManager.lightYellow),
-            _buildStatCard('Active Users', '${userStats['active'] ?? 0}',
-                Icons.verified_user, ColorsManager.lightYellow),
-            _buildStatCard('Inactive Users', '${userStats['inactive'] ?? 0}',
-                Icons.person_off, ColorsManager.lightYellow),
-            _buildStatCard('Admins', '${userStats['admins'] ?? 0}',
-                Icons.admin_panel_settings, ColorsManager.lightYellow),
-          ],
-        ),
-      ],
     );
   }
 
@@ -364,7 +330,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(fontSize: 12, color: ColorsManager.lightYellow),
+              style: const TextStyle(
+                  fontSize: 12, color: ColorsManager.lightYellow),
               textAlign: TextAlign.center,
             ),
           ],
@@ -381,69 +348,75 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           'Quick Actions',
           style: TextStyles.adminDashboardTitle,
         ),
-
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
-              child: Container (
+              child: Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: ElevatedButton.icon(
                   onPressed: _navigateToUserManagement,
-                  icon: const Icon(Icons.people, color: ColorsManager.lightYellow),
-                  label: Text (
-                    'Manage Users', 
+                  icon: const Icon(Icons.people,
+                      color: ColorsManager.lightYellow),
+                  label: Text(
+                    'Manage Users',
                     style: GoogleFonts.nunitoSans(
                       textStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: ColorsManager.lightYellow, // Wrap inside TextStyle
+                        color:
+                            ColorsManager.lightYellow, // Wrap inside TextStyle
                       ),
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Make button transparent
-                    shadowColor: Colors.transparent,     // Remove shadow to show gradient
+                    backgroundColor:
+                        Colors.transparent, // Make button transparent
+                    shadowColor:
+                        Colors.transparent, // Remove shadow to show gradient
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
             ),
-
             const SizedBox(width: 12),
             Expanded(
-              child: Container (
+              child: Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: ElevatedButton.icon(
                   onPressed: _loadAdminData,
-                  icon: const Icon(Icons.refresh, color: ColorsManager.lightYellow),
+                  icon: const Icon(Icons.refresh,
+                      color: ColorsManager.lightYellow),
                   label: Text(
                     'Refresh Data',
-                    style: GoogleFonts.nunitoSans (
+                    style: GoogleFonts.nunitoSans(
                       textStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: ColorsManager.lightYellow, // Wrap inside TextStyle
+                        color:
+                            ColorsManager.lightYellow, // Wrap inside TextStyle
                       ),
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Make button transparent
-                    shadowColor: Colors.transparent,     // Remove shadow to show gradient
+                    backgroundColor:
+                        Colors.transparent, // Make button transparent
+                    shadowColor:
+                        Colors.transparent, // Remove shadow to show gradient
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -483,21 +456,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                      colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(action.icon, size: 36, color: ColorsManager.lightYellow),
+                      Icon(action.icon,
+                          size: 36, color: ColorsManager.lightYellow),
                       const SizedBox(height: 8),
                       Text(
                         action.title,
-                        style: GoogleFonts.nunitoSans (
+                        style: GoogleFonts.nunitoSans(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: ColorsManager.lightYellow,
@@ -507,8 +481,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       const SizedBox(height: 4),
                       Text(
                         action.subtitle,
-                        style:
-                            GoogleFonts.nunitoSans (fontSize: 10, color: ColorsManager.gray93Color),
+                        style: GoogleFonts.nunitoSans(
+                            fontSize: 10, color: ColorsManager.gray93Color),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
