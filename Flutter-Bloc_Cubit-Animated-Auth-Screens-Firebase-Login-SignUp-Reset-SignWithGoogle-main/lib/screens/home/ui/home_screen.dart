@@ -194,8 +194,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     final deviceName = device['deviceName'];
 
                     return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 260),
+                      child: Align(
+                        alignment: Alignment.topCenter,
                         child: Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
