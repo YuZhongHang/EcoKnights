@@ -228,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: GoogleFonts.nunitoSans (
                                         fontSize: 14.sp,
                                         color: ColorsManager.gray)),
-                                SizedBox(height: 16.h),
+                                SizedBox(height: 14.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
