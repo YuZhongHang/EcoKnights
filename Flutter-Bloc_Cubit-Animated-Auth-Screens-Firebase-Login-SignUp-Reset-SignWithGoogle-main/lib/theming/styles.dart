@@ -18,6 +18,12 @@ class TextStyles {
     fontSize: 20, 
     fontWeight: FontWeight.w600,
   );
+  static TextStyle addDeviceScreenTitle = const TextStyle(
+    fontFamily: 'Georgia',
+    color: ColorsManager.darkBlue,
+    fontSize: 20, 
+    fontWeight: FontWeight.w600,
+  );
   static TextStyle userHomeScreenTitle = const TextStyle(
     fontFamily: 'Georgia',
     color: ColorsManager.darkBlue,
