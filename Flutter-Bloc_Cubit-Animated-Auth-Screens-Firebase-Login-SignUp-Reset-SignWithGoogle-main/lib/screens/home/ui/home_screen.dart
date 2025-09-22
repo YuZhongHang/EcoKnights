@@ -105,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> {
           final bool connected = connectivity != ConnectivityResult.none;
           return connected ? child : const BuildNoInternet();
         },
-        child: SingleChildScrollView(   // allow vertical scrolling
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: Column(
@@ -281,7 +280,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
-        ),
         ),
       ),
     );
