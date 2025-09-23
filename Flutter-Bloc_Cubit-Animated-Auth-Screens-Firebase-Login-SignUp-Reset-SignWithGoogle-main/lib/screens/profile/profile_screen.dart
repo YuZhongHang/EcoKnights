@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final photoUrl = (data['photoURL'] as String?) ?? '';
 
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
                       CircleAvatar(
