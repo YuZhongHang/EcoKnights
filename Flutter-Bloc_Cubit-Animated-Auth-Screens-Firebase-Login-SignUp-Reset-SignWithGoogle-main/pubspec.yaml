@@ -50,11 +50,9 @@ dependencies:
   file_picker: ^8.0.0
   http: ^1.1.0
   google_fonts: ^6.2.1
-<<<<<<< HEAD
   cloud_functions: ^4.3.0
-=======
   firebase_database: ^10.5.7
->>>>>>> 8f78e3522a4fd4cbce03fcb91155a6d082bcc119
+
   
 
 dev_dependencies:
