@@ -74,15 +74,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
-  final db = FirebaseDatabase(
-    databaseURL: 'https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app'
-  );
+  final database = FirebaseDatabase(
+      databaseURL:
+          "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    debugPrint(
-        "Current Firebase user: ${user?.uid}, email: ${user?.email}, displayName: ${user?.displayName}");
+
     return Scaffold(
       backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
@@ -122,15 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       .doc(user?.uid)
                       .snapshots(),
                   builder: (context, snapshot) {
-                    debugPrint(
-                        "Firestore snapshot connectionState: ${snapshot.connectionState}");
-                    debugPrint(
-                        "Firestore snapshot hasData: ${snapshot.hasData}");
-                    debugPrint(
-                        "Firestore snapshot hasError: ${snapshot.hasError}, error: ${snapshot.error}");
-                    debugPrint(
-                        "Firestore raw snapshot data: ${snapshot.data?.data()}");
-
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
@@ -147,10 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     debugPrint(
                         "Firestore snapshot data: $userData"); // <-- Add this
                     final device = userData?['device'];
-                    debugPrint("Device from Firestore: $device");
-                    debugPrint("Device keys: ${device?.keys.toList()}");
-                    debugPrint("Device ID: ${device?['deviceId']}, Device Name: ${device?['deviceName']}");
-
+                    debugPrint("Device info from Firestore: $device");
 
                     if (device == null) {
                       return Center(
@@ -215,8 +202,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     final deviceName = device['deviceName'];
                     debugPrint("Device ID: $deviceName");
                     // Realtime Database reference
-                    debugPrint("Setting up Realtime DB listener for path: devices/$deviceName/readings/latest");
-
                     deviceDataRef ??= FirebaseDatabase.instance
                         .ref("devices/$deviceName/readings/latest");
                     deviceDataRef!.onValue.listen((event) {
@@ -335,14 +320,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
 
                                   final value = dbSnapshot.data?.snapshot.value;
-                                    debugPrint("Realtime DB StreamBuilder connectionState: ${dbSnapshot.connectionState}");
-                                    debugPrint("Realtime DB snapshot value: $value");
-
-                                    if (value is Map<dynamic, dynamic>) {
-                                      value.forEach((key, val) {
-                                        debugPrint("Sensor key: $key, value: $val");
-                                      });
-                                    }
+                                  debugPrint(
+                                      "StreamBuilder snapshot value: $value");
+                                  if (value == null) {
+                                    debugPrint(
+                                        "Realtime DB StreamBuilder: value is null!");
                                     return Center(
                                       child: Text("No sensor data yet",
                                           style: TextStyle(
