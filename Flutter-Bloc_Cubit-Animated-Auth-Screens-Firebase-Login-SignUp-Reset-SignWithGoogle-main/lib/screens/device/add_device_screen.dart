@@ -351,6 +351,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     return Scaffold(
       backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
+        backgroundColor: ColorsManager.greyGreen,
         title: Text(
           "Add Device",
           style: TextStyles.addDeviceScreenTitle,
@@ -372,13 +373,58 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                     itemCount: scannedDevices.length,
                     itemBuilder: (context, index) {
                       final d = scannedDevices[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(d.device.name),
-                          subtitle: Text(d.device.id.id),
-                          trailing: ElevatedButton(
-                            child: const Text("Connect"),
-                            onPressed: () => connectDevice(d),
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              ColorsManager.lightYellow,
+                              ColorsManager.grayYellow, // Gradient
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10), // match card shape
+                        ),
+                        child: Card(
+                          color: Colors.transparent, 
+                          shadowColor: Colors.transparent,
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              d.device.name,
+                              style: const TextStyle (
+                                fontFamily: 'Georgia',
+                                color: ColorsManager.darkBlue,
+                                fontSize: 18,
+                              ),
+                            ),
+                            subtitle: Text(
+                              d.device.id.id,
+                              style: GoogleFonts.nunitoSans(
+                                color: ColorsManager.gray,
+                                fontSize: 14,
+                              ),
+                            ),
+                            trailing: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorsManager.gray,
+                                foregroundColor: ColorsManager.lightYellow,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                "Connect",
+                                style: GoogleFonts.nunitoSans(
+                                  color: ColorsManager.lightYellow,
+                                ),
+                              ),
+                              onPressed: () => connectDevice(d),
+                            ),
                           ),
                         ),
                       );
