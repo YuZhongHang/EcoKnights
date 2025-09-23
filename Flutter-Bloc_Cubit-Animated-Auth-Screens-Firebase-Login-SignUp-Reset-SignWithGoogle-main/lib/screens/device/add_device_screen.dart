@@ -127,7 +127,14 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            title: const Text('Connect to WiFi'),
+            backgroundColor: ColorsManager.lightYellow,
+            title: const Text(
+              'Connect to WiFi',
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                color: ColorsManager.darkBlue, 
+              ),
+            ),
             content: Form(
               key: _formKey,
               child: Column(
@@ -135,9 +142,21 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                 children: [
                   TextFormField(
                     controller: ssidController,
-                    decoration: const InputDecoration(
+                    style: const TextStyle( // Text color inside the field (dunno what field)
+                      color: ColorsManager.darkBlue,
+                    ),
+                    decoration: InputDecoration(
                       labelText: 'SSID',
-                      border: OutlineInputBorder(),
+                      labelStyle: GoogleFonts.nunitoSans ( // Label text color
+                        color: ColorsManager.gray,
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder( // Border when not focused
+                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                      ),
+                      focusedBorder: const OutlineInputBorder( // Border when focused
+                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -150,14 +169,27 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                   TextFormField(
                     controller: passwordController,
                     obscureText: _obscurePassword,
+                    style: GoogleFonts.nunitoSans (
+                      color: ColorsManager.darkBlue, // Password text color
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      labelStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.gray, // Label color
+                      ),
                       border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
+                              color: ColorsManager.darkBlue
                         ),
                         onPressed: () {
                           setState(() {
