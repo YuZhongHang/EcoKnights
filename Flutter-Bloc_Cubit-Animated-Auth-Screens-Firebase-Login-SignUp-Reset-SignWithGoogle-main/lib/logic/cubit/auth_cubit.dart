@@ -92,6 +92,17 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
+      // 🔒 NEW: Require email verification
+    if (!user.emailVerified) {
+      await _auth.signOut();
+      if (!isClosed) {
+        emit(AuthError(
+          'Please verify your email before signing in.',
+        ));
+      }
+      return;
+    }
+
       // Load or create Firestore user profile
       final userProfile = await _getOrCreateUserProfile(user);
       if (userProfile == null) {

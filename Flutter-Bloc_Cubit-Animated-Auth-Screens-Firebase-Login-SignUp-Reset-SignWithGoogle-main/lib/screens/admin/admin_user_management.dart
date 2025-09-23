@@ -7,6 +7,10 @@ import '../../services/firestore_service.dart';
 import 'package:flutter/foundation.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+
+
+
 
 class AdminUserManagement extends StatefulWidget {
   const AdminUserManagement({super.key});
@@ -303,7 +307,10 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     if (confirm == true) {
       try {
         setState(() => _isLoading = true);
+
+        // 🔑 Only delete the Firestore doc
         await FirestoreService.deleteUser(user.uid);
+
         _refreshUsers();
 
         if (mounted) {
@@ -427,7 +434,10 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     return Scaffold(
       backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: Text("Manage Users", style: TextStyles.adminDashboardTitle,),
+        title: Text(
+          "Manage Users",
+          style: TextStyles.adminDashboardTitle,
+        ),
         backgroundColor: ColorsManager.gray,
         foregroundColor: ColorsManager.lightYellow,
         actions: [
@@ -458,21 +468,27 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search users...',
-                labelStyle: const TextStyle(color: ColorsManager.lightYellow), // Label text color
+                labelStyle: const TextStyle(
+                    color: ColorsManager.lightYellow), // Label text color
                 hintText: 'Search by username, email, or phone',
-                hintStyle: const TextStyle(color: ColorsManager.greyGreen),  // Hint text color
-                prefixIcon: const Icon(Icons.search, color: ColorsManager.lightYellow),
+                hintStyle: const TextStyle(
+                    color: ColorsManager.greyGreen), // Hint text color
+                prefixIcon:
+                    const Icon(Icons.search, color: ColorsManager.lightYellow),
                 border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                borderSide: const BorderSide(color: ColorsManager.gray), // Border color
+                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  borderSide: const BorderSide(
+                      color: ColorsManager.gray), // Border color
                 ),
                 enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                borderSide: const BorderSide(color: ColorsManager.gray),
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(color: ColorsManager.gray),
                 ),
                 focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.0),
-                borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0), // Border when focused
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(
+                      color: ColorsManager.greyGreen,
+                      width: 2.0), // Border when focused
                 ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
@@ -570,110 +586,117 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                   itemBuilder: (context, index) {
                     final user = filteredUsers[index];
                     return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4), 
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [ColorsManager.greyGreen, ColorsManager.gray],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Card(
-                        color: Colors.transparent, 
-                        shadowColor: Colors.transparent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              ColorsManager.greyGreen,
+                              ColorsManager.gray
+                            ],
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor:
-                            user.isAdmin ? ColorsManager.mainBlue : ColorsManager.lightYellow,
-                            child: Icon(
-                              user.isAdmin
-                                ? Icons.admin_panel_settings
-                                : Icons.person,
-                            color: 
-                              user.isAdmin ? Colors.white : ColorsManager.darkBlue,
+                        child: Card(
+                          color: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: user.isAdmin
+                                  ? ColorsManager.mainBlue
+                                  : ColorsManager.lightYellow,
+                              child: Icon(
+                                user.isAdmin
+                                    ? Icons.admin_panel_settings
+                                    : Icons.person,
+                                color: user.isAdmin
+                                    ? Colors.white
+                                    : ColorsManager.darkBlue,
+                              ),
                             ),
-                          ),
-                          title: Text(
-                            user.username,
-                            style: TextStyles.adminManageUser.copyWith (
-                              color: user.isActive ? ColorsManager.darkBlue : ColorsManager.lightYellow,
-                              )
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                            Text(
-                                "${user.email} • ${user.phoneNumber ?? 'No phone'}",
-                                style: TextStyle(
-                                  color: ColorsManager.mainBlue
-                                )
-                                ),
-                            Row(
+                            title: Text(user.username,
+                                style: TextStyles.adminManageUser.copyWith(
+                                  color: user.isActive
+                                      ? ColorsManager.darkBlue
+                                      : ColorsManager.lightYellow,
+                                )),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        user.isAdmin ? ColorsManager.mainBlue : ColorsManager.lightYellow,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    user.role.name,
+                                Text(
+                                    "${user.email} • ${user.phoneNumber ?? 'No phone'}",
                                     style: TextStyle(
-                                      color: 
-                                        user.isAdmin ? Colors.white : ColorsManager.darkBlue,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                                        color: ColorsManager.mainBlue)),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: user.isAdmin
+                                            ? ColorsManager.mainBlue
+                                            : ColorsManager.lightYellow,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        user.role.name,
+                                        style: TextStyle(
+                                          color: user.isAdmin
+                                              ? Colors.white
+                                              : ColorsManager.darkBlue,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: user.isActive
-                                        ? Colors.green
-                                        : ColorsManager.lightYellow,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    user.isActive ? 'Active' : 'Inactive',
-                                    style: TextStyle(
-                                      color: user.isActive
-                                      ? Colors.white
-                                      : ColorsManager.darkBlue,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: user.isActive
+                                            ? Colors.green
+                                            : ColorsManager.lightYellow,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        user.isActive ? 'Active' : 'Inactive',
+                                        style: TextStyle(
+                                          color: user.isActive
+                                              ? Colors.white
+                                              : ColorsManager.darkBlue,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: ColorsManager.lightYellow),
-                              onPressed: () => _showEditDialog(user),
-                              tooltip: 'Edit User',
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: ColorsManager.lightYellow),
+                                  onPressed: () => _showEditDialog(user),
+                                  tooltip: 'Edit User',
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: ColorsManager.zhYellow),
+                                  onPressed: () => _deleteUser(user),
+                                  tooltip: 'Delete User',
+                                ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: ColorsManager.zhYellow),
-                              onPressed: () => _deleteUser(user),
-                              tooltip: 'Delete User',
-                            ),
-                          ],
-                        ),
-                      ),
-                      )
-                    );
+                          ),
+                        ));
                   },
                 );
               },
