@@ -351,16 +351,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: TextStyle(
                                             fontFamily: 'Georgia',
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18.sp,
-                                            color: ColorsManager.darkBlue, // white for contrast
+                                            fontSize: 20.sp,
+                                            color: ColorsManager.mainBlue, // white for contrast
                                           ),
                                         ),
                                         SizedBox(height: 8.h),
-                                        Text("CO2: $co2 ppm", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Temperature: $temperature °C", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Humidity: $humidity %", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Dust: $dust mg/m³", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Air Quality: $airQuality", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        Text("CO2: $co2 ppm", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
+                                        Text("Temperature: $temperature °C", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
+                                        Text("Humidity: $humidity %", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
+                                        Text("Dust: $dust mg/m³", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
+                                        Text("Air Quality: $airQuality", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
                                         SizedBox(height: 8.h),
                                         Text(
                                           "Last Updated: $timestamp",
