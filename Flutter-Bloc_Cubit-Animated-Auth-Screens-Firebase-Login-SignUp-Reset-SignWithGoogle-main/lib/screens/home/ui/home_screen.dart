@@ -73,18 +73,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
+  DatabaseReference? deviceDataRef;
+  final db = FirebaseDatabase(
+    databaseURL: 'https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app'
+  );
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-
+    debugPrint(
+        "Current Firebase user: ${user?.uid}, email: ${user?.email}, displayName: ${user?.displayName}");
     return Scaffold(
       backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
-        title: Text(
-          "Home",
-          style: TextStyles.userHomeScreenTitle,
-        ),
+        title: Text("Home", style: TextStyles.userHomeScreenTitle),
         backgroundColor: ColorsManager.greyGreen,
         elevation: 0,
         actions: [
@@ -120,6 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       .doc(user?.uid)
                       .snapshots(),
                   builder: (context, snapshot) {
+                    debugPrint(
+                        "Firestore snapshot connectionState: ${snapshot.connectionState}");
+                    debugPrint(
+                        "Firestore snapshot hasData: ${snapshot.hasData}");
+                    debugPrint(
+                        "Firestore snapshot hasError: ${snapshot.hasError}, error: ${snapshot.error}");
+                    debugPrint(
+                        "Firestore raw snapshot data: ${snapshot.data?.data()}");
+
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(
@@ -133,7 +144,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     final userData =
                         snapshot.data?.data() as Map<String, dynamic>?;
+                    debugPrint(
+                        "Firestore snapshot data: $userData"); // <-- Add this
                     final device = userData?['device'];
+                    debugPrint("Device from Firestore: $device");
+                    debugPrint("Device keys: ${device?.keys.toList()}");
+                    debugPrint("Device ID: ${device?['deviceId']}, Device Name: ${device?['deviceName']}");
+
 
                     if (device == null) {
                       return Center(
@@ -162,12 +179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: ElevatedButton.icon(
                                 icon: const Icon(Icons.add,
-                                    color: ColorsManager
-                                        .darkBlue), // Change icon color
+                                    color: ColorsManager.darkBlue),
                                 label: const Text(
                                   "Add Device",
                                   style: TextStyle(
-                                    color: ColorsManager.darkBlue, // Text color
+                                    color: ColorsManager.darkBlue,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -180,10 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors
-                                      .transparent, // Make button transparent
-                                  shadowColor:
-                                      Colors.transparent, // Remove shadow
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 14, horizontal: 24),
                                   shape: RoundedRectangleBorder(
@@ -199,90 +213,191 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     final deviceId = device['deviceId'];
                     final deviceName = device['deviceName'];
+                    debugPrint("Device ID: $deviceName");
+                    // Realtime Database reference
+                    debugPrint("Setting up Realtime DB listener for path: devices/$deviceName/readings/latest");
 
-                    return Center(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          elevation: 4,
-                          clipBehavior: Clip
-                              .antiAlias, // Important: clips child to the card's border
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(24.w),
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  ColorsManager.lightYellow,
-                                  ColorsManager.grayYellow,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(deviceName,
-                                    style: TextStyle(
-                                        color: ColorsManager.darkBlue,
-                                        fontFamily: 'Georgia',
-                                        fontSize: 20.sp,
-                                        fontWeight: FontWeight.bold)),
-                                SizedBox(height: 8.h),
-                                Text("ID: $deviceId",
-                                    style: GoogleFonts.nunitoSans(
-                                        fontSize: 14.sp,
-                                        color: ColorsManager.gray)),
-                                SizedBox(height: 14.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.circle,
-                                        color: Colors.green, size: 16),
-                                    SizedBox(width: 8.w),
-                                    const Text("Connected",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.green)),
+                    deviceDataRef ??= FirebaseDatabase.instance
+                        .ref("devices/$deviceName/readings/latest");
+                    deviceDataRef!.onValue.listen((event) {
+                      debugPrint(
+                          "Realtime DB raw snapshot: ${event.snapshot.value}");
+                      if (event.snapshot.value == null) {
+                        debugPrint(
+                            "No data found at path: devices/$deviceName/readings/latest");
+                      } else if (event.snapshot.value is Map) {
+                        debugPrint(
+                            "Realtime DB keys: ${(event.snapshot.value as Map).keys.toList()}");
+                      }
+                    });
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // ---- Device Info Card ----
+                          Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            elevation: 4,
+                            clipBehavior: Clip.antiAlias,
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(24.w),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    ColorsManager.lightYellow,
+                                    ColorsManager.grayYellow,
                                   ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                                SizedBox(height: 20.h),
-                                ElevatedButton.icon(
-                                  icon: const Icon(Icons.power_settings_new,
-                                      color: ColorsManager.darkBlue),
-                                  label: Text(
-                                    "Disconnect / Remove",
-                                    style: GoogleFonts.nunitoSans(
-                                      textStyle: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorsManager
-                                            .darkBlue, // Wrap inside TextStyle
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(deviceName,
+                                      style: TextStyle(
+                                          color: ColorsManager.darkBlue,
+                                          fontFamily: 'Georgia',
+                                          fontSize: 20.sp,
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 8.h),
+                                  Text("ID: $deviceId",
+                                      style: GoogleFonts.nunitoSans(
+                                          fontSize: 14.sp,
+                                          color: ColorsManager.gray)),
+                                  SizedBox(height: 14.h),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.circle,
+                                          color: Colors.green, size: 16),
+                                      SizedBox(width: 8.w),
+                                      const Text("Connected",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20.h),
+                                  ElevatedButton.icon(
+                                    icon: const Icon(Icons.power_settings_new,
+                                        color: ColorsManager.darkBlue),
+                                    label: Text(
+                                      "Disconnect / Remove",
+                                      style: GoogleFonts.nunitoSans(
+                                        textStyle: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorsManager.darkBlue),
                                       ),
                                     ),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            ColorsManager.zhYellow),
+                                    onPressed: () async {
+                                      final uid = user!.uid;
+                                      await FirebaseFirestore.instance
+                                          .collection('devices')
+                                          .doc(deviceId)
+                                          .delete();
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(uid)
+                                          .update(
+                                              {'device': FieldValue.delete()});
+                                    },
                                   ),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: ColorsManager.zhYellow),
-                                  onPressed: () async {
-                                    final uid = user!.uid;
-                                    await FirebaseFirestore.instance
-                                        .collection('devices')
-                                        .doc(deviceId)
-                                        .delete();
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .doc(uid)
-                                        .update(
-                                            {'device': FieldValue.delete()});
-                                  },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
+
+                          SizedBox(height: 20.h),
+
+                          // ---- Realtime Database Sensor Data Card ----
+                          Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            elevation: 4,
+                            child: Padding(
+                              padding: EdgeInsets.all(16.w),
+                              child: StreamBuilder<DatabaseEvent>(
+                                stream: deviceDataRef!.onValue,
+                                builder: (context, dbSnapshot) {
+                                  if (dbSnapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                          color: ColorsManager.mainBlue),
+                                    );
+                                  }
+
+                                  final value = dbSnapshot.data?.snapshot.value;
+                                    debugPrint("Realtime DB StreamBuilder connectionState: ${dbSnapshot.connectionState}");
+                                    debugPrint("Realtime DB snapshot value: $value");
+
+                                    if (value is Map<dynamic, dynamic>) {
+                                      value.forEach((key, val) {
+                                        debugPrint("Sensor key: $key, value: $val");
+                                      });
+                                    }
+                                    return Center(
+                                      child: Text("No sensor data yet",
+                                          style: TextStyle(
+                                              color: ColorsManager.darkBlue)),
+                                    );
+                                  }
+
+                                  final sensorData = <String, dynamic>{};
+                                  if (value is Map<dynamic, dynamic>) {
+                                    value.forEach((key, val) {
+                                      sensorData[key.toString()] = val;
+                                      debugPrint(
+                                          "Sensor key: $key, value: $val"); // <-- Add this
+                                    });
+                                  }
+                                  debugPrint(
+                                      "Final sensorData map: $sensorData");
+
+                                  final co2 = sensorData['co2'] ?? 0;
+                                  final temperature =
+                                      sensorData['temperature'] ?? 0.0;
+                                  final humidity =
+                                      sensorData['humidity'] ?? 0.0;
+                                  final dust = sensorData['dust'] ?? 0.0;
+                                  final airQuality =
+                                      sensorData['airQuality'] ?? 'Unknown';
+                                  final timestamp =
+                                      sensorData['timestamp'] ?? '';
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Sensor Readings",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp)),
+                                      SizedBox(height: 8.h),
+                                      Text("CO2: $co2 ppm"),
+                                      Text("Temperature: $temperature °C"),
+                                      Text("Humidity: $humidity %"),
+                                      Text("Dust: $dust mg/m³"),
+                                      Text("Air Quality: $airQuality"),
+                                      SizedBox(height: 8.h),
+                                      Text("Last Updated: $timestamp",
+                                          style: GoogleFonts.nunitoSans(
+                                              fontSize: 12.sp,
+                                              color: ColorsManager.gray)),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
