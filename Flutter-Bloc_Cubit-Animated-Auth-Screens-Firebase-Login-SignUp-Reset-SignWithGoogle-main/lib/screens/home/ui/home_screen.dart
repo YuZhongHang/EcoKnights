@@ -299,17 +299,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
 
-                          SizedBox(height: 20.h),
-
                           // ---- Realtime Database Sensor Data Card ----
                           Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             elevation: 4,
+                            clipBehavior: Clip.antiAlias,
                             child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(24.w),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
+                                gradient: const LinearGradient(
                                   colors: [ColorsManager.gray93Color, ColorsManager.brightYellow], // gradient colors
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
