@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../theming/colors.dart';
+import '../../../theming/styles.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({Key? key}) : super(key: key);
@@ -115,71 +118,146 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       fbp.ScanResult result, fbp.BluetoothCharacteristic targetChar) async {
     final ssidController = TextEditingController();
     final passwordController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
 
     await showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Connect to WiFi'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: ssidController,
-              decoration: const InputDecoration(labelText: 'SSID'),
+      builder: (_) {
+        bool _obscurePassword = true;
+
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            backgroundColor: ColorsManager.lightYellow,
+            title: const Text(
+              'Connect to WiFi',
+              style: TextStyle(
+                fontFamily: 'Georgia',
+                color: ColorsManager.darkBlue, 
+              ),
             ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: ssidController,
+                    style: const TextStyle( // Text color inside the field (dunno what field)
+                      color: ColorsManager.darkBlue,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'SSID',
+                      labelStyle: GoogleFonts.nunitoSans ( // Label text color
+                        color: ColorsManager.gray,
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder( // Border when not focused
+                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                      ),
+                      focusedBorder: const OutlineInputBorder( // Border when focused
+                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "SSID can't be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: _obscurePassword,
+                    style: GoogleFonts.nunitoSans (
+                      color: ColorsManager.darkBlue, // Password text color
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.gray, // Label color
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                              color: ColorsManager.darkBlue
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Password can't be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final ssid = ssidController.text.trim();
-              final password = passwordController.text.trim();
-              if (ssid.isEmpty || password.isEmpty) return;
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (!_formKey.currentState!.validate()) return;
 
-              final creds = "$ssid|$password";
-              await targetChar.write(creds.codeUnits, withoutResponse: false);
-              Navigator.pop(context); // close dialog
+                  final ssid = ssidController.text.trim();
+                  final password = passwordController.text.trim();
+                  final creds = "$ssid|$password";
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content:
-                        Text('WiFi credentials sent! Waiting for response...')),
-              );
+                  await targetChar.write(creds.codeUnits,
+                      withoutResponse: false);
+                  Navigator.pop(context);
 
-              // Enable notifications
-              await targetChar.setNotifyValue(true);
-
-              targetChar.lastValueStream.listen((value) {
-                final response = String.fromCharCodes(value);
-                debugPrint("ESP32 replied: $response");
-
-                if (response == "OK") {
-                  _claimDevice(result.device);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('WiFi connected successfully!')),
+                        content: Text(
+                            'WiFi credentials sent! Waiting for response...')),
                   );
-                } else if (response == "FAIL") {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('WiFi connection failed! Please retry.')),
-                  );
-                }
-              });
-            },
-            child: const Text('Connect'),
+
+                  await targetChar.setNotifyValue(true);
+
+                  targetChar.lastValueStream.listen((value) {
+                    final response = String.fromCharCodes(value);
+                    debugPrint("ESP32 replied: $response");
+
+                    if (response == "OK") {
+                      _claimDevice(result.device);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('WiFi connected successfully!')),
+                      );
+                    } else if (response == "FAIL") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content:
+                                Text('WiFi connection failed! Please retry.')),
+                      );
+                    }
+                  });
+                },
+                child: const Text('Connect'),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -218,23 +296,51 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
 
       debugPrint("✅ Device successfully claimed!");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Device successfully claimed!')),
+        SnackBar(
+            content: Text(
+          'Device successfully claimed!',
+          style: GoogleFonts.nunitoSans(
+            color: ColorsManager.darkBlue,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        )),
       );
       Navigator.pop(context, true);
     } else {
       final data = snapshot.data()!;
-      debugPrint("📦 Found existing Firestore doc: $data");
 
       if (data['ownerUid'] != user.uid) {
-        debugPrint("❌ Device already owned by ${data['ownerUid']}");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Device already owned by another user!')),
+          SnackBar(
+              backgroundColor: ColorsManager.lightYellow,
+              content: Text(
+                'Device already owned by another user!',
+                style: GoogleFonts.nunitoSans(
+                  color: ColorsManager.darkBlue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              )),
         );
       } else {
-        debugPrint("⚠️ You already own this device.");
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'device': {
+            'deviceId': deviceId,
+            'deviceName': device.name,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }
+        }, SetOptions(merge: true));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You already own this device.')),
+          SnackBar(
+              content: Text(
+            'You already own this device.',
+            style: GoogleFonts.nunitoSans(
+              color: ColorsManager.darkBlue,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          )),
         );
       }
     }
@@ -243,11 +349,16 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
-        title: const Text("Add Device"),
+        backgroundColor: ColorsManager.greyGreen,
+        title: Text(
+          "Add Device",
+          style: TextStyles.addDeviceScreenTitle,
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh, color: ColorsManager.darkBlue),
             onPressed: scanDevices,
           ),
         ],
@@ -262,13 +373,58 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                     itemCount: scannedDevices.length,
                     itemBuilder: (context, index) {
                       final d = scannedDevices[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(d.device.name),
-                          subtitle: Text(d.device.id.id),
-                          trailing: ElevatedButton(
-                            child: const Text("Connect"),
-                            onPressed: () => connectDevice(d),
+                      return Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              ColorsManager.lightYellow,
+                              ColorsManager.grayYellow, // Gradient
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10), // match card shape
+                        ),
+                        child: Card(
+                          color: Colors.transparent, 
+                          shadowColor: Colors.transparent,
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              d.device.name,
+                              style: const TextStyle (
+                                fontFamily: 'Georgia',
+                                color: ColorsManager.darkBlue,
+                                fontSize: 18,
+                              ),
+                            ),
+                            subtitle: Text(
+                              d.device.id.id,
+                              style: GoogleFonts.nunitoSans(
+                                color: ColorsManager.gray,
+                                fontSize: 14,
+                              ),
+                            ),
+                            trailing: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorsManager.gray,
+                                foregroundColor: ColorsManager.lightYellow,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                "Connect",
+                                style: GoogleFonts.nunitoSans(
+                                  color: ColorsManager.lightYellow,
+                                ),
+                              ),
+                              onPressed: () => connectDevice(d),
+                            ),
                           ),
                         ),
                       );

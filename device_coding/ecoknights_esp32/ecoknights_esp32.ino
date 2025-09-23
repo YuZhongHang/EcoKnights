@@ -21,11 +21,18 @@
 #include "DHT.h"
 
 // ----------------- Firebase Setup -----------------
-#include <HTTPClient.h>
+#include <FirebaseESP32.h>
+#include <addons/TokenHelper.h>
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
+String FIREBASE_DEVICE_ID = "44:1D:64:F6:19:6E";
+FirebaseData fbdo;       // Firebase object for read/write
+FirebaseAuth auth;
+FirebaseConfig config;    // Configuration object
+
 String ID_TOKEN = "your-firebase-id-token"; // device login token
-#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
+#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/";
+#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q";
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -152,6 +159,17 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
   }
 };
 
+String generateDeviceID() {
+  // ---- Generate Unique ID from ESP32 MAC ----
+  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
+  char uniqueID[13];                   // 12 hex chars + null terminator
+  sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
+
+  // ---- Create Bluetooth name using ID ----
+  String deviceID = "EcoKnights_" + String(uniqueID);
+  return deviceID;
+}
+
 
 
 // ----------------- Setup -----------------
@@ -171,28 +189,16 @@ void setup() {
     delay(500);
   }
 
-  Serial.println("OLED initialized successfully!");
+  Serial.println("\nOLED initialized successfully!");
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
 
   Serial.println("Ecoknight Air Quality + Dust + Temp/Humidity Monitor");
-  Serial.println("Calibrating MQ-135 sensor...");
-  
-  // Calibrate MQ-135
-  Ro = MQCalibration(MQ135_PIN);
-  Serial.print("Calibration completed. Ro = ");
-  Serial.print(Ro);
-  Serial.println(" kohm");
-  Serial.println("Sensor ready!");
+
+  Serial.println("Sensor ready!\n");
   oledPrint("Sensor ready!");
 
-  // ---- Generate Unique ID from ESP32 MAC ----
-  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
-  char uniqueID[13];                   // 12 hex chars + null terminator
-  sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
-
-  // ---- Create Bluetooth name using ID ----
-  btName = "EcoKnights_" + String(uniqueID);
+  btName = generateDeviceID();
 
   // Initialize BLE device
   BLEDevice::init(btName);   // Name of ESP32 device
@@ -222,21 +228,17 @@ void setup() {
   pAdvertising->setMaxInterval(48);
   pAdvertising->start();
 
-  Serial.println("BLE started, waiting for client...");
-  Serial.print("Service UUID: ");
-  Serial.println(SERVICE_UUID);
-  Serial.print("Characteristic UUID: ");
-  Serial.println(CHARACTERISTIC_UUID);  
-  
   obtainWifi();
   
   delay(3000);
 }
 
 bool obtainWifi() {
+  Serial.print("Bluetooth: " + btName + "\nWaiting WiFi via BLE");
+  oledPrint("Bluetooth: " + btName + "\nWaiting WiFi via BLE");
   while (!(WiFi.status() == WL_CONNECTED)) {
-    Serial.println("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
-    oledPrint("Waiting WiFi via BLE...\n\nBluetooth: " + btName);
+    Serial.print(".");
+    display.print(".");
     delay(1500);
   }
   return true;
@@ -246,18 +248,21 @@ bool obtainTime() {
   struct tm timeinfo;
   int retry = 0;
   const int maxRetries = 300; // ~300s max
+  oledPrint("Waiting for NTP time sync.");
+  Serial.print("Waiting for NTP time sync");
   while (!getLocalTime(&timeinfo) && retry < maxRetries) {
-    oledPrint("Waiting for NTP time sync...");
-    Serial.println("Waiting for NTP time sync...");
+    display.print(".");
+    Serial.print(".");
     delay(1000);
     retry++;
   }
+  Serial.print("\n");
   return retry < maxRetries;
 }
 
 // ----------------- Loop -----------------
 void loop() {
-  if(success && !connected){
+  if(!connected){
   if (success) {
             wifiConnected = true;
             pCharacteristic->setValue("OK");
@@ -265,12 +270,11 @@ void loop() {
             Serial.println("WiFi connected!");
             oledPrint("WiFi connected!");
             connected = true;
-
             config.api_key = API_KEY;
             config.database_url = DATABASE_URL;
             config.signer.tokens.legacy_token = DATABASE_SECRET;
-
-            Firebase.begin(&config, nullptr);
+            auth.token.uid = ""; // optional if anonymous
+            Firebase.begin(&config, &auth);
             Firebase.reconnectWiFi(true);
           } else {
             wifiConnected = false;
@@ -279,9 +283,8 @@ void loop() {
             Serial.println("WiFi connect FAIL");
             oledPrint("WiFi FAIL, retry via BLE");
             obtainWifi();
-    }
+          }
   } 
-  
 
   // Once WiFi is connected for the first time, sync NTP
   static bool ntpDone = false;
@@ -422,8 +425,8 @@ void loop() {
     display.print(timeString);
 
     display.display();
-
-    // --------------- Push Data To Real-Time Firebase ---------------
+    
+     // --------------- Push Data To Real-Time Firebase ---------------
     if (Firebase.ready() && WiFi.status() == WL_CONNECTED) {
       String path = "/devices/" + btName + "/readings";
 
@@ -440,11 +443,21 @@ void loop() {
       strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
       json.set("timestamp", timeString);
 
-      // Save as latest
-      Firebase.RTDB.setJSON(&fbdo, path + "/latest", &json);
+      // Write latest
+      if (Firebase.setJSON(fbdo, path + "/latest", json)) {
+        Serial.println("Latest data sent!");
+      } else {
+        Serial.println("Failed to send latest:");
+        Serial.println(fbdo.errorReason());
+      }
 
-      // Push as historical
-      Firebase.RTDB.pushJSON(&fbdo, path + "/history", &json);
+      // Push to history
+      if (Firebase.pushJSON(fbdo, path + "/history", json)) {
+        Serial.println("History data pushed!");
+      } else {
+        Serial.println("Failed to push history:");
+        Serial.println(fbdo.errorReason());
+      }
 
       Serial.println("Data sent to Firebase!");
     }
@@ -495,3 +508,5 @@ String getAirQualityLevel(float co2_ppm) {
   else if (co2_ppm < 1500) return "Poor";
   else return "Very Poor";
 }
+
+
