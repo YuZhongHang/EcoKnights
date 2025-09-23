@@ -11,6 +11,7 @@ import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 Widget _buildWelcomeSection(User? user) {
   return Card(
@@ -41,7 +42,7 @@ Widget _buildWelcomeSection(User? user) {
           ),
           const SizedBox(height: 8),
           Text(
-            'Glad to have you back.', // 👈 Friendlier subtitle
+            'Glad to have you back.',
             style: GoogleFonts.nunitoSans(
               fontSize: 16,
               color: ColorsManager.lightYellow,
@@ -81,15 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: ColorsManager.greyGreen,
       appBar: AppBar(
         title: Text(
-          "Home", 
+          "Home",
           style: TextStyles.userHomeScreenTitle,
         ),
         backgroundColor: ColorsManager.greyGreen,
         elevation: 0,
         actions: [
           IconButton(
-            icon:
-                const Icon(Icons.account_circle, color: ColorsManager.darkBlue, size: 30),
+            icon: const Icon(Icons.account_circle,
+                color: ColorsManager.darkBlue, size: 30),
             onPressed: () {
               Navigator.push(
                 context,
@@ -139,10 +140,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.devices, size: 80, color: ColorsManager.darkBlue),
+                            Icon(Icons.devices,
+                                size: 80, color: ColorsManager.darkBlue),
                             SizedBox(height: 20.h),
                             Text("No device connected",
-                                style: GoogleFonts.nunitoSans (
+                                style: GoogleFonts.nunitoSans(
                                     fontSize: 18.sp,
                                     color: ColorsManager.darkBlue)),
                             SizedBox(height: 10.h),
@@ -150,16 +152,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
-                                  ColorsManager.gray,
-                                  ColorsManager.mainBlue, 
+                                    ColorsManager.gray,
+                                    ColorsManager.mainBlue,
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                borderRadius: BorderRadius.circular(30), 
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               child: ElevatedButton.icon(
-                                icon: const Icon(Icons.add, color: ColorsManager.darkBlue), // Change icon color
+                                icon: const Icon(Icons.add,
+                                    color: ColorsManager
+                                        .darkBlue), // Change icon color
                                 label: const Text(
                                   "Add Device",
                                   style: TextStyle(
@@ -176,9 +180,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,  // Make button transparent
-                                  shadowColor: Colors.transparent,      // Remove shadow
-                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                  backgroundColor: Colors
+                                      .transparent, // Make button transparent
+                                  shadowColor:
+                                      Colors.transparent, // Remove shadow
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14, horizontal: 24),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -200,7 +207,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                           elevation: 4,
-                          clipBehavior: Clip.antiAlias, // Important: clips child to the card's border
+                          clipBehavior: Clip
+                              .antiAlias, // Important: clips child to the card's border
                           child: Container(
                             width: double.infinity,
                             padding: EdgeInsets.all(24.w),
@@ -208,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               gradient: LinearGradient(
                                 colors: [
                                   ColorsManager.lightYellow,
-                                  ColorsManager.grayYellow, 
+                                  ColorsManager.grayYellow,
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -219,13 +227,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(deviceName,
                                     style: TextStyle(
-                                      color: ColorsManager.darkBlue,
-                                      fontFamily: 'Georgia',
-                                      fontSize: 20.sp,
-                                      fontWeight: FontWeight.bold)),
+                                        color: ColorsManager.darkBlue,
+                                        fontFamily: 'Georgia',
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold)),
                                 SizedBox(height: 8.h),
                                 Text("ID: $deviceId",
-                                    style: GoogleFonts.nunitoSans (
+                                    style: GoogleFonts.nunitoSans(
                                         fontSize: 14.sp,
                                         color: ColorsManager.gray)),
                                 SizedBox(height: 14.h),
@@ -243,15 +251,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 SizedBox(height: 20.h),
                                 ElevatedButton.icon(
-                                  icon: const Icon(Icons.power_settings_new, color: ColorsManager.darkBlue),
+                                  icon: const Icon(Icons.power_settings_new,
+                                      color: ColorsManager.darkBlue),
                                   label: Text(
                                     "Disconnect / Remove",
                                     style: GoogleFonts.nunitoSans(
                                       textStyle: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color:
-                                            ColorsManager.darkBlue, // Wrap inside TextStyle
+                                        color: ColorsManager
+                                            .darkBlue, // Wrap inside TextStyle
                                       ),
                                     ),
                                   ),
@@ -266,7 +275,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     await FirebaseFirestore.instance
                                         .collection('users')
                                         .doc(uid)
-                                        .update({'device': FieldValue.delete()});
+                                        .update(
+                                            {'device': FieldValue.delete()});
                                   },
                                 ),
                               ],

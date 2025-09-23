@@ -1,3 +1,4 @@
+import 'package:auth_bloc/screens/home/ui/home_screen.dart';
 import 'package:auth_bloc/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,16 +105,16 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: ColorsManager.lightYellow,
         title: const Text(
-          'Confirm Logout', 
-          style: TextStyle (
+          'Confirm Logout',
+          style: TextStyle(
             fontFamily: 'Georgia',
             color: ColorsManager.mainBlue,
-          ) ,
+          ),
         ),
-        content: Text (
+        content: Text(
           'Are you sure you want to logout?',
           style: GoogleFonts.nunitoSans(
-            color: ColorsManager.gray, 
+            color: ColorsManager.gray,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -121,12 +122,23 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel', style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue,),),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.nunitoSans(
+                color: ColorsManager.mainBlue,
+              ),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: ColorsManager.mainBlue),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsManager.mainBlue),
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Logout', style: GoogleFonts.nunitoSans (color: ColorsManager.lightYellow,),),
+            child: Text(
+              'Logout',
+              style: GoogleFonts.nunitoSans(
+                color: ColorsManager.lightYellow,
+              ),
+            ),
           ),
         ],
       ),
@@ -221,9 +233,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         elevation: 2,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadAdminData,
-            tooltip: 'Refresh Data',
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            },
+            tooltip: 'Home Page',
           ),
           IconButton(
             icon: const Icon(Icons.logout),

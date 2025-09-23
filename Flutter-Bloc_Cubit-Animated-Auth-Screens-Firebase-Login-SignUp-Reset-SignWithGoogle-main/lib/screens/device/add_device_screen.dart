@@ -292,6 +292,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               )),
         );
       } else {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'device': {
+            'deviceId': deviceId,
+            'deviceName': device.name,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }
+        }, SetOptions(merge: true));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
