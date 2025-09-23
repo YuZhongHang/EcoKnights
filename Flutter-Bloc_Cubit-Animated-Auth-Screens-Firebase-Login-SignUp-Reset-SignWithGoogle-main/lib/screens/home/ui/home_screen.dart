@@ -311,57 +311,38 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: StreamBuilder<DatabaseEvent>(
                                 stream: deviceDataRef!.onValue,
                                 builder: (context, dbSnapshot) {
-                                  if (dbSnapshot.connectionState ==
-                                      ConnectionState.waiting) {
+                                  if (dbSnapshot.connectionState == ConnectionState.waiting) {
                                     return const Center(
-                                      child: CircularProgressIndicator(
-                                          color: ColorsManager.mainBlue),
+                                      child: CircularProgressIndicator(color: ColorsManager.mainBlue),
                                     );
                                   }
 
                                   final value = dbSnapshot.data?.snapshot.value;
-                                  debugPrint(
-                                      "StreamBuilder snapshot value: $value");
-                                  if (value == null) {
-                                    debugPrint(
-                                        "Realtime DB StreamBuilder: value is null!");
-                                    return Center(
-                                      child: Text("No sensor data yet",
-                                          style: TextStyle(
-                                              color: ColorsManager.darkBlue)),
-                                    );
-                                  
-                                
+                                  debugPrint("Realtime DB StreamBuilder connectionState: ${dbSnapshot.connectionState}");
+                                  debugPrint("Realtime DB snapshot value: $value");
+
                                   final sensorData = <String, dynamic>{};
                                   if (value is Map<dynamic, dynamic>) {
                                     value.forEach((key, val) {
                                       sensorData[key.toString()] = val;
-                                      debugPrint(
-                                          "Sensor key: $key, value: $val"); // <-- Add this
+                                      debugPrint("Sensor key: $key, value: $val");
                                     });
                                   }
-                                  debugPrint(
-                                      "Final sensorData map: $sensorData");
+
+                                  debugPrint("Final sensorData map: $sensorData");
 
                                   final co2 = sensorData['co2'] ?? 0;
-                                  final temperature =
-                                      sensorData['temperature'] ?? 0.0;
-                                  final humidity =
-                                      sensorData['humidity'] ?? 0.0;
+                                  final temperature = sensorData['temperature'] ?? 0.0;
+                                  final humidity = sensorData['humidity'] ?? 0.0;
                                   final dust = sensorData['dust'] ?? 0.0;
-                                  final airQuality =
-                                      sensorData['airQuality'] ?? 'Unknown';
-                                  final timestamp =
-                                      sensorData['timestamp'] ?? '';
+                                  final airQuality = sensorData['airQuality'] ?? 'Unknown';
+                                  final timestamp = sensorData['timestamp'] ?? '';
 
                                   return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text("Sensor Readings",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18.sp)),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp)),
                                       SizedBox(height: 8.h),
                                       Text("CO2: $co2 ppm"),
                                       Text("Temperature: $temperature °C"),
@@ -371,8 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       SizedBox(height: 8.h),
                                       Text("Last Updated: $timestamp",
                                           style: GoogleFonts.nunitoSans(
-                                              fontSize: 12.sp,
-                                              color: ColorsManager.gray)),
+                                              fontSize: 12.sp, color: ColorsManager.gray)),
                                     ],
                                   );
                                 },
