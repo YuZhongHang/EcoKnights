@@ -52,7 +52,10 @@ dependencies:
   google_fonts: ^6.2.1
   cloud_functions: ^4.3.0
   firebase_database: ^10.5.7
+<<<<<<< HEAD
 
+=======
+>>>>>>> f95fad704ab1b0885a3c0bd0ad31d2b571e458ce
   
 
 dev_dependencies:
