@@ -348,8 +348,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: TextStyle(
                                               color: ColorsManager.darkBlue)),
                                     );
-                                  }
-
+                                  
+                                
                                   final sensorData = <String, dynamic>{};
                                   if (value is Map<dynamic, dynamic>) {
                                     value.forEach((key, val) {
