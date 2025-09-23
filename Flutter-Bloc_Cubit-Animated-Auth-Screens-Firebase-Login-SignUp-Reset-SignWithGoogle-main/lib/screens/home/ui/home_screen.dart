@@ -304,58 +304,74 @@ class _HomeScreenState extends State<HomeScreen> {
                           // ---- Realtime Database Sensor Data Card ----
                           Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             elevation: 4,
-                            child: Padding(
-                              padding: EdgeInsets.all(16.w),
-                              child: StreamBuilder<DatabaseEvent>(
-                                stream: deviceDataRef!.onValue,
-                                builder: (context, dbSnapshot) {
-                                  if (dbSnapshot.connectionState == ConnectionState.waiting) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(color: ColorsManager.mainBlue),
-                                    );
-                                  }
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [ColorsManager.gray93Color, ColorsManager.brightYellow], // gradient colors
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(10), // same as Card radius
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(16.w),
+                                child: StreamBuilder<DatabaseEvent>(
+                                  stream: deviceDataRef!.onValue,
+                                  builder: (context, dbSnapshot) {
+                                    if (dbSnapshot.connectionState == ConnectionState.waiting) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(color: ColorsManager.mainBlue),
+                                      );
+                                    }
 
-                                  final value = dbSnapshot.data?.snapshot.value;
-                                  debugPrint("Realtime DB StreamBuilder connectionState: ${dbSnapshot.connectionState}");
-                                  debugPrint("Realtime DB snapshot value: $value");
+                                    final value = dbSnapshot.data?.snapshot.value;
+                                    final sensorData = <String, dynamic>{};
+                                    if (value is Map<dynamic, dynamic>) {
+                                      value.forEach((key, val) {
+                                        sensorData[key.toString()] = val;
+                                      });
+                                    }
 
-                                  final sensorData = <String, dynamic>{};
-                                  if (value is Map<dynamic, dynamic>) {
-                                    value.forEach((key, val) {
-                                      sensorData[key.toString()] = val;
-                                      debugPrint("Sensor key: $key, value: $val");
-                                    });
-                                  }
+                                    final co2 = sensorData['co2'] ?? 0;
+                                    final temperature = sensorData['temperature'] ?? 0.0;
+                                    final humidity = sensorData['humidity'] ?? 0.0;
+                                    final dust = sensorData['dust'] ?? 0.0;
+                                    final airQuality = sensorData['airQuality'] ?? 'Unknown';
+                                    final timestamp = sensorData['timestamp'] ?? '';
 
-                                  debugPrint("Final sensorData map: $sensorData");
-
-                                  final co2 = sensorData['co2'] ?? 0;
-                                  final temperature = sensorData['temperature'] ?? 0.0;
-                                  final humidity = sensorData['humidity'] ?? 0.0;
-                                  final dust = sensorData['dust'] ?? 0.0;
-                                  final airQuality = sensorData['airQuality'] ?? 'Unknown';
-                                  final timestamp = sensorData['timestamp'] ?? '';
-
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Sensor Readings",
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp)),
-                                      SizedBox(height: 8.h),
-                                      Text("CO2: $co2 ppm"),
-                                      Text("Temperature: $temperature °C"),
-                                      Text("Humidity: $humidity %"),
-                                      Text("Dust: $dust mg/m³"),
-                                      Text("Air Quality: $airQuality"),
-                                      SizedBox(height: 8.h),
-                                      Text("Last Updated: $timestamp",
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Sensor Readings",
+                                          style: TextStyle(
+                                            fontFamily: 'Georgia',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18.sp,
+                                            color: ColorsManager.darkBlue, // white for contrast
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Text("CO2: $co2 ppm", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        Text("Temperature: $temperature °C", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        Text("Humidity: $humidity %", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        Text("Dust: $dust mg/m³", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        Text("Air Quality: $airQuality", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                                        SizedBox(height: 8.h),
+                                        Text(
+                                          "Last Updated: $timestamp",
                                           style: GoogleFonts.nunitoSans(
-                                              fontSize: 12.sp, color: ColorsManager.gray)),
-                                    ],
-                                  );
-                                },
+                                            fontSize: 12.sp,
+                                            color: ColorsManager.greyGreen,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
