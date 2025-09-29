@@ -5,15 +5,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
+import 'package:firebase_database/firebase_database.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/widgets/no_internet.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_database/firebase_database.dart';
 
-Widget _buildWelcomeSection(User? user) {
+/// ----- WELCOME CARD ---------------------------------------------------------
+Widget _buildWelcomeSection({
+  required String username,
+  required String email,
+}) {
   return Card(
     elevation: 4,
     child: Container(
@@ -30,16 +34,11 @@ Widget _buildWelcomeSection(User? user) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.home, // Changed from admin icon
-            size: 48,
-            color: ColorsManager.lightYellow,
-          ),
+          const Icon(Icons.home,
+              size: 48, color: ColorsManager.lightYellow),
           const SizedBox(height: 16),
-          Text(
-            'Welcome, ${user?.displayName ?? 'User'}!', // Changed text
-            style: TextStyles.adminDashboardCardTitle,
-          ),
+          Text('Welcome, $username!',
+              style: TextStyles.adminDashboardCardTitle),
           const SizedBox(height: 8),
           Text(
             'Glad to have you back.',
@@ -48,22 +47,21 @@ Widget _buildWelcomeSection(User? user) {
               color: ColorsManager.lightYellow,
             ),
           ),
-          if (user?.email != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Logged in as: ${user!.email}', // 👈 Still useful
-              style: GoogleFonts.nunitoSans(
-                fontSize: 14,
-                color: ColorsManager.darkBlue,
-              ),
+          const SizedBox(height: 8),
+          Text(
+            'Logged in as: $email',
+            style: GoogleFonts.nunitoSans(
+              fontSize: 14,
+              color: ColorsManager.darkBlue,
             ),
-          ],
+          ),
         ],
       ),
     ),
   );
 }
 
+/// ----- HOME SCREEN ----------------------------------------------------------
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -75,8 +73,21 @@ class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
   final database = FirebaseDatabase(
-      databaseURL:
-          "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/");
+    databaseURL:
+        "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  );
+
+  /// Refresh button logic
+  void _refreshHomeData() async {
+    setState(() {}); // rebuilds StreamBuilders
+    if (deviceDataRef != null) {
+      final latest = await deviceDataRef!.get();
+      debugPrint('Manual refresh of Realtime DB: ${latest.value}');
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Data refreshed')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,411 +110,257 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.refresh, color: ColorsManager.darkBlue),
+            tooltip: 'Refresh',
+            onPressed: _refreshHomeData,
+          ),
         ],
       ),
       body: OfflineBuilder(
-        connectivityBuilder: (BuildContext context,
-            ConnectivityResult connectivity, Widget child) {
+        connectivityBuilder: (context, connectivity, child) {
           final bool connected = connectivity != ConnectivityResult.none;
           return connected ? child : const BuildNoInternet();
         },
+        // ────────── MAIN CONTENT ──────────
         child: Padding(
           padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeSection(user),
-              SizedBox(height: 20.h),
-              Expanded(
-                child: StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user?.uid)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                            color: ColorsManager.mainBlue),
-                      );
-                    }
+          child: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(user?.uid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: Text("Error: ${snapshot.error}"));
+              }
 
-                    if (snapshot.hasError) {
-                      return Center(child: Text("Error: ${snapshot.error}"));
-                    }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator(color: ColorsManager.mainBlue),
+                );
+              }
 
-                    final userData =
-                        snapshot.data?.data() as Map<String, dynamic>?;
-                    debugPrint(
-                        "Firestore snapshot data: $userData"); // <-- Add this
-                    final device = userData?['device'];
-                    debugPrint("Device info from Firestore: $device");
+              final userData =
+                  snapshot.data?.data() as Map<String, dynamic>?;
+              if (userData == null) {
+                return const SizedBox.shrink();
+              }
 
-                    if (device == null) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.devices,
-                                size: 80, color: ColorsManager.darkBlue),
-                            SizedBox(height: 20.h),
-                            Text("No device connected",
-                                style: GoogleFonts.nunitoSans(
-                                    fontSize: 18.sp,
-                                    color: ColorsManager.darkBlue)),
-                            SizedBox(height: 10.h),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    ColorsManager.gray,
-                                    ColorsManager.mainBlue,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: ElevatedButton.icon(
-                                icon: const Icon(Icons.add,
-                                    color: ColorsManager.darkBlue),
-                                label: const Text(
-                                  "Add Device",
-                                  style: TextStyle(
-                                    color: ColorsManager.darkBlue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AddDeviceScreen(),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14, horizontal: 24),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
+              final username = userData['username'] ?? 'User';
+              final email = user?.email ?? '';
+              final device = userData['device'];
 
-                    final deviceId = device['deviceId'];
-                    final deviceName = device['deviceName'];
-                    debugPrint("Device ID: $deviceName");
-                    // Realtime Database reference
-                    deviceDataRef ??= FirebaseDatabase.instance
-                        .ref("devices/$deviceName/readings/latest");
-                    deviceDataRef!.onValue.listen((event) {
-                      debugPrint(
-                          "Realtime DB raw snapshot: ${event.snapshot.value}");
-                      if (event.snapshot.value == null) {
-                        debugPrint(
-                            "No data found at path: devices/$deviceName/readings/latest");
-                      } else if (event.snapshot.value is Map) {
-                        debugPrint(
-                            "Realtime DB keys: ${(event.snapshot.value as Map).keys.toList()}");
-                      }
-                    });
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          // ---- Device Info Card ----
-                          Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            elevation: 4,
-                            clipBehavior: Clip.antiAlias,
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(24.w),
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    ColorsManager.lightYellow,
-                                    ColorsManager.grayYellow,
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(deviceName,
-                                      style: TextStyle(
-                                          color: ColorsManager.darkBlue,
-                                          fontFamily: 'Georgia',
-                                          fontSize: 20.sp,
-                                          fontWeight: FontWeight.bold)),
-                                  SizedBox(height: 8.h),
-                                  Text("ID: $deviceId",
-                                      style: GoogleFonts.nunitoSans(
-                                          fontSize: 14.sp,
-                                          color: ColorsManager.gray)),
-                                  SizedBox(height: 14.h),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.circle,
-                                          color: Colors.green, size: 16),
-                                      SizedBox(width: 8.w),
-                                      const Text("Connected",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green)),
-                                    ],
-                                  ),
-                                  SizedBox(height: 20.h),
-                                  ElevatedButton.icon(
-                                    icon: const Icon(Icons.power_settings_new,
-                                        color: ColorsManager.darkBlue),
-                                    label: Text(
-                                      "Disconnect / Remove",
-                                      style: GoogleFonts.nunitoSans(
-                                        textStyle: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: ColorsManager.darkBlue),
-                                      ),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            ColorsManager.zhYellow),
-                                    onPressed: () async {
-                                      final uid = user!.uid;
-                                      await FirebaseFirestore.instance
-                                          .collection('devices')
-                                          .doc(deviceId)
-                                          .delete();
-                                      await FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(uid)
-                                          .update(
-                                              {'device': FieldValue.delete()});
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // ---- Realtime Database Sensor Data Card ----
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 4,
-                            clipBehavior: Clip.antiAlias,
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(24.w),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [ColorsManager.gray93Color, ColorsManager.brightYellow], // gradient colors
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(10), // same as Card radius
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.w),
-                                child: StreamBuilder<DatabaseEvent>(
-                                  stream: deviceDataRef!.onValue,
-                                  builder: (context, dbSnapshot) {
-                                    if (dbSnapshot.connectionState == ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(color: ColorsManager.mainBlue),
-                                      );
-                                    }
-
-                                    final value = dbSnapshot.data?.snapshot.value;
-                                    final sensorData = <String, dynamic>{};
-                                    if (value is Map<dynamic, dynamic>) {
-                                      value.forEach((key, val) {
-                                        sensorData[key.toString()] = val;
-                                      });
-                                    }
-
-                                    final co2 = sensorData['co2'] ?? 0;
-                                    final temperature = sensorData['temperature'] ?? 0.0;
-                                    final humidity = sensorData['humidity'] ?? 0.0;
-                                    final dust = sensorData['dust'] ?? 0.0;
-                                    final airQuality = sensorData['airQuality'] ?? 'Unknown';
-                                    final timestamp = sensorData['timestamp'] ?? '';
-
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Sensor Readings",
-                                          style: TextStyle(
-                                            fontFamily: 'Georgia',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.sp,
-                                            color: ColorsManager.darkBlue, // white for contrast
-                                          ),
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        Text("CO2: $co2 ppm", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Temperature: $temperature °C", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Humidity: $humidity %", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Dust: $dust mg/m³", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        Text("Air Quality: $airQuality", style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                                        SizedBox(height: 8.h),
-                                        Text(
-                                          "Last Updated: $timestamp",
-                                          style: GoogleFonts.nunitoSans(
-                                            fontSize: 12.sp,
-                                            color: ColorsManager.greyGreen,
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildWelcomeSection(username: username, email: email),
+                  SizedBox(height: 20.h),
+                  Expanded(child: _buildDeviceSection(device, user)),
+                ],
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Future<void> _reconnectAndShowWifiDialog(
-      String deviceId, String deviceName) async {
-    try {
-      // Scan to find the BLE device first
-      await fbp.FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
-
-      fbp.ScanResult? scanResult;
-      final results = await fbp.FlutterBluePlus.scanResults.first;
-      for (var r in results) {
-        if (r.device.id.id == deviceId) {
-          scanResult = r;
-          break;
-        }
-      }
-
-      await fbp.FlutterBluePlus.stopScan();
-
-      if (scanResult == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Device not found during reconnect.')),
-        );
-        return;
-      }
-
-      connectedDevice = scanResult.device;
-      await connectedDevice!.connect(autoConnect: false);
-      final services = await connectedDevice!.discoverServices();
-
-      final targetService = services.firstWhere(
-          (s) =>
-              s.uuid.toString().toLowerCase() ==
-              "6e400001-b5a3-f393-e0a9-e50e24dcca9e",
-          orElse: () => throw Exception('Service not found'));
-
-      final targetChar = targetService.characteristics.firstWhere(
-          (c) =>
-              c.uuid.toString().toLowerCase() ==
-              "6e400002-b5a3-f393-e0a9-e50e24dcca9e",
-          orElse: () => throw Exception('Characteristic not found'));
-
-      // Show WiFi dialog
-      await _showWifiDialog(targetChar, deviceName);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to reconnect: $e')),
+  /// ----- DEVICE + REALTIME DATA SECTION ------------------------------------
+  Widget _buildDeviceSection(dynamic device, User? user) {
+    if (device == null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.devices,
+                size: 80, color: ColorsManager.darkBlue),
+            SizedBox(height: 20.h),
+            Text("No device connected",
+                style: GoogleFonts.nunitoSans(
+                    fontSize: 18.sp, color: ColorsManager.darkBlue)),
+            SizedBox(height: 10.h),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add, color: ColorsManager.darkBlue),
+              label: const Text(
+                "Add Device",
+                style: TextStyle(
+                  color: ColorsManager.darkBlue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AddDeviceScreen()),
+                );
+              },
+            )
+          ],
+        ),
       );
     }
+
+    final deviceId = device['deviceId'];
+    final deviceName = device['deviceName'];
+
+    deviceDataRef ??=
+        FirebaseDatabase.instance.ref("devices/$deviceName/readings/latest");
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _deviceInfoCard(deviceName, deviceId, user),
+          SizedBox(height: 16.h),
+          _sensorDataCard(),
+        ],
+      ),
+    );
   }
 
-  Future<void> _showWifiDialog(
-      fbp.BluetoothCharacteristic targetChar, String deviceName) async {
-    final ssidController = TextEditingController();
-    final passwordController = TextEditingController();
-
-    await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Reconnect WiFi - $deviceName'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+  Widget _deviceInfoCard(String name, String id, User? user) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 4,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(24.w),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [ColorsManager.lightYellow, ColorsManager.grayYellow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
           children: [
-            TextField(
-              controller: ssidController,
-              decoration: const InputDecoration(labelText: 'SSID'),
+            Text(name,
+                style: TextStyle(
+                    color: ColorsManager.darkBlue,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold)),
+            SizedBox(height: 8.h),
+            Text("ID: $id",
+                style: GoogleFonts.nunitoSans(
+                    fontSize: 14.sp, color: ColorsManager.gray)),
+            SizedBox(height: 14.h),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.circle, color: Colors.green, size: 16),
+                SizedBox(width: 8),
+                Text("Connected",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.green)),
+              ],
             ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            SizedBox(height: 20.h),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.power_settings_new,
+                  color: ColorsManager.darkBlue),
+              label: Text(
+                "Disconnect / Remove",
+                style: GoogleFonts.nunitoSans(
+                  textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: ColorsManager.darkBlue),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsManager.zhYellow),
+              onPressed: () async {
+                if (user == null) return;
+                await FirebaseFirestore.instance
+                    .collection('devices')
+                    .doc(id)
+                    .delete();
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .update({'device': FieldValue.delete()});
+              },
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      ),
+    );
+  }
+
+  Widget _sensorDataCard() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 4,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(24.w),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [ColorsManager.gray93Color, ColorsManager.brightYellow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final ssid = ssidController.text.trim();
-              final password = passwordController.text.trim();
-              if (ssid.isEmpty || password.isEmpty) return;
-
-              final creds = "$ssid|$password";
-              await targetChar.write(creds.codeUnits, withoutResponse: false);
-              Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content:
-                      Text('WiFi credentials sent! Waiting for response...'),
-                ),
+        ),
+        child: StreamBuilder<DatabaseEvent>(
+          stream: deviceDataRef!.onValue,
+          builder: (context, dbSnapshot) {
+            if (dbSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                    color: ColorsManager.mainBlue),
               );
+            }
 
-              await targetChar.setNotifyValue(true);
-              targetChar.lastValueStream.listen((value) {
-                final response = String.fromCharCodes(value);
-                debugPrint("ESP32 replied: $response");
+            final value = dbSnapshot.data?.snapshot.value;
+            final sensorData = <String, dynamic>{};
+            if (value is Map<dynamic, dynamic>) {
+              value.forEach((k, v) => sensorData[k.toString()] = v);
+            }
 
-                if (response == "OK") {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('WiFi connected successfully!')),
-                  );
-                } else if (response == "FAIL") {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('WiFi connection failed! Please retry.')),
-                  );
-                }
-              });
-            },
-            child: const Text('Connect'),
-          ),
-        ],
+            final co2 = sensorData['co2'] ?? 0;
+            final temperature = sensorData['temperature'] ?? 0.0;
+            final humidity = sensorData['humidity'] ?? 0.0;
+            final dust = sensorData['dust'] ?? 0.0;
+            final airQuality = sensorData['airQuality'] ?? 'Unknown';
+            final timestamp = sensorData['timestamp'] ?? '';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Sensor Readings",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp,
+                      color: ColorsManager.darkBlue,
+                    )),
+                SizedBox(height: 8.h),
+                Text("CO2: $co2 ppm",
+                    style: GoogleFonts.nunitoSans(
+                        color: ColorsManager.mainBlue)),
+                Text("Temperature: $temperature °C",
+                    style: GoogleFonts.nunitoSans(
+                        color: ColorsManager.mainBlue)),
+                Text("Humidity: $humidity %",
+                    style: GoogleFonts.nunitoSans(
+                        color: ColorsManager.mainBlue)),
+                Text("Dust: $dust mg/m³",
+                    style: GoogleFonts.nunitoSans(
+                        color: ColorsManager.mainBlue)),
+                Text("Air Quality: $airQuality",
+                    style: GoogleFonts.nunitoSans(
+                        color: ColorsManager.mainBlue)),
+                SizedBox(height: 8.h),
+                Text("Last Updated: $timestamp",
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 12.sp,
+                      color: ColorsManager.greyGreen,
+                    )),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

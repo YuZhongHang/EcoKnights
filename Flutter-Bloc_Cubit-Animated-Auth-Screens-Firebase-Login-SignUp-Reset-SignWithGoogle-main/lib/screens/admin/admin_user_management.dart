@@ -1,16 +1,12 @@
-import 'package:auth_bloc/theming/colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
-import 'package:flutter/foundation.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-
-
-
 
 class AdminUserManagement extends StatefulWidget {
   const AdminUserManagement({super.key});
@@ -25,7 +21,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   String _searchQuery = '';
   UserRole? _filterRole;
   bool? _filterActiveStatus;
-  bool _isLoading = false;
+  bool _isLoading = false; // Global loading for Save/Delete
 
   @override
   void initState() {
@@ -40,7 +36,6 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     super.dispose();
   }
 
-  // Enhanced debug function with better formatting
   Future<void> debugUserRole() async {
     final user = FirebaseAuth.instance.currentUser;
     debugPrint('=== DEBUG USER ROLE (AdminUserManagement) ===');
@@ -48,16 +43,10 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     if (user != null) {
       debugPrint('Current user UID: ${user.uid}');
       debugPrint('Current user email: ${user.email}');
-
       try {
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-
+        final userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
-          debugPrint('Document exists: ${userDoc.data()}');
-
           final userModel = UserModel.fromFirestore(userDoc);
           debugPrint('User role: ${userModel.role}');
           debugPrint('Role name: ${userModel.role.name}');
@@ -65,14 +54,13 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
           debugPrint('Is active: ${userModel.isActive}');
           debugPrint('Username: ${userModel.username}');
         } else {
-          debugPrint('ERROR: User document does not exist in Firestore!');
-          debugPrint('Expected document path: users/${user.uid}');
+          debugPrint('User document does not exist for uid ${user.uid}');
         }
       } catch (e) {
-        debugPrint('ERROR loading user document: $e');
+        debugPrint('Error loading user doc: $e');
       }
     } else {
-      debugPrint('ERROR: No authenticated user found!');
+      debugPrint('No authenticated user found!');
     }
     debugPrint('=== END DEBUG ===');
   }
@@ -83,29 +71,20 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     });
   }
 
-  // Enhanced search and filter functionality
   List<UserModel> _filterUsers(List<UserModel> users) {
     return users.where((user) {
-      // Search filter
       final matchesSearch = _searchQuery.isEmpty ||
           user.username.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           user.email.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (user.phoneNumber
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ??
-              false);
+          (user.phoneNumber?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
 
-      // Role filter
       final matchesRole = _filterRole == null || user.role == _filterRole;
-
-      // Active status filter
-      final matchesActiveStatus =
-          _filterActiveStatus == null || user.isActive == _filterActiveStatus;
-
-      return matchesSearch && matchesRole && matchesActiveStatus;
+      final matchesActive = _filterActiveStatus == null || user.isActive == _filterActiveStatus;
+      return matchesSearch && matchesRole && matchesActive;
     }).toList();
   }
 
+  // ======== EDIT DIALOG ========
   void _showEditDialog(UserModel user) {
     final formKey = GlobalKey<FormState>();
     final usernameController = TextEditingController(text: user.username);
@@ -116,7 +95,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
+        builder: (context, setDialogOnly) => AlertDialog(
           title: Text("Edit User: ${user.email}"),
           content: Form(
             key: formKey,
@@ -130,13 +109,9 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       labelText: "Username",
                       border: OutlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Username is required';
-                      }
-                      if (value.trim().length < 3) {
-                        return 'Username must be at least 3 characters';
-                      }
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Username is required';
+                      if (v.trim().length < 3) return 'At least 3 characters';
                       return null;
                     },
                   ),
@@ -148,10 +123,8 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value != null &&
-                          value.isNotEmpty &&
-                          value.length < 8) {
+                    validator: (v) {
+                      if (v != null && v.isNotEmpty && v.length < 8) {
                         return 'Invalid phone number';
                       }
                       return null;
@@ -166,30 +139,20 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                     ),
                     onChanged: (role) {
                       if (role != null) {
-                        setDialogState(() {
-                          selectedRole = role;
-                        });
+                        setDialogOnly(() => selectedRole = role);
                       }
                     },
-                    items: UserRole.values.map((role) {
-                      return DropdownMenuItem(
-                        value: role,
-                        child: Text(role.name),
-                      );
-                    }).toList(),
+                    items: UserRole.values
+                        .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))
+                        .toList(),
                   ),
                   const SizedBox(height: 16),
                   Card(
                     child: SwitchListTile(
                       title: const Text("Active Status"),
-                      subtitle: Text(
-                          isActive ? "User is active" : "User is inactive"),
+                      subtitle: Text(isActive ? "User is active" : "User is inactive"),
                       value: isActive,
-                      onChanged: (val) {
-                        setDialogState(() {
-                          isActive = val;
-                        });
-                      },
+                      onChanged: (val) => setDialogOnly(() => isActive = val),
                     ),
                   ),
                 ],
@@ -203,43 +166,41 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
             ),
             ElevatedButton(
               onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  try {
-                    setState(() => _isLoading = true);
+                if (!formKey.currentState!.validate()) return;
+                if (mounted) setState(() => _isLoading = true);
 
-                    final updatedUser = user.copyWith(
-                      username: usernameController.text.trim(),
-                      phoneNumber: phoneController.text.trim().isEmpty
-                          ? null
-                          : phoneController.text.trim(),
-                      role: selectedRole,
-                      isActive: isActive,
+                final updated = user.copyWith(
+                  username: usernameController.text.trim(),
+                  phoneNumber: phoneController.text.trim().isEmpty
+                      ? null
+                      : phoneController.text.trim(),
+                  role: selectedRole,
+                  isActive: isActive,
+                );
+
+                try {
+                  await FirestoreService.updateUser(updated);
+                  if (mounted) {
+                    Navigator.pop(context); // close dialog
+                    _refreshUsers();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('User updated successfully'),
+                        backgroundColor: Colors.green,
+                      ),
                     );
-
-                    await FirestoreService.updateUser(updatedUser);
-
-                    if (mounted) {
-                      Navigator.pop(context);
-                      _refreshUsers();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('User updated successfully'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error updating user: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  } finally {
-                    if (mounted) setState(() => _isLoading = false);
                   }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error updating user: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                } finally {
+                  if (mounted) setState(() => _isLoading = false);
                 }
               },
               child: _isLoading
@@ -256,8 +217,8 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     );
   }
 
-  void _deleteUser(UserModel user) async {
-    // Prevent deleting current user or other admins (optional safety check)
+  // ======== DELETE ========
+  Future<void> _deleteUser(UserModel user) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (user.uid == currentUser?.uid) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -273,66 +234,37 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Confirm Delete"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Are you sure you want to delete this user?"),
-            const SizedBox(height: 8),
-            Text("Username: ${user.username}",
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text("Email: ${user.email}",
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            const Text(
-              "This action cannot be undone!",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+        content: Text("Delete ${user.username}? This cannot be undone."),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Delete", style: TextStyle(color: Colors.white)),
+            child: const Text("Delete"),
           ),
         ],
       ),
     );
 
-    if (confirm == true) {
-      try {
-        setState(() => _isLoading = true);
+    if (confirm != true) return;
 
-        // 🔑 Only delete the Firestore doc
-        await FirestoreService.deleteUser(user.uid);
-
-        _refreshUsers();
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error deleting user: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
+    if (mounted) setState(() => _isLoading = true);
+    try {
+      await FirestoreService.deleteUser(user.uid);
+      _refreshUsers();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User deleted successfully'), backgroundColor: Color.fromARGB(255, 226, 225, 207)),
+        );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting user: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -341,65 +273,36 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Filter Users',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              const Text('Filter Users', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
-
-              // Role filter
-              const Text('Filter by Role:'),
               DropdownButton<UserRole?>(
                 value: _filterRole,
                 isExpanded: true,
-                onChanged: (role) {
-                  setSheetState(() => _filterRole = role);
-                },
+                hint: const Text('Filter by Role'),
+                onChanged: (role) => setSheetState(() => _filterRole = role),
                 items: [
-                  const DropdownMenuItem<UserRole?>(
-                    value: null,
-                    child: Text('All Roles'),
-                  ),
-                  ...UserRole.values.map((role) {
-                    return DropdownMenuItem<UserRole?>(
-                      value: role,
-                      child: Text(role.name),
-                    );
-                  }),
+                  const DropdownMenuItem(value: null, child: Text('All Roles')),
+                  ...UserRole.values
+                      .map((r) => DropdownMenuItem<UserRole?>(value: r, child: Text(r.name)))
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Active status filter
-              const Text('Filter by Status:'),
               DropdownButton<bool?>(
                 value: _filterActiveStatus,
                 isExpanded: true,
-                onChanged: (status) {
-                  setSheetState(() => _filterActiveStatus = status);
-                },
+                hint: const Text('Filter by Status'),
+                onChanged: (status) => setSheetState(() => _filterActiveStatus = status),
                 items: const [
-                  DropdownMenuItem<bool?>(
-                    value: null,
-                    child: Text('All Statuses'),
-                  ),
-                  DropdownMenuItem<bool?>(
-                    value: true,
-                    child: Text('Active Only'),
-                  ),
-                  DropdownMenuItem<bool?>(
-                    value: false,
-                    child: Text('Inactive Only'),
-                  ),
+                  DropdownMenuItem(value: null, child: Text('All Statuses')),
+                  DropdownMenuItem(value: true, child: Text('Active Only')),
+                  DropdownMenuItem(value: false, child: Text('Inactive Only')),
                 ],
               ),
               const SizedBox(height: 16),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -411,11 +314,11 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       });
                       Navigator.pop(context);
                     },
-                    child: const Text('Clear Filters'),
+                    child: const Text('Clear'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {}); // Refresh with new filters
+                      setState(() {}); // refresh with filters
                       Navigator.pop(context);
                     },
                     child: const Text('Apply'),
@@ -434,62 +337,25 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     return Scaffold(
       backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: Text(
-          "Manage Users",
-          style: TextStyles.adminDashboardTitle,
-        ),
+        title: Text("Manage Users", style: TextStyles.adminDashboardTitle),
         backgroundColor: ColorsManager.gray,
         foregroundColor: ColorsManager.lightYellow,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterBottomSheet,
-            tooltip: "Filter Users",
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _refreshUsers,
-            tooltip: "Refresh",
-          ),
-          if (kDebugMode) // Only show debug button in debug mode
-            IconButton(
-              icon: const Icon(Icons.bug_report),
-              onPressed: debugUserRole,
-              tooltip: "Debug User Role",
-            ),
+          IconButton(icon: const Icon(Icons.filter_list), onPressed: _showFilterBottomSheet),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _refreshUsers),
+          if (kDebugMode)
+            IconButton(icon: const Icon(Icons.bug_report), onPressed: debugUserRole),
         ],
       ),
       body: Column(
         children: [
-          // Search bar
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search users...',
-                labelStyle: const TextStyle(
-                    color: ColorsManager.lightYellow), // Label text color
-                hintText: 'Search by username, email, or phone',
-                hintStyle: const TextStyle(
-                    color: ColorsManager.greyGreen), // Hint text color
-                prefixIcon:
-                    const Icon(Icons.search, color: ColorsManager.lightYellow),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                  borderSide: const BorderSide(
-                      color: ColorsManager.gray), // Border color
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: const BorderSide(color: ColorsManager.gray),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: const BorderSide(
-                      color: ColorsManager.greyGreen,
-                      width: 2.0), // Border when focused
-                ),
+                prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -499,204 +365,61 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                         },
                       )
                     : null,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
+              onChanged: (v) => setState(() => _searchQuery = v),
             ),
           ),
-
-          // Active filters display
-          if (_filterRole != null || _filterActiveStatus != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  const Text('Filters: '),
-                  if (_filterRole != null)
-                    Chip(
-                      label: Text(_filterRole!.name),
-                      onDeleted: () => setState(() => _filterRole = null),
-                    ),
-                  if (_filterActiveStatus != null)
-                    Chip(
-                      label: Text(_filterActiveStatus! ? 'Active' : 'Inactive'),
-                      onDeleted: () =>
-                          setState(() => _filterActiveStatus = null),
-                    ),
-                ],
-              ),
-            ),
-
-          // Users list
           Expanded(
             child: FutureBuilder<List<UserModel>>(
               future: _usersFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text("Error: ${snapshot.error}"),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _refreshUsers,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.people_outline,
-                            size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text("No users found"),
-                      ],
-                    ),
-                  );
                 }
-
-                final allUsers = snapshot.data!;
-                final filteredUsers = _filterUsers(allUsers);
-
-                if (filteredUsers.isEmpty) {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text("No users match your search criteria"),
-                      ],
-                    ),
-                  );
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                final users = snapshot.data ?? [];
+                final filtered = _filterUsers(users);
+                if (filtered.isEmpty) {
+                  return const Center(child: Text('No users found'));
                 }
 
                 return ListView.builder(
-                  itemCount: filteredUsers.length,
-                  itemBuilder: (context, index) {
-                    final user = filteredUsers[index];
-                    return Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 4),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              ColorsManager.greyGreen,
-                              ColorsManager.gray
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, i) {
+                    final u = filtered[i];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: u.isAdmin
+                            ? ColorsManager.mainBlue
+                            : ColorsManager.lightYellow,
+                        child: Icon(
+                          u.isAdmin ? Icons.admin_panel_settings : Icons.person,
+                          color: Colors.white,
                         ),
-                        child: Card(
-                          color: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      ),
+                      title: Text(u.username,
+                          style: TextStyle(
+                              color: u.isActive
+                                  ? Colors.white
+                                  : ColorsManager.lightYellow)),
+                      subtitle: Text('${u.email} • ${u.phoneNumber ?? "No phone"}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: ColorsManager.lightYellow),
+                            onPressed: () => _showEditDialog(u),
                           ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: user.isAdmin
-                                  ? ColorsManager.mainBlue
-                                  : ColorsManager.lightYellow,
-                              child: Icon(
-                                user.isAdmin
-                                    ? Icons.admin_panel_settings
-                                    : Icons.person,
-                                color: user.isAdmin
-                                    ? Colors.white
-                                    : ColorsManager.darkBlue,
-                              ),
-                            ),
-                            title: Text(user.username,
-                                style: TextStyles.adminManageUser.copyWith(
-                                  color: user.isActive
-                                      ? ColorsManager.darkBlue
-                                      : ColorsManager.lightYellow,
-                                )),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    "${user.email} • ${user.phoneNumber ?? 'No phone'}",
-                                    style: TextStyle(
-                                        color: ColorsManager.mainBlue)),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: user.isAdmin
-                                            ? ColorsManager.mainBlue
-                                            : ColorsManager.lightYellow,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        user.role.name,
-                                        style: TextStyle(
-                                          color: user.isAdmin
-                                              ? Colors.white
-                                              : ColorsManager.darkBlue,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: user.isActive
-                                            ? Colors.green
-                                            : ColorsManager.lightYellow,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        user.isActive ? 'Active' : 'Inactive',
-                                        style: TextStyle(
-                                          color: user.isActive
-                                              ? Colors.white
-                                              : ColorsManager.darkBlue,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit,
-                                      color: ColorsManager.lightYellow),
-                                  onPressed: () => _showEditDialog(user),
-                                  tooltip: 'Edit User',
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: ColorsManager.zhYellow),
-                                  onPressed: () => _deleteUser(user),
-                                  tooltip: 'Delete User',
-                                ),
-                              ],
-                            ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteUser(u),
                           ),
-                        ));
+                        ],
+                      ),
+                    );
                   },
                 );
               },
@@ -708,7 +431,6 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
           ? const CircularProgressIndicator()
           : FloatingActionButton(
               onPressed: _refreshUsers,
-              tooltip: 'Refresh Users',
               child: const Icon(Icons.refresh),
             ),
     );
