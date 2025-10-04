@@ -13,7 +13,7 @@ import '../../device/add_device_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-Widget _buildWelcomeSection(User? user) {
+Widget _buildWelcomeSectionWithName(String? username, String? email) {
   return Card(
     elevation: 4,
     child: Container(
@@ -31,13 +31,13 @@ Widget _buildWelcomeSection(User? user) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Icon(
-            Icons.home, // Changed from admin icon
+            Icons.home,
             size: 48,
             color: ColorsManager.lightYellow,
           ),
           const SizedBox(height: 16),
           Text(
-            'Welcome, ${user?.displayName ?? 'User'}!', // Changed text
+            'Welcome, ${username ?? 'User'}!',
             style: TextStyles.adminDashboardCardTitle,
           ),
           const SizedBox(height: 8),
@@ -48,10 +48,10 @@ Widget _buildWelcomeSection(User? user) {
               color: ColorsManager.lightYellow,
             ),
           ),
-          if (user?.email != null) ...[
+          if (email != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Logged in as: ${user!.email}', // 👈 Still useful
+              'Logged in as: $email',
               style: GoogleFonts.nunitoSans(
                 fontSize: 14,
                 color: ColorsManager.darkBlue,
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser?.reload();
 
     return Scaffold(
       backgroundColor: ColorsManager.greyGreen,
@@ -89,6 +89,16 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: ColorsManager.greyGreen,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh,
+                color: ColorsManager.darkBlue, size: 28),
+            tooltip: 'Refresh',
+            onPressed: () async {
+              // if you want to refresh the auth user:
+              await FirebaseAuth.instance.currentUser?.reload();
+              setState(() {}); // rebuild with new data
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.account_circle,
                 color: ColorsManager.darkBlue, size: 30),
@@ -112,7 +122,20 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildWelcomeSection(user),
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user?.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return _buildWelcomeSectionWithName(null, user?.email);
+                  }
+                  final data = snapshot.data?.data() as Map<String, dynamic>?;
+                  final username = data?['username'] ?? 'User';
+                  return _buildWelcomeSectionWithName(username, user?.email);
+                },
+              ),
               SizedBox(height: 20.h),
               Expanded(
                 child: StreamBuilder<DocumentSnapshot>(
@@ -134,10 +157,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     final userData =
                         snapshot.data?.data() as Map<String, dynamic>?;
-                    debugPrint(
-                        "Firestore snapshot data: $userData"); // <-- Add this
+                    debugPrint("Firestore snapshot data: $userData");
                     final device = userData?['device'];
                     debugPrint("Device info from Firestore: $device");
+
+                    if (device != null) {
+                      final deviceId = device['deviceId'];
+                      final deviceName = device['deviceName'];
+                      debugPrint(
+                          "User device ID: $deviceId, Name: $deviceName");
+                    }
 
                     if (device == null) {
                       return Center(
@@ -299,80 +328,83 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
 
+                          SizedBox(height: 20.h),
+
                           // ---- Realtime Database Sensor Data Card ----
                           Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                                borderRadius: BorderRadius.circular(10)),
                             elevation: 4,
-                            clipBehavior: Clip.antiAlias,
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(24.w),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [ColorsManager.gray93Color, ColorsManager.brightYellow], // gradient colors
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(10), // same as Card radius
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.w),
-                                child: StreamBuilder<DatabaseEvent>(
-                                  stream: deviceDataRef!.onValue,
-                                  builder: (context, dbSnapshot) {
-                                    if (dbSnapshot.connectionState == ConnectionState.waiting) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(color: ColorsManager.mainBlue),
-                                      );
-                                    }
-
-                                    final value = dbSnapshot.data?.snapshot.value;
-                                    final sensorData = <String, dynamic>{};
-                                    if (value is Map<dynamic, dynamic>) {
-                                      value.forEach((key, val) {
-                                        sensorData[key.toString()] = val;
-                                      });
-                                    }
-
-                                    final co2 = sensorData['co2'] ?? 0;
-                                    final temperature = sensorData['temperature'] ?? 0.0;
-                                    final humidity = sensorData['humidity'] ?? 0.0;
-                                    final dust = sensorData['dust'] ?? 0.0;
-                                    final airQuality = sensorData['airQuality'] ?? 'Unknown';
-                                    final timestamp = sensorData['timestamp'] ?? '';
-
-                                    return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Sensor Readings",
-                                          style: TextStyle(
-                                            fontFamily: 'Georgia',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20.sp,
-                                            color: ColorsManager.mainBlue, // white for contrast
-                                          ),
-                                        ),
-                                        SizedBox(height: 8.h),
-                                        Text("CO2: $co2 ppm", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
-                                        Text("Temperature: $temperature °C", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
-                                        Text("Humidity: $humidity %", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
-                                        Text("Dust: $dust mg/m³", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
-                                        Text("Air Quality: $airQuality", style: GoogleFonts.nunitoSans(color: ColorsManager.gray)),
-                                        SizedBox(height: 8.h),
-                                        Text(
-                                          "Last Updated: $timestamp",
-                                          style: GoogleFonts.nunitoSans(
-                                            fontSize: 12.sp,
-                                            color: ColorsManager.greyGreen,
-                                          ),
-                                        ),
-                                      ],
+                            child: Padding(
+                              padding: EdgeInsets.all(16.w),
+                              child: StreamBuilder<DatabaseEvent>(
+                                stream: deviceDataRef!.onValue,
+                                builder: (context, dbSnapshot) {
+                                  if (dbSnapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                          color: ColorsManager.mainBlue),
                                     );
-                                  },
-                                ),
+                                  }
+
+                                  final value = dbSnapshot.data?.snapshot.value;
+                                  debugPrint(
+                                      "StreamBuilder snapshot value: $value");
+                                  if (value == null) {
+                                    debugPrint(
+                                        "Realtime DB StreamBuilder: value is null!");
+                                    return Center(
+                                      child: Text("No sensor data yet",
+                                          style: TextStyle(
+                                              color: ColorsManager.darkBlue)),
+                                    );
+                                  }
+
+                                  final sensorData = <String, dynamic>{};
+                                  if (value is Map<dynamic, dynamic>) {
+                                    value.forEach((key, val) {
+                                      sensorData[key.toString()] = val;
+                                      debugPrint(
+                                          "Sensor key: $key, value: $val"); // <-- Add this
+                                    });
+                                  }
+                                  debugPrint(
+                                      "Final sensorData map: $sensorData");
+
+                                  final co2 = sensorData['co2'] ?? 0;
+                                  final temperature =
+                                      sensorData['temperature'] ?? 0.0;
+                                  final humidity =
+                                      sensorData['humidity'] ?? 0.0;
+                                  final dust = sensorData['dust'] ?? 0.0;
+                                  final airQuality =
+                                      sensorData['airQuality'] ?? 'Unknown';
+                                  final timestamp =
+                                      sensorData['timestamp'] ?? '';
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Sensor Readings",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp)),
+                                      SizedBox(height: 8.h),
+                                      Text("CO2: $co2 ppm"),
+                                      Text("Temperature: $temperature °C"),
+                                      Text("Humidity: $humidity %"),
+                                      Text("Dust: $dust mg/m³"),
+                                      Text("Air Quality: $airQuality"),
+                                      SizedBox(height: 8.h),
+                                      Text("Last Updated: $timestamp",
+                                          style: GoogleFonts.nunitoSans(
+                                              fontSize: 12.sp,
+                                              color: ColorsManager.gray)),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ),
