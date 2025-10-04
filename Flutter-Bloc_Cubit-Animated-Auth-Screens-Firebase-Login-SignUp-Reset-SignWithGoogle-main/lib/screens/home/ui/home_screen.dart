@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser?.reload();
+    final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       backgroundColor: ColorsManager.greyGreen,
@@ -94,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: ColorsManager.darkBlue, size: 28),
             tooltip: 'Refresh',
             onPressed: () async {
-              // if you want to refresh the auth user:
               await FirebaseAuth.instance.currentUser?.reload();
               setState(() {}); // rebuild with new data
             },
