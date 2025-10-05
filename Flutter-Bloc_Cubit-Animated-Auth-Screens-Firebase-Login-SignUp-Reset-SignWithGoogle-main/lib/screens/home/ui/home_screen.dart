@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Refresh',
             onPressed: () async {
               await FirebaseAuth.instance.currentUser?.reload();
-              setState(() {}); // rebuild with new data
+              setState(() {});
             },
           ),
           IconButton(
