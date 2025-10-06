@@ -14,10 +14,7 @@ import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
 
 /// ----- WELCOME CARD ---------------------------------------------------------
-Widget _buildWelcomeSection({
-  required String username,
-  required String email,
-}) {
+Widget _buildWelcomeSectionWithName(String? username, String? email) {
   return Card(
     elevation: 4,
     child: Container(
@@ -34,11 +31,16 @@ Widget _buildWelcomeSection({
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.home,
-              size: 48, color: ColorsManager.lightYellow),
+          const Icon(
+            Icons.home,
+            size: 48,
+            color: ColorsManager.lightYellow,
+          ),
           const SizedBox(height: 16),
-          Text('Welcome, $username!',
-              style: TextStyles.adminDashboardCardTitle),
+          Text(
+            'Welcome, ${username ?? 'User'}!',
+            style: TextStyles.adminDashboardCardTitle,
+          ),
           const SizedBox(height: 8),
           Text(
             'Glad to have you back.',
@@ -47,14 +49,16 @@ Widget _buildWelcomeSection({
               color: ColorsManager.lightYellow,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Logged in as: $email',
-            style: GoogleFonts.nunitoSans(
-              fontSize: 14,
-              color: ColorsManager.darkBlue,
+          if (email != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Logged in as: $email',
+              style: GoogleFonts.nunitoSans(
+                fontSize: 14,
+                color: ColorsManager.darkBlue,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     ),
@@ -101,6 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh,
+                color: ColorsManager.darkBlue, size: 28),
+            tooltip: 'Refresh',
+            onPressed: () async {
+              await FirebaseAuth.instance.currentUser?.reload();
+              setState(() {});
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.account_circle,
                 color: ColorsManager.darkBlue, size: 30),
             onPressed: () {
@@ -136,24 +149,21 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator(color: ColorsManager.mainBlue),
-                );
+                return const Center(
+                    child: CircularProgressIndicator(
+                        color: ColorsManager.mainBlue));
               }
 
               final userData =
                   snapshot.data?.data() as Map<String, dynamic>?;
-              if (userData == null) {
-                return const SizedBox.shrink();
-              }
-
-              final username = userData['username'] ?? 'User';
-              final email = user?.email ?? '';
-              final device = userData['device'];
+              final username = userData?['username'] ?? 'User';
+              final email = user?.email;
+              final device = userData?['device'];
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildWelcomeSection(username: username, email: email),
+                  _buildWelcomeSectionWithName(username, email),
                   SizedBox(height: 20.h),
                   Expanded(child: _buildDeviceSection(device, user)),
                 ],

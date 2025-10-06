@@ -509,4 +509,16 @@ String getAirQualityLevel(float co2_ppm) {
   else return "Very Poor";
 }
 
+String secret = "DEVICE_SHARED_SECRET";
+void sendAlert(float co2) {
+  HTTPClient http;
+  String url = "?";
+  http.begin(url);
+  http.addHeader("Content-Type","application/json");
+  http.addHeader("x-device-secret", secret); // simple auth
+  String body = "{\"deviceId\":\"" + deviceId + "\",\"co2\":" + String(co2) + "}";
+  int code = http.POST(body);
+  Serial.printf("alert post code: %d\n", code);
+  http.end();
+}
 

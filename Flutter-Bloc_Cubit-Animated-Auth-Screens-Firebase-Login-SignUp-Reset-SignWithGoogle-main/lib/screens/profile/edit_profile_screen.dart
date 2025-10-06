@@ -103,9 +103,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(
-      text: FirebaseAuth.instance.currentUser?.displayName ?? '',
-    );
+    _nameController = TextEditingController();
     _phoneController = TextEditingController();
     _loadLatestFromFirestore();
   }
@@ -131,20 +129,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final data = snap.data();
       if (data == null) return;
 
-      final stored = (data['phoneNumber'] as String?)?.trim() ?? '';
-      if (stored.isEmpty) return;
-
-      final cleaned = _cleanPlusDigits(stored);
-      final split = _splitByKnownCountryCode(cleaned);
-
       setState(() {
-        if (split != null) {
-          _selectedCountryCode = split.$1;
-          _phoneController.text = split.$2;
-        } else {
-          _phoneController.text = cleaned.replaceAll('+', '');
-        }
+        _nameController.text = (data['username'] as String?) ?? '';
       });
+
+      final storedPhone = (data['phoneNumber'] as String?)?.trim() ?? '';
+      if (storedPhone.isNotEmpty) {
+        final cleaned = _cleanPlusDigits(storedPhone);
+        final split = _splitByKnownCountryCode(cleaned);
+        if (split != null) {
+          setState(() {
+            _selectedCountryCode = split.$1;
+            _phoneController.text = split.$2;
+          });
+        } else {
+          setState(() => _phoneController.text = cleaned.replaceAll('+', ''));
+        }
+      }
     } catch (_) {
       // ignore errors silently
     }
@@ -345,10 +346,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: ColorsManager.lightYellow,
-      appBar: AppBar(title: Text('Edit Profile', style: TextStyles.profileScreenTitle,),
+      appBar: AppBar(
+        title: Text(
+          'Edit Profile',
+          style: TextStyles.profileScreenTitle,
+        ),
         backgroundColor: ColorsManager.greyGreen,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue), 
+          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -368,8 +373,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 'Tap to change profile picture',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.nunitoSans(
-                fontSize: 16,
-                color: ColorsManager.gray,
+                  fontSize: 16,
+                  color: ColorsManager.gray,
                 ),
               ),
               const SizedBox(height: 20),
@@ -395,11 +400,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
                 style: GoogleFonts.nunitoSans(
-                color: ColorsManager.mainBlue, 
+                  color: ColorsManager.mainBlue,
                 ),
                 decoration: const InputDecoration(
                   labelText: 'Name',
-                  labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                  labelStyle:
+                      TextStyle(color: ColorsManager.gray), // Label text color
                   border: const OutlineInputBorder(
                     borderSide: BorderSide(color: ColorsManager.gray),
                   ),
@@ -407,11 +413,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderSide: const BorderSide(color: ColorsManager.gray),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                    borderSide: const BorderSide(
+                        color: ColorsManager.greyGreen, width: 2.0),
                   ),
                   prefixIcon: Icon(
                     Icons.person,
-                    color: ColorsManager.gray, 
+                    color: ColorsManager.gray,
                   ),
                   prefixIconConstraints: BoxConstraints(
                     minWidth: 72,
@@ -435,11 +442,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.done,
                 style: GoogleFonts.nunitoSans(
-                  color: ColorsManager.mainBlue, 
+                  color: ColorsManager.mainBlue,
                 ),
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
-                  labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                  labelStyle:
+                      TextStyle(color: ColorsManager.gray), // Label text color
                   border: const OutlineInputBorder(
                     borderSide: BorderSide(color: ColorsManager.gray),
                   ),
@@ -447,7 +455,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderSide: const BorderSide(color: ColorsManager.gray),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                    borderSide: const BorderSide(
+                        color: ColorsManager.greyGreen, width: 2.0),
                   ),
                   prefixIcon: InkWell(
                     onTap: _openCountryPicker,
@@ -479,22 +488,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 },
               ),
               const SizedBox(height: 30),
-              
               Container(
                 width: double.infinity,
                 height: 50,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent, // Make button background transparent
+                    backgroundColor: Colors
+                        .transparent, // Make button background transparent
                     shadowColor: Colors.transparent,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
@@ -502,25 +511,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   child: _isLoading
-                  ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: ColorsManager.mainBlue, strokeWidth: 2
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Text('Saving...', style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue, fontSize: 18)
-                      ),
-                    ],
-                  )
-                  : Text(
-                    'Save Profile',
-                    style: GoogleFonts.nunitoSans(color: ColorsManager.lightYellow, fontSize: 18)
-                  ),
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  color: ColorsManager.mainBlue,
+                                  strokeWidth: 2),
+                            ),
+                            SizedBox(width: 12),
+                            Text('Saving...',
+                                style: GoogleFonts.nunitoSans(
+                                    color: ColorsManager.mainBlue,
+                                    fontSize: 18)),
+                          ],
+                        )
+                      : Text('Save Profile',
+                          style: GoogleFonts.nunitoSans(
+                              color: ColorsManager.lightYellow, fontSize: 18)),
                 ),
               )
             ],

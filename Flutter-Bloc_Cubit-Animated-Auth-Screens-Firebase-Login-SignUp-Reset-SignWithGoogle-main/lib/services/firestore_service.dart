@@ -96,7 +96,6 @@ class FirestoreService {
     return user?.isAdmin ?? false;
   }
 
-
   // ADMIN FUNCTIONS
 
   // Get all users with pagination and filtering
@@ -718,8 +717,6 @@ class FirestoreService {
       throw Exception('Failed to get admin logs: $e');
     }
   }
-
-
 
   // Health check - verify service is working
   static Future<bool> healthCheck() async {
