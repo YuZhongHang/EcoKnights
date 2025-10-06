@@ -650,7 +650,6 @@ class FirestoreService {
   ) async {
     try {
       String? adminId = _auth.currentUser?.uid;
-      if (adminId == null) return;
 
       // Get admin user info for better logging
       UserModel? adminUser = await getCurrentUserProfile();

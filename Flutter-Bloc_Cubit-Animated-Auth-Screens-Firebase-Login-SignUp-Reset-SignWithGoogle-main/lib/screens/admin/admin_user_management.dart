@@ -76,7 +76,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       final matchesSearch = _searchQuery.isEmpty ||
           user.username.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           user.email.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (user.phoneNumber?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+          (user.phoneNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
 
       final matchesRole = _filterRole == null || user.role == _filterRole;
       final matchesActive = _filterActiveStatus == null || user.isActive == _filterActiveStatus;
