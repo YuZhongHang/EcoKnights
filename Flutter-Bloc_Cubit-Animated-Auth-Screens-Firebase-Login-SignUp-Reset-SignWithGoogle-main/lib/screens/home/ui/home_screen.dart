@@ -7,11 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:async';
 
 import '../../../core/widgets/no_internet.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
+import '../../history/history_screen.dart';
 
 /// ----- WELCOME CARD ---------------------------------------------------------
 Widget _buildWelcomeSectionWithName(String? username, String? email) {
@@ -31,16 +33,10 @@ Widget _buildWelcomeSectionWithName(String? username, String? email) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.home,
-            size: 48,
-            color: ColorsManager.lightYellow,
-          ),
+          const Icon(Icons.home, size: 48, color: ColorsManager.lightYellow),
           const SizedBox(height: 16),
-          Text(
-            'Welcome, ${username ?? 'User'}!',
-            style: TextStyles.adminDashboardCardTitle,
-          ),
+          Text('Welcome, ${username ?? 'User'}!',
+              style: TextStyles.adminDashboardCardTitle),
           const SizedBox(height: 8),
           Text(
             'Glad to have you back.',
@@ -76,14 +72,79 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
+  Timer? _historyTimer;
+
   final database = FirebaseDatabase(
     databaseURL:
         "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/",
   );
 
-  /// Refresh button logic
+  @override
+  void initState() {
+    super.initState();
+
+    // Wait for build complete to start recording safely
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initAutoRecording());
+  }
+
+  /// Initializes auto-recording after verifying device
+  Future<void> _initAutoRecording() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final device = userDoc.data()?['device'];
+
+    if (device == null) return;
+
+    final deviceName = device['deviceName'];
+    _startAutoRecording(deviceName);
+  }
+
+  /// Auto record readings to history (every 1 minute)
+  void _startAutoRecording(String deviceName) {
+    // Cancel any existing timer before starting a new one
+    _historyTimer?.cancel();
+
+    final deviceDataRef =
+        FirebaseDatabase.instance.ref("devices/$deviceName/readings/latest");
+    final historyRef =
+        FirebaseDatabase.instance.ref("devices/$deviceName/readings/history");
+
+    _historyTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+      final latestSnapshot = await deviceDataRef.get();
+      final value = latestSnapshot.value;
+
+      if (value is Map) {
+        final now = DateTime.now();
+        final date =
+            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+        final time =
+            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+        await historyRef.push().set({
+          ...value,
+          'date': date,
+          'time': time,
+        });
+
+        debugPrint("✅ Recorded reading for $deviceName at $date $time");
+      }
+    });
+
+    debugPrint("⏱️ Started auto recording for $deviceName (every 1 min)");
+  }
+
+  @override
+  void dispose() {
+    _historyTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Manual refresh
   void _refreshHomeData() async {
-    setState(() {}); // rebuilds StreamBuilders
+    setState(() {});
     if (deviceDataRef != null) {
       final latest = await deviceDataRef!.get();
       debugPrint('Manual refresh of Realtime DB: ${latest.value}');
@@ -108,25 +169,15 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.refresh,
                 color: ColorsManager.darkBlue, size: 28),
             tooltip: 'Refresh',
-            onPressed: () async {
-              await FirebaseAuth.instance.currentUser?.reload();
-              setState(() {});
-            },
+            onPressed: _refreshHomeData,
           ),
           IconButton(
             icon: const Icon(Icons.account_circle,
                 color: ColorsManager.darkBlue, size: 30),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()));
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: ColorsManager.darkBlue),
-            tooltip: 'Refresh',
-            onPressed: _refreshHomeData,
           ),
         ],
       ),
@@ -135,7 +186,6 @@ class _HomeScreenState extends State<HomeScreen> {
           final bool connected = connectivity != ConnectivityResult.none;
           return connected ? child : const BuildNoInternet();
         },
-        // ────────── MAIN CONTENT ──────────
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: StreamBuilder<DocumentSnapshot>(
@@ -154,8 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: ColorsManager.mainBlue));
               }
 
-              final userData =
-                  snapshot.data?.data() as Map<String, dynamic>?;
+              final userData = snapshot.data?.data() as Map<String, dynamic>?;
               final username = userData?['username'] ?? 'User';
               final email = user?.email;
               final device = userData?['device'];
@@ -175,15 +224,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// ----- DEVICE + REALTIME DATA SECTION ------------------------------------
+  /// DEVICE SECTION
   Widget _buildDeviceSection(dynamic device, User? user) {
     if (device == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.devices,
-                size: 80, color: ColorsManager.darkBlue),
+            const Icon(Icons.devices, size: 80, color: ColorsManager.darkBlue),
             SizedBox(height: 20.h),
             Text("No device connected",
                 style: GoogleFonts.nunitoSans(
@@ -199,10 +247,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AddDeviceScreen()),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const AddDeviceScreen()));
               },
             )
           ],
@@ -213,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final deviceId = device['deviceId'];
     final deviceName = device['deviceName'];
 
-    deviceDataRef ??=
+    deviceDataRef =
         FirebaseDatabase.instance.ref("devices/$deviceName/readings/latest");
 
     return SingleChildScrollView(
@@ -222,6 +268,23 @@ class _HomeScreenState extends State<HomeScreen> {
           _deviceInfoCard(deviceName, deviceId, user),
           SizedBox(height: 16.h),
           _sensorDataCard(),
+          SizedBox(height: 16.h),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.history, color: ColorsManager.darkBlue),
+            label: const Text("View History",
+                style: TextStyle(
+                    color: ColorsManager.darkBlue,
+                    fontWeight: FontWeight.bold)),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: ColorsManager.zhYellow),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => HistoryScreen(deviceName: deviceName)),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -276,8 +339,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: ColorsManager.darkBlue),
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsManager.zhYellow),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: ColorsManager.zhYellow),
               onPressed: () async {
                 if (user == null) return;
                 await FirebaseFirestore.instance
@@ -298,9 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _sensorDataCard() {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 4,
       clipBehavior: Clip.antiAlias,
       child: Container(
@@ -318,9 +379,8 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, dbSnapshot) {
             if (dbSnapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                    color: ColorsManager.mainBlue),
-              );
+                  child: CircularProgressIndicator(
+                      color: ColorsManager.mainBlue));
             }
 
             final value = dbSnapshot.data?.snapshot.value;
@@ -341,32 +401,29 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text("Sensor Readings",
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.sp,
-                      color: ColorsManager.darkBlue,
-                    )),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.sp,
+                        color: ColorsManager.darkBlue)),
                 SizedBox(height: 8.h),
                 Text("CO2: $co2 ppm",
-                    style: GoogleFonts.nunitoSans(
-                        color: ColorsManager.mainBlue)),
+                    style:
+                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
                 Text("Temperature: $temperature °C",
-                    style: GoogleFonts.nunitoSans(
-                        color: ColorsManager.mainBlue)),
+                    style:
+                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
                 Text("Humidity: $humidity %",
-                    style: GoogleFonts.nunitoSans(
-                        color: ColorsManager.mainBlue)),
+                    style:
+                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
                 Text("Dust: $dust mg/m³",
-                    style: GoogleFonts.nunitoSans(
-                        color: ColorsManager.mainBlue)),
+                    style:
+                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
                 Text("Air Quality: $airQuality",
-                    style: GoogleFonts.nunitoSans(
-                        color: ColorsManager.mainBlue)),
+                    style:
+                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
                 SizedBox(height: 8.h),
                 Text("Last Updated: $timestamp",
                     style: GoogleFonts.nunitoSans(
-                      fontSize: 12.sp,
-                      color: ColorsManager.greyGreen,
-                    )),
+                        fontSize: 12.sp, color: ColorsManager.darkBlue)),
               ],
             );
           },
