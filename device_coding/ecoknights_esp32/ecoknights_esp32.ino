@@ -13,8 +13,6 @@
 // +->'+'Rail(Red), out->D27(Dark Cho), -->'-'Rail(Black)
 // Red->'+'Rail, Black->'-'Rail, Green->'+'Rail, Blue->'-'Rail, Yellow->D32, White->D33
 
-
-
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -26,13 +24,13 @@
 #define API_KEY "AIzaSyACHWHcfV0sQ36EzGFc88Np2JD7NT60BFU"
 #define FIREBASE_PROJECT_ID "my-iot-project-g01-43"
 String FIREBASE_DEVICE_ID = "44:1D:64:F6:19:6E";
-FirebaseData fbdo;       // Firebase object for read/write
+FirebaseData fbdo;
 FirebaseAuth auth;
-FirebaseConfig config;    // Configuration object
+FirebaseConfig config;
 
-String ID_TOKEN = "your-firebase-id-token"; // device login token
-#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/";
-#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q";
+String ID_TOKEN = "your-firebase-id-token";
+#define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
+#define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q"
 
 // ----------------- OLED Setup -----------------
 #define SCREEN_WIDTH 128
@@ -41,7 +39,7 @@ String ID_TOKEN = "your-firebase-id-token"; // device login token
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // ----------------- MQ-135 Setup ----------------
-#define MQ135_PIN 34  // Analog pin for MQ135
+#define MQ135_PIN 34
 #define RL_VALUE 10.0          
 #define RO_CLEAN_AIR_FACTOR 3.6 
 #define CALIBRATION_SAMPLE_TIMES 50
@@ -53,13 +51,13 @@ float CO2Curve[3] = {2.602, 0.053, -0.42};
 float Ro = 10.0;
 
 // ----------------- DHT22 Setup -----------------
-#define DHT_PIN 27     // DATA pin for DHT22
+#define DHT_PIN 27
 #define DHT_TYPE DHT22
 DHT dht(DHT_PIN, DHT_TYPE);
 
 // --------------- Dust Sensor Setup ---------------
-#define DUST_PIN 32   // Analog pin for GP2Y1010AU0F
-#define DUST_LED_PIN 33 // Control pin for dust sensor LED
+#define DUST_PIN 32
+#define DUST_LED_PIN 33
 
 // NTP server and timezone
 #include "time.h"
@@ -69,18 +67,12 @@ const int   daylightOffset_sec = 0;
 
 // ---------- Time variables Initialization ----------
 unsigned long lastUpdate = 0;
-const long interval = 1000; // update every 1 second
+const long interval = 1000; // update display every 1 second
 
 unsigned long lastDustRead = 0; 
 float dust_density = 0;
 unsigned long lastDHTRead = 0;
 float humidity = 0, temperature = 0;
-
-// Timing rules:
-// - Main loop refresh: every 1s
-// - Dust sensor: every 2s
-// - DHT22: every 2s
-// - MQ-135: every 1s
 
 // ----------------- Bluetooth Setup -----------------
 #include <BLEDevice.h>
@@ -110,6 +102,7 @@ void oledPrint(String msg) {
   display.println(msg);
   display.display();
 }
+
 // Callback to restart advertising after disconnect
 class MyServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer* pServer) override {
@@ -118,12 +111,13 @@ class MyServerCallbacks : public BLEServerCallbacks {
 
   void onDisconnect(BLEServer* pServer) override {
     Serial.println("BLE Client Disconnected. Restarting advertising...");
-    pServer->startAdvertising(); // restart advertising
+    pServer->startAdvertising();
   }
 };
 
 bool success = false;
 bool connected = false;
+
 // ----------------- Reading Wifi Credential From App -----------------
 class WifiCredentialsCallback: public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
@@ -132,7 +126,6 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
     if (value.length() > 0) {
       Serial.println("Received over BLE: " + value);
 
-      // Expecting format: "SSID|PASSWORD"
       int delimiter = value.indexOf('|');
       if (delimiter != -1) {
         wifiSSID = value.substring(0, delimiter);
@@ -145,7 +138,7 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
         oledPrint("Connecting WiFi...");
 
         unsigned long startAttempt = millis();
-        while (millis() - startAttempt < 15000) { // 15s timeout
+        while (millis() - startAttempt < 15000) {
           if (WiFi.status() == WL_CONNECTED) {
             success = true;
             break;
@@ -160,17 +153,12 @@ class WifiCredentialsCallback: public BLECharacteristicCallbacks {
 };
 
 String generateDeviceID() {
-  // ---- Generate Unique ID from ESP32 MAC ----
-  uint64_t chipid = ESP.getEfuseMac();  // Get unique MAC address
-  char uniqueID[13];                   // 12 hex chars + null terminator
+  uint64_t chipid = ESP.getEfuseMac();
+  char uniqueID[13];
   sprintf(uniqueID, "%04X%08X", (uint16_t)(chipid >> 32), (uint32_t)chipid);
-
-  // ---- Create Bluetooth name using ID ----
   String deviceID = "EcoKnights_" + String(uniqueID);
   return deviceID;
 }
-
-
 
 // ----------------- Setup -----------------
 void setup() {
@@ -181,9 +169,8 @@ void setup() {
 
   dht.begin();
 
-  // OLED init
-  delay(3000); // delay for a while let OLED power stabilize
-  Wire.begin(25, 26); // SDA, SCL
+  delay(3000);
+  Wire.begin(25, 26);
   while(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("SSD1306 allocation failed, retrying...");
     delay(500);
@@ -194,21 +181,17 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
 
   Serial.println("Ecoknight Air Quality + Dust + Temp/Humidity Monitor");
-
   Serial.println("Sensor ready!\n");
   oledPrint("Sensor ready!");
 
   btName = generateDeviceID();
 
-  // Initialize BLE device
-  BLEDevice::init(btName);   // Name of ESP32 device
+  BLEDevice::init(btName);
   pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
-  // ---------------- WiFi Service ----------------
   pService = pServer->createService(SERVICE_UUID);
 
-  // Create Characteristic (WiFi credentials channel)
   pCharacteristic = pService->createCharacteristic(
       CHARACTERISTIC_UUID,
       BLECharacteristic::PROPERTY_READ   |
@@ -216,12 +199,10 @@ void setup() {
       BLECharacteristic::PROPERTY_NOTIFY
   );
 
-  // Set callback for incoming writes (SSID|Password)
   pCharacteristic->setCallbacks(new WifiCredentialsCallback());
   pCharacteristic->setValue("Ready");
   pService->start();
 
-  // ---------------- Advertising ----------------
   pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setMinInterval(32);
@@ -229,7 +210,6 @@ void setup() {
   pAdvertising->start();
 
   obtainWifi();
-  
   delay(3000);
 }
 
@@ -247,7 +227,7 @@ bool obtainWifi() {
 bool obtainTime() {
   struct tm timeinfo;
   int retry = 0;
-  const int maxRetries = 300; // ~300s max
+  const int maxRetries = 300;
   oledPrint("Waiting for NTP time sync.");
   Serial.print("Waiting for NTP time sync");
   while (!getLocalTime(&timeinfo) && retry < maxRetries) {
@@ -263,30 +243,29 @@ bool obtainTime() {
 // ----------------- Loop -----------------
 void loop() {
   if(!connected){
-  if (success) {
-            wifiConnected = true;
-            pCharacteristic->setValue("OK");
-            pCharacteristic->notify();
-            Serial.println("WiFi connected!");
-            oledPrint("WiFi connected!");
-            connected = true;
-            config.api_key = API_KEY;
-            config.database_url = DATABASE_URL;
-            config.signer.tokens.legacy_token = DATABASE_SECRET;
-            auth.token.uid = ""; // optional if anonymous
-            Firebase.begin(&config, &auth);
-            Firebase.reconnectWiFi(true);
-          } else {
-            wifiConnected = false;
-            pCharacteristic->setValue("FAIL");
-            pCharacteristic->notify();
-            Serial.println("WiFi connect FAIL");
-            oledPrint("WiFi FAIL, retry via BLE");
-            obtainWifi();
-          }
+    if (success) {
+      wifiConnected = true;
+      pCharacteristic->setValue("OK");
+      pCharacteristic->notify();
+      Serial.println("WiFi connected!");
+      oledPrint("WiFi connected!");
+      connected = true;
+      config.api_key = API_KEY;
+      config.database_url = DATABASE_URL;
+      config.signer.tokens.legacy_token = DATABASE_SECRET;
+      auth.token.uid = "";
+      Firebase.begin(&config, &auth);
+      Firebase.reconnectWiFi(true);
+    } else {
+      wifiConnected = false;
+      pCharacteristic->setValue("FAIL");
+      pCharacteristic->notify();
+      Serial.println("WiFi connect FAIL");
+      oledPrint("WiFi FAIL, retry via BLE");
+      obtainWifi();
+    }
   } 
 
-  // Once WiFi is connected for the first time, sync NTP
   static bool ntpDone = false;
   if (!ntpDone) {
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
@@ -304,9 +283,7 @@ void loop() {
     lastUpdate = millis();
 
     struct tm timeinfo;
-    // ----- Timestamp Read -----
     if (!getLocalTime(&timeinfo)) {
-      // set default "0000-00-00 00:00:00"
       timeinfo.tm_year = 0;
       timeinfo.tm_mon  = 0;
       timeinfo.tm_mday = 0;
@@ -333,7 +310,7 @@ void loop() {
       dust_density = 0.17 * voltage * 5.0 * 1000 - 0.1 * 1000;
       if (dust_density < 0) dust_density = 0;
 
-      lastDustRead = millis();  // update timer
+      lastDustRead = millis();
     }
 
     // ----- DHT22 Read (only every 2 sec) -----
@@ -356,7 +333,6 @@ void loop() {
     Serial.print(" C | Humidity: "); Serial.print(humidity);
     Serial.print(" % | Dust: "); Serial.print(dust_density); Serial.println(" mg/m³");
 
-    // ---- Timestamp Output ----
     Serial.printf("%04d-%02d-%02d %02d:%02d:%02d\n",
                   timeinfo.tm_year + 1900,
                   timeinfo.tm_mon + 1,
@@ -369,13 +345,11 @@ void loop() {
     display.clearDisplay();
     display.setTextSize(1);
 
-    // Draw sensor boxes
-    display.drawRect(0, 0, 64, 26, SSD1306_WHITE);    // CO2
-    display.drawRect(64, 0, 64, 26, SSD1306_WHITE);   // Temp
-    display.drawRect(0, 26, 64, 26, SSD1306_WHITE);   // Humi
-    display.drawRect(64, 26, 64, 26, SSD1306_WHITE);  // Dust
+    display.drawRect(0, 0, 64, 26, SSD1306_WHITE);
+    display.drawRect(64, 0, 64, 26, SSD1306_WHITE);
+    display.drawRect(0, 26, 64, 26, SSD1306_WHITE);
+    display.drawRect(64, 26, 64, 26, SSD1306_WHITE);
 
-    // ---- CO2 ----
     display.setCursor(5, 2);
     display.print("CO2");
     char co2Str[10];
@@ -386,7 +360,6 @@ void loop() {
     display.setCursor(cx, 12);
     display.print(co2Str);
 
-    // ---- Temp ----
     display.setCursor(70, 2);
     display.print("Temp");
     char tempStr[10];
@@ -396,7 +369,6 @@ void loop() {
     display.setCursor(cx, 12);
     display.print(tempStr);
 
-    // ---- Humi ----
     display.setCursor(5, 28);
     display.print("Humi");
     char humiStr[10];
@@ -406,7 +378,6 @@ void loop() {
     display.setCursor(cx, 38);
     display.print(humiStr);
 
-    // ---- Dust ----
     display.setCursor(70, 28);
     display.print("Dust");
     char dustStr[12];
@@ -416,7 +387,6 @@ void loop() {
     display.setCursor(cx, 38);
     display.print(dustStr);
 
-    // ---- Timestamp ----
     char timeString[25];
     strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
     display.getTextBounds(timeString, 0, 0, &x1, &y1, &w, &h);
@@ -426,11 +396,10 @@ void loop() {
 
     display.display();
     
-     // --------------- Push Data To Real-Time Firebase ---------------
+    // --------------- Push Data To Real-Time Firebase ---------------
     if (Firebase.ready() && WiFi.status() == WL_CONNECTED) {
       String path = "/devices/" + btName + "/readings";
 
-      // Prepare JSON object
       FirebaseJson json;
       json.set("co2", (int)co2_ppm);
       json.set("temperature", temperature);
@@ -438,32 +407,45 @@ void loop() {
       json.set("dust", dust_density);
       json.set("airQuality", airQuality);
 
-      // Add timestamp
       char timeString[25];
       strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
       json.set("timestamp", timeString);
 
-      // Write latest
+      // ✅ Update "latest" every second
       if (Firebase.setJSON(fbdo, path + "/latest", json)) {
-        Serial.println("Latest data sent!");
+        Serial.println("Latest data updated!");
       } else {
         Serial.println("Failed to send latest:");
         Serial.println(fbdo.errorReason());
       }
 
-      // Push to history
-      if (Firebase.pushJSON(fbdo, path + "/history", json)) {
-        Serial.println("History data pushed!");
-      } else {
-        Serial.println("Failed to push history:");
-        Serial.println(fbdo.errorReason());
+      // ✅ Push to history ONLY at :00 or :30 seconds (with slot tracking)
+      int currentSecond = timeinfo.tm_sec;
+      
+      if (currentSecond == 0 || currentSecond == 30) {
+        // Create unique slot: "HHMM_SS"
+        char currentSlot[10];
+        sprintf(currentSlot, "%02d%02d_%02d", 
+                timeinfo.tm_hour, 
+                timeinfo.tm_min, 
+                currentSecond);
+        
+        static char lastSlot[10] = "XXXX_XX";
+        
+        if (strcmp(currentSlot, lastSlot) != 0) {
+          if (Firebase.pushJSON(fbdo, path + "/history", json)) {
+            Serial.printf("✅ History: %02d:%02d:%02d (Slot: %s)\n", 
+                         timeinfo.tm_hour, timeinfo.tm_min, currentSecond, currentSlot);
+            strcpy(lastSlot, currentSlot);
+          } else {
+            Serial.println("❌ History failed:");
+            Serial.println(fbdo.errorReason());
+          }
+        }
       }
-
-      Serial.println("Data sent to Firebase!");
     }
   }
 }
-
 
 // ----------------- MQ-135 Functions -----------------
 float MQCalibration(int mq_pin) {
@@ -508,17 +490,3 @@ String getAirQualityLevel(float co2_ppm) {
   else if (co2_ppm < 1500) return "Poor";
   else return "Very Poor";
 }
-
-String secret = "DEVICE_SHARED_SECRET";
-void sendAlert(float co2) {
-  HTTPClient http;
-  String url = "?";
-  http.begin(url);
-  http.addHeader("Content-Type","application/json");
-  http.addHeader("x-device-secret", secret); // simple auth
-  String body = "{\"deviceId\":\"" + deviceId + "\",\"co2\":" + String(co2) + "}";
-  int code = http.POST(body);
-  Serial.printf("alert post code: %d\n", code);
-  http.end();
-}
-

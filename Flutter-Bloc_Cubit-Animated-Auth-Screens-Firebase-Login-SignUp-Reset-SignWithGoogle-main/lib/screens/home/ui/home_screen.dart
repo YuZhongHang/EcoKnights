@@ -8,7 +8,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-
 import '../../../core/widgets/no_internet.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
@@ -72,7 +71,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
-  Timer? _historyTimer;
+  StreamSubscription? _historyMonitor;
 
   final database = FirebaseDatabase(
     databaseURL:
@@ -82,63 +81,50 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Wait for build complete to start recording safely
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initAutoRecording());
+    // No auto-recording needed - ESP32 handles it!
+    WidgetsBinding.instance.addPostFrameCallback((_) => _verifyAndMonitorDevice());
   }
 
-  /// Initializes auto-recording after verifying device
-  Future<void> _initAutoRecording() async {
+  /// ✅ Verify device exists and optionally monitor history
+  Future<void> _verifyAndMonitorDevice() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
     final device = userDoc.data()?['device'];
 
     if (device == null) return;
 
     final deviceName = device['deviceName'];
-    _startAutoRecording(deviceName);
+    
+    debugPrint("✅ Device found: $deviceName");
+    debugPrint("📊 ESP32 records history every 30 seconds automatically");
+    
+    // Optional: Monitor history to verify ESP32 is working
+    _monitorHistoryUpdates(deviceName);
   }
 
-  /// Auto record readings to history (every 1 minute)
-  void _startAutoRecording(String deviceName) {
-    // Cancel any existing timer before starting a new one
-    _historyTimer?.cancel();
-
-    final deviceDataRef =
-        FirebaseDatabase.instance.ref("devices/$deviceName/readings/latest");
-    final historyRef =
-        FirebaseDatabase.instance.ref("devices/$deviceName/readings/history");
-
-    _historyTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
-      final latestSnapshot = await deviceDataRef.get();
-      final value = latestSnapshot.value;
-
-      if (value is Map) {
-        final now = DateTime.now();
-        final date =
-            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-        final time =
-            "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
-
-        await historyRef.push().set({
-          ...value,
-          'date': date,
-          'time': time,
-        });
-
-        debugPrint("✅ Recorded reading for $deviceName at $date $time");
+  /// ✅ Optional: Monitor history entries (for debugging/verification)
+  void _monitorHistoryUpdates(String deviceName) {
+    final historyRef = FirebaseDatabase.instance
+        .ref("devices/$deviceName/readings/history")
+        .limitToLast(1);
+    
+    _historyMonitor = historyRef.onValue.listen((event) {
+      if (event.snapshot.exists) {
+        final data = event.snapshot.value as Map;
+        final latest = data.values.first as Map;
+        debugPrint("✅ History updated by ESP32: ${latest['timestamp']}");
       }
     });
-
-    debugPrint("⏱️ Started auto recording for $deviceName (every 1 min)");
   }
 
   @override
   void dispose() {
-    _historyTimer?.cancel();
+    _historyMonitor?.cancel();
     super.dispose();
   }
 
@@ -149,9 +135,11 @@ class _HomeScreenState extends State<HomeScreen> {
       final latest = await deviceDataRef!.get();
       debugPrint('Manual refresh of Realtime DB: ${latest.value}');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Data refreshed')),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Data refreshed')),
+      );
+    }
   }
 
   @override
@@ -275,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                     color: ColorsManager.darkBlue,
                     fontWeight: FontWeight.bold)),
-            style:
-                ElevatedButton.styleFrom(backgroundColor: ColorsManager.zhYellow),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsManager.zhYellow),
             onPressed: () {
               Navigator.push(
                 context,
@@ -339,18 +327,63 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: ColorsManager.darkBlue),
                 ),
               ),
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: ColorsManager.zhYellow),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsManager.zhYellow),
               onPressed: () async {
                 if (user == null) return;
-                await FirebaseFirestore.instance
-                    .collection('devices')
-                    .doc(id)
-                    .delete();
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .update({'device': FieldValue.delete()});
+                
+                // Show confirmation dialog
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Remove Device?'),
+                    content: const Text(
+                      'Are you sure you want to disconnect and remove this device?'
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Remove', 
+                          style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirmed == true) {
+                  try {
+                    await FirebaseFirestore.instance
+                        .collection('devices')
+                        .doc(id)
+                        .delete();
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .update({'device': FieldValue.delete()});
+                    
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Device removed successfully'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error removing device: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                }
               },
             ),
           ],
@@ -379,8 +412,22 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context, dbSnapshot) {
             if (dbSnapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                  child: CircularProgressIndicator(
-                      color: ColorsManager.mainBlue));
+                  child:
+                      CircularProgressIndicator(color: ColorsManager.mainBlue));
+            }
+
+            if (dbSnapshot.hasError) {
+              return Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.error_outline, 
+                      color: Colors.red, size: 48),
+                    const SizedBox(height: 8),
+                    Text('Error: ${dbSnapshot.error}',
+                      style: const TextStyle(color: Colors.red)),
+                  ],
+                ),
+              );
             }
 
             final value = dbSnapshot.data?.snapshot.value;
@@ -389,46 +436,137 @@ class _HomeScreenState extends State<HomeScreen> {
               value.forEach((k, v) => sensorData[k.toString()] = v);
             }
 
+            // Handle missing data
+            if (sensorData.isEmpty) {
+              return Center(
+                child: Column(
+                  children: [
+                    const Icon(Icons.sensors_off, 
+                      color: Colors.grey, size: 48),
+                    const SizedBox(height: 8),
+                    Text('Waiting for sensor data...',
+                      style: GoogleFonts.nunitoSans(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      )),
+                  ],
+                ),
+              );
+            }
+
             final co2 = sensorData['co2'] ?? 0;
             final temperature = sensorData['temperature'] ?? 0.0;
             final humidity = sensorData['humidity'] ?? 0.0;
             final dust = sensorData['dust'] ?? 0.0;
             final airQuality = sensorData['airQuality'] ?? 'Unknown';
-            final timestamp = sensorData['timestamp'] ?? '';
+            final timestamp = sensorData['timestamp'] ?? 'No timestamp';
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Sensor Readings",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.sp,
-                        color: ColorsManager.darkBlue)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Sensor Readings",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.sp,
+                            color: ColorsManager.darkBlue)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _getAirQualityColor(airQuality),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        airQuality,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                _buildSensorRow(Icons.cloud_outlined, "CO2", "$co2 ppm"),
                 SizedBox(height: 8.h),
-                Text("CO2: $co2 ppm",
-                    style:
-                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                Text("Temperature: $temperature °C",
-                    style:
-                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                Text("Humidity: $humidity %",
-                    style:
-                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                Text("Dust: $dust mg/m³",
-                    style:
-                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
-                Text("Air Quality: $airQuality",
-                    style:
-                        GoogleFonts.nunitoSans(color: ColorsManager.mainBlue)),
+                _buildSensorRow(Icons.thermostat_outlined, "Temperature", 
+                  "${temperature.toStringAsFixed(1)} °C"),
                 SizedBox(height: 8.h),
-                Text("Last Updated: $timestamp",
-                    style: GoogleFonts.nunitoSans(
-                        fontSize: 12.sp, color: ColorsManager.darkBlue)),
+                _buildSensorRow(Icons.water_drop_outlined, "Humidity", 
+                  "${humidity.toStringAsFixed(1)} %"),
+                SizedBox(height: 8.h),
+                _buildSensorRow(Icons.grain, "Dust", 
+                  "${dust.toStringAsFixed(2)} mg/m³"),
+                SizedBox(height: 16.h),
+                Divider(color: ColorsManager.darkBlue.withOpacity(0.3)),
+                SizedBox(height: 8.h),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time, 
+                      size: 16, color: ColorsManager.darkBlue),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text("Last Updated: $timestamp",
+                          style: GoogleFonts.nunitoSans(
+                              fontSize: 12.sp, 
+                              color: ColorsManager.darkBlue,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
               ],
             );
           },
         ),
       ),
     );
+  }
+
+  Widget _buildSensorRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: ColorsManager.mainBlue, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: GoogleFonts.nunitoSans(
+              color: ColorsManager.darkBlue,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.nunitoSans(
+            color: ColorsManager.mainBlue,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getAirQualityColor(String quality) {
+    switch (quality.toLowerCase()) {
+      case 'excellent':
+        return Colors.green;
+      case 'good':
+        return Colors.lightGreen;
+      case 'fair':
+        return Colors.orange;
+      case 'poor':
+        return Colors.deepOrange;
+      case 'very poor':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

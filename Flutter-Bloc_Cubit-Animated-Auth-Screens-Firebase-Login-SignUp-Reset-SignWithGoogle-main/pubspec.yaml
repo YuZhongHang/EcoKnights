@@ -32,7 +32,7 @@ dependencies:
   cloud_functions: ^4.3.0
   firebase_database: ^10.5.7
   intl: ^0.20.2
-  
+  collection: ^1.18.0
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^4.0.0
