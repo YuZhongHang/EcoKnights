@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:async';
 
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({Key? key}) : super(key: key);
@@ -32,25 +33,45 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       scannedDevices.clear();
     });
 
-    await fbp.FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+    StreamSubscription? scanSubscription;
+    bool deviceFound = false;
 
-    fbp.FlutterBluePlus.scanResults.listen((results) {
+    scanSubscription = fbp.FlutterBluePlus.scanResults.listen((results) {
       for (var result in results) {
         if (result.device.name.startsWith("EcoKnights_") &&
             !scannedDevices.any((d) => d.device.id == result.device.id)) {
           setState(() {
             scannedDevices.add(result);
           });
+
+          if (!deviceFound) {
+            deviceFound = true;
+            // Stop scan and cleanup
+            fbp.FlutterBluePlus.stopScan();
+            scanSubscription?.cancel();
+            setState(() {
+              scanning = false;
+            });
+          }
+          break;
         }
       }
     });
 
-    Future.delayed(const Duration(seconds: 5), () {
-      fbp.FlutterBluePlus.stopScan();
-      setState(() {
-        scanning = false;
+    await fbp.FlutterBluePlus.startScan(timeout: const Duration(seconds: 3));
+
+    // If no device found after 3 seconds, stop anyway
+    if (!deviceFound) {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (scanning) {
+          fbp.FlutterBluePlus.stopScan();
+          scanSubscription?.cancel();
+          setState(() {
+            scanning = false;
+          });
+        }
       });
-    });
+    }
   }
 
   Future<void> connectDevice(fbp.ScanResult result) async {
@@ -86,7 +107,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
       if (snapshot.exists) {
         final data = snapshot.data()!;
         if (data['ownerUid'] != user.uid) {
-          // 🚫 Device owned by someone else
+          // Device owned by someone else
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -105,7 +126,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         }
       }
 
-      // ✅ Not owned → proceed with WiFi credentials
+      // Not owned by anyone, then proceed with WiFi credentials
       await _showWifiDialog(result, targetChar);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -132,7 +153,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
               'Connect to WiFi',
               style: TextStyle(
                 fontFamily: 'Georgia',
-                color: ColorsManager.darkBlue, 
+                color: ColorsManager.darkBlue,
               ),
             ),
             content: Form(
@@ -142,20 +163,26 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                 children: [
                   TextFormField(
                     controller: ssidController,
-                    style: const TextStyle( // Text color inside the field (dunno what field)
+                    style: const TextStyle(
+                      // Text color inside the field
                       color: ColorsManager.darkBlue,
                     ),
                     decoration: InputDecoration(
                       labelText: 'SSID',
-                      labelStyle: GoogleFonts.nunitoSans ( // Label text color
+                      labelStyle: GoogleFonts.nunitoSans(
+                        // Label text color
                         color: ColorsManager.gray,
                       ),
                       border: const OutlineInputBorder(),
-                      enabledBorder: const OutlineInputBorder( // Border when not focused
-                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                      enabledBorder: const OutlineInputBorder(
+                        // Border when not focused
+                        borderSide: BorderSide(
+                            color: ColorsManager.darkBlue, width: 1.5),
                       ),
-                      focusedBorder: const OutlineInputBorder( // Border when focused
-                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                      focusedBorder: const OutlineInputBorder(
+                        // Border when focused
+                        borderSide:
+                            BorderSide(color: ColorsManager.gray, width: 2.0),
                       ),
                     ),
                     validator: (value) {
@@ -169,7 +196,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                   TextFormField(
                     controller: passwordController,
                     obscureText: _obscurePassword,
-                    style: GoogleFonts.nunitoSans (
+                    style: GoogleFonts.nunitoSans(
                       color: ColorsManager.darkBlue, // Password text color
                     ),
                     decoration: InputDecoration(
@@ -179,18 +206,19 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                       ),
                       border: const OutlineInputBorder(),
                       enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.darkBlue, width: 1.5),
+                        borderSide: BorderSide(
+                            color: ColorsManager.darkBlue, width: 1.5),
                       ),
                       focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.gray, width: 2.0),
+                        borderSide:
+                            BorderSide(color: ColorsManager.gray, width: 2.0),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                              color: ColorsManager.darkBlue
-                        ),
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: ColorsManager.darkBlue),
                         onPressed: () {
                           setState(() {
                             _obscurePassword = !_obscurePassword;
@@ -383,10 +411,11 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(10), // match card shape
+                          borderRadius:
+                              BorderRadius.circular(10), // match card shape
                         ),
                         child: Card(
-                          color: Colors.transparent, 
+                          color: Colors.transparent,
                           shadowColor: Colors.transparent,
                           elevation: 6,
                           shape: RoundedRectangleBorder(
@@ -395,7 +424,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                           child: ListTile(
                             title: Text(
                               d.device.name,
-                              style: const TextStyle (
+                              style: const TextStyle(
                                 fontFamily: 'Georgia',
                                 color: ColorsManager.darkBlue,
                                 fontSize: 18,
@@ -412,7 +441,8 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorsManager.gray,
                                 foregroundColor: ColorsManager.lightYellow,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
