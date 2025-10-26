@@ -28,7 +28,6 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String ID_TOKEN = "your-firebase-id-token";
 #define DATABASE_URL "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define DATABASE_SECRET "t8HrQIQWklk5oJePbSAnqPkYt2b6NzVgTcUaoM7Q"
 
@@ -162,7 +161,7 @@ String generateDeviceID() {
 
 // ----------------- Setup -----------------
 void setup() {
-  Serial.begin(460800);
+  Serial.begin(921600);
   pinMode(MQ135_PIN, INPUT);
   pinMode(DUST_PIN, INPUT);
   pinMode(DUST_LED_PIN, OUTPUT);
@@ -296,7 +295,7 @@ void loop() {
     int mq_raw = analogRead(MQ135_PIN);
     float mq_resistance = MQRead(MQ135_PIN);
     float co2_ppm = MQGetGasPercentage(mq_resistance / Ro, GAS_CO2);
-    String airQuality = getAirQualityLevel(co2_ppm);
+    String airQuality;
 
     // ----- Dust Sensor Read (only every 2 sec) -----
     if (millis() - lastDustRead > 2000) {
@@ -309,7 +308,7 @@ void loop() {
       float voltage = dust_raw * (3.3 / 4095.0);
       dust_density = 0.17 * voltage * 5.0 * 1000 - 0.1 * 1000;
       if (dust_density < 0) dust_density = 0;
-
+      airQuality = getAirQualityLevel(dust_density);
       lastDustRead = millis();
     }
 
@@ -331,7 +330,7 @@ void loop() {
     Serial.print(" PPM | Quality: "); Serial.print(airQuality);
     Serial.print(" | Temp: "); Serial.print(temperature); 
     Serial.print(" C | Humidity: "); Serial.print(humidity);
-    Serial.print(" % | Dust: "); Serial.print(dust_density); Serial.println(" mg/m³");
+    Serial.print(" % | Dust: "); Serial.print(dust_density); Serial.println(" µg/m³");
 
     Serial.printf("%04d-%02d-%02d %02d:%02d:%02d\n",
                   timeinfo.tm_year + 1900,
@@ -381,7 +380,7 @@ void loop() {
     display.setCursor(70, 28);
     display.print("Dust");
     char dustStr[12];
-    sprintf(dustStr, "%d mg", (int)dust_density);
+    sprintf(dustStr, "%d µg", (int)dust_density);
     display.getTextBounds(dustStr, 0, 0, &x1, &y1, &w, &h);
     cx = 64 + (64 - w) / 2;
     display.setCursor(cx, 38);
@@ -411,7 +410,7 @@ void loop() {
       strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeinfo);
       json.set("timestamp", timeString);
 
-      // ✅ Update "latest" every second
+      // Update "latest" every second
       if (Firebase.setJSON(fbdo, path + "/latest", json)) {
         Serial.println("Latest data updated!");
       } else {
@@ -419,7 +418,7 @@ void loop() {
         Serial.println(fbdo.errorReason());
       }
 
-      // ✅ Push to history ONLY at :00 or :30 seconds (with slot tracking)
+      // Push to history ONLY at :00 or :30 seconds (with slot tracking)
       int currentSecond = timeinfo.tm_sec;
       
       if (currentSecond == 0 || currentSecond == 30) {
@@ -434,7 +433,7 @@ void loop() {
         
         if (strcmp(currentSlot, lastSlot) != 0) {
           if (Firebase.pushJSON(fbdo, path + "/history", json)) {
-            Serial.printf("✅ History: %02d:%02d:%02d (Slot: %s)\n", 
+            Serial.printf("History: %02d:%02d:%02d (Slot: %s)\n", 
                          timeinfo.tm_hour, timeinfo.tm_min, currentSecond, currentSlot);
             strcpy(lastSlot, currentSlot);
           } else {
@@ -483,10 +482,9 @@ float MQGetPercentage(float rs_ro_ratio, float *curve) {
   return pow(10, (((log10(rs_ro_ratio) - curve[1]) / curve[2]) + curve[0]));
 }
 
-String getAirQualityLevel(float co2_ppm) {
-  if (co2_ppm < 400) return "Excellent";
-  else if (co2_ppm < 600) return "Good";
-  else if (co2_ppm < 1000) return "Fair";
-  else if (co2_ppm < 1500) return "Poor";
+String getAirQualityLevel(float dust_density) {
+  if (dust_density <= 100) return "Excellent";
+  else if (dust_density <= 150) return "Fair";
+  else if (dust_density <= 250) return "Poor";
   else return "Very Poor";
 }

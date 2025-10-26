@@ -499,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "${humidity.toStringAsFixed(1)} %"),
                 SizedBox(height: 8.h),
                 _buildSensorRow(
-                    Icons.grain, "Dust", "${dust.toStringAsFixed(2)} mg/m³"),
+                    Icons.grain, "Dust", "${dust.toStringAsFixed(2)} µg/m³"),
                 SizedBox(height: 16.h),
                 Divider(color: ColorsManager.darkBlue.withOpacity(0.3)),
                 SizedBox(height: 8.h),
