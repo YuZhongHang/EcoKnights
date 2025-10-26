@@ -108,7 +108,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   void _showMessage(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
-      backgroundColor: msg.contains('successfully') ? Colors.green : Colors.red,
+      backgroundColor: msg.contains('successfully') ? ColorsManager.mainBlue : ColorsManager.zhYellow
     ));
   }
 
@@ -170,6 +170,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   TextFormField(
                     controller: _oldPassController,
                     obscureText: _obscureOldPassword,
+                    style: const TextStyle(
+                      color: ColorsManager.gray, // text color for typed password
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Old Password',
                       labelStyle: TextStyle(
@@ -186,8 +189,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                            color: ColorsManager
-                                .zhYellow), // <-- your custom color
+                            color: ColorsManager.zhYellow), // <-- your custom color
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -199,7 +201,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         color: ColorsManager.gray,
                       ),
                       errorStyle: GoogleFonts.nunitoSans(
-                        color: ColorsManager.zhYellow,
+                        color: ColorsManager.greyGreen,
                         fontSize: 14, // custom font size
                       ),
                       suffixIcon: IconButton(
@@ -207,7 +209,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             _obscureOldPassword
                                 ? Icons.visibility_off
                                 : Icons.visibility,
-                            color: ColorsManager.darkBlue),
+                            color: ColorsManager.gray),
                         onPressed: () {
                           setState(() {
                             _obscureOldPassword = !_obscureOldPassword;
@@ -221,6 +223,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   TextFormField(
                     controller: _newPassController,
                     obscureText: _obscureNewPassword,
+                    style: const TextStyle(
+                      color: ColorsManager.gray, // text color for typed password
+                    ),
                     decoration: InputDecoration(
                       labelText: 'New Password',
                       labelStyle: TextStyle(
@@ -250,7 +255,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         color: ColorsManager.gray,
                       ),
                       errorStyle: GoogleFonts.nunitoSans(
-                        color: ColorsManager.zhYellow,
+                        color: ColorsManager.greyGreen,
                         fontSize: 14, // custom font size
                       ),
                       suffixIcon: IconButton(
@@ -258,7 +263,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             _obscureNewPassword
                                 ? Icons.visibility_off
                                 : Icons.visibility,
-                            color: ColorsManager.darkBlue),
+                            color: ColorsManager.gray),
                         onPressed: () {
                           setState(() {
                             _obscureNewPassword = !_obscureNewPassword;
