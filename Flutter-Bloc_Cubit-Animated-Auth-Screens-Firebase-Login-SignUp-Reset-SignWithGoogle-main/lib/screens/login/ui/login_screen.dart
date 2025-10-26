@@ -34,15 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: ColorsManager.lightYellow,
       body: OfflineBuilder(
-        connectivityBuilder:
-            (
-              BuildContext context,
-              ConnectivityResult connectivity,
-              Widget child,
-            ) {
-              final bool connected = connectivity != ConnectivityResult.none;
-              return connected ? _loginPage(context) : const BuildNoInternet();
-            },
+        connectivityBuilder: (
+          BuildContext context,
+          ConnectivityResult connectivity,
+          Widget child,
+        ) {
+          final bool connected = connectivity != ConnectivityResult.none;
+          return connected ? _loginPage(context) : const BuildNoInternet();
+        },
         child: const Center(
           child: CircularProgressIndicator(color: ColorsManager.mainBlue),
         ),
@@ -70,12 +69,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 context.pop();
                 riveHelper.addFailController();
                 AwesomeDialog(
-                  context: context,
-                  dialogType: DialogType.error,
-                  animType: AnimType.rightSlide,
-                  title: 'Error',
-                  desc: state.message,
-                ).show();
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'Error',
+                        desc: 'Please check your email and password.',
+                        autoHide: Duration(seconds: 5))
+                    .show();
               } else if (state is UserSignIn) {
                 riveHelper.addSuccessController();
                 await Future.delayed(const Duration(seconds: 2));
@@ -93,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   animType: AnimType.rightSlide,
                   title: 'Email Not Verified',
                   desc: 'Please check your email and verify your email.',
+                  autoHide: Duration(seconds: 5),
                 ).show();
               } else if (state is IsNewUser) {
                 context.pushNamedAndRemoveUntil(
