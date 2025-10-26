@@ -193,21 +193,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           icon: Icons.people,
           color: Colors.blue,
           onTap: _navigateToUserManagement,
-        ),
-        AdminActionItem(
-          title: 'Analytics',
-          subtitle: 'View app analytics and reports',
-          icon: Icons.analytics,
-          color: Colors.orange,
-          onTap: () => _showComingSoon('Analytics'),
-        ),
-        AdminActionItem(
-          title: 'Notifications',
-          subtitle: 'Send push notifications',
-          icon: Icons.notifications,
-          color: Colors.indigo,
-          onTap: () => _showComingSoon('Notifications'),
-        ),
+        )
       ];
 
   void _showComingSoon(String feature) {
