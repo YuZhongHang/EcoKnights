@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
@@ -295,17 +296,13 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     if (user == null) return;
 
     final deviceId = device.id.id;
-    debugPrint("📡 Using deviceId: $deviceId");
-    debugPrint("📡 Advertised device name: ${device.name}");
 
     final deviceRef =
         FirebaseFirestore.instance.collection('devices').doc(deviceId);
 
     final snapshot = await deviceRef.get();
-    debugPrint("📦 Firestore snapshot exists? ${snapshot.exists}");
 
     if (!snapshot.exists) {
-      debugPrint("📦 Creating new device document for $deviceId...");
       await deviceRef.set({
         'ownerUid': user.uid,
         'deviceId': deviceId,
@@ -322,7 +319,6 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         }
       }, SetOptions(merge: true));
 
-      debugPrint("✅ Device successfully claimed!");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
@@ -335,6 +331,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         )),
       );
       Navigator.pop(context, true);
+      updateDeviceToken(deviceId);
     } else {
       final data = snapshot.data()!;
 
@@ -372,6 +369,35 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         );
       }
     }
+  }
+
+  Future<void> updateDeviceToken(String deviceId) async {
+    final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    String? token = await messaging.getToken();
+
+    if (token != null) {
+      // Store it under the device document
+      await FirebaseFirestore.instance
+          .collection('devices')
+          .doc(deviceId)
+          .update({
+        'fcmToken': token,
+      });
+
+      print('FCM token saved for device $deviceId');
+    }
+
+    // Listen for token refresh (when app reinstall / update)
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      await FirebaseFirestore.instance
+          .collection('devices')
+          .doc(deviceId)
+          .update({
+        'fcmToken': newToken,
+      });
+      print('🔄 Token refreshed and updated for $deviceId');
+    });
   }
 
   @override
