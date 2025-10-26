@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user_model.dart';
 import '../../services/firestore_service.dart';
@@ -21,7 +22,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   String _searchQuery = '';
   UserRole? _filterRole;
   bool? _filterActiveStatus;
-  bool _isLoading = false; // Global loading for Save/Delete
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -76,7 +77,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       final matchesSearch = _searchQuery.isEmpty ||
           user.username.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           user.email.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (user.phoneNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+          (user.phoneNumber?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
 
       final matchesRole = _filterRole == null || user.role == _filterRole;
       final matchesActive = _filterActiveStatus == null || user.isActive == _filterActiveStatus;
@@ -96,31 +97,79 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogOnly) => AlertDialog(
-          title: Text("Edit User: ${user.email}"),
+          backgroundColor: ColorsManager.lightYellow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            "Edit User: ${user.email}",
+            style: const TextStyle(
+              fontFamily: 'Georgia',
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              color: ColorsManager.gray,
+            ),
+          ),
           content: Form(
             key: formKey,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Username
                   TextFormField(
                     controller: usernameController,
-                    decoration: const InputDecoration(
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 14,
+                      color: ColorsManager.gray,
+                    ),
+                    decoration: InputDecoration(
                       labelText: "Username",
-                      border: OutlineInputBorder(),
+                      labelStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.gray,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: ColorsManager.gray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            const BorderSide(color: ColorsManager.greyGreen),
+                      ),
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Username is required';
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Username is required';
+                      }
                       if (v.trim().length < 3) return 'At least 3 characters';
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 16),
+
+                  // Phone Number
                   TextFormField(
                     controller: phoneController,
-                    decoration: const InputDecoration(
+                    style: GoogleFonts.nunitoSans(
+                      fontSize: 14,
+                      color: ColorsManager.gray,
+                    ),
+                    decoration: InputDecoration(
                       labelText: "Phone Number",
-                      border: OutlineInputBorder(),
+                      labelStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.gray,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: ColorsManager.gray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            const BorderSide(color: ColorsManager.greyGreen),
+                      ),
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (v) {
@@ -130,12 +179,26 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 16),
+
+                  // Role Dropdown
                   DropdownButtonFormField<UserRole>(
                     value: selectedRole,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Role",
-                      border: OutlineInputBorder(),
+                      labelStyle: GoogleFonts.nunitoSans(
+                        color: ColorsManager.gray,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: ColorsManager.gray),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            const BorderSide(color: ColorsManager.greyGreen),
+                      ),
                     ),
                     onChanged: (role) {
                       if (role != null) {
@@ -143,28 +206,71 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       }
                     },
                     items: UserRole.values
-                        .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))
+                        .map(
+                          (r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(
+                              r.name,
+                              style: GoogleFonts.nunitoSans(
+                                color: ColorsManager.gray,
+                              ),
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
+
                   const SizedBox(height: 16),
+
+                  // Active Status Switch
                   Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: SwitchListTile(
-                      title: const Text("Active Status"),
-                      subtitle: Text(isActive ? "User is active" : "User is inactive"),
+                      title: Text(
+                        "Active Status",
+                        style: GoogleFonts.nunitoSans(
+                          fontWeight: FontWeight.w500,
+                          color: ColorsManager.gray,
+                        ),
+                      ),
+                      subtitle: Text(
+                        isActive ? "User is active" : "User is inactive",
+                        style: GoogleFonts.nunitoSans(
+                          color: isActive
+                              ? const Color(0xFF4CAF50)
+                              : ColorsManager.gray,
+                        ),
+                      ),
                       value: isActive,
-                      onChanged: (val) => setDialogOnly(() => isActive = val),
+                      onChanged: (val) =>
+                          setDialogOnly(() => isActive = val),
+                      activeColor: const Color(0xFF4CAF50),
                     ),
                   ),
                 ],
               ),
             ),
           ),
+
+          actionsPadding: const EdgeInsets.only(right: 16, bottom: 10),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.nunitoSans(color: ColorsManager.gray),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsManager.mainBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () async {
                 if (!formKey.currentState!.validate()) return;
                 if (mounted) setState(() => _isLoading = true);
@@ -181,12 +287,12 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                 try {
                   await FirestoreService.updateUser(updated);
                   if (mounted) {
-                    Navigator.pop(context); // close dialog
+                    Navigator.pop(context);
                     _refreshUsers();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('User updated successfully'),
-                        backgroundColor: Colors.green,
+                        backgroundColor: ColorsManager.mainBlue,
                       ),
                     );
                   }
@@ -195,7 +301,7 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Error updating user: $e'),
-                        backgroundColor: Colors.red,
+                        backgroundColor: ColorsManager.zhYellow,
                       ),
                     );
                   }
@@ -207,9 +313,15 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: ColorsManager.lightYellow,
+                      ),
                     )
-                  : const Text("Save"),
+                  : Text(
+                      "Save",
+                      style: GoogleFonts.nunitoSans(color: Colors.white),
+                    ),
             ),
           ],
         ),
@@ -254,13 +366,19 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       _refreshUsers();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User deleted successfully'), backgroundColor: Color.fromARGB(255, 226, 225, 207)),
+          const SnackBar(
+            content: Text('User deleted successfully'),
+            backgroundColor: Color.fromARGB(255, 226, 225, 207),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting user: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error deleting user: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -277,29 +395,34 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Filter Users', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Filter Users',
+                  style: GoogleFonts.nunitoSans(fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               DropdownButton<UserRole?>(
                 value: _filterRole,
                 isExpanded: true,
-                hint: const Text('Filter by Role'),
+                hint: Text('Filter by Role', style: GoogleFonts.nunitoSans()),
                 onChanged: (role) => setSheetState(() => _filterRole = role),
                 items: [
-                  const DropdownMenuItem(value: null, child: Text('All Roles')),
-                  ...UserRole.values
-                      .map((r) => DropdownMenuItem<UserRole?>(value: r, child: Text(r.name)))
+                  DropdownMenuItem(value: null, child: Text('All Roles', style: GoogleFonts.nunitoSans())),
+                  ...UserRole.values.map(
+                    (r) => DropdownMenuItem<UserRole?>(
+                      value: r,
+                      child: Text(r.name, style: GoogleFonts.nunitoSans()),
+                    ),
+                  )
                 ],
               ),
               const SizedBox(height: 16),
               DropdownButton<bool?>(
                 value: _filterActiveStatus,
                 isExpanded: true,
-                hint: const Text('Filter by Status'),
+                hint: Text('Filter by Status', style: GoogleFonts.nunitoSans()),
                 onChanged: (status) => setSheetState(() => _filterActiveStatus = status),
-                items: const [
-                  DropdownMenuItem(value: null, child: Text('All Statuses')),
-                  DropdownMenuItem(value: true, child: Text('Active Only')),
-                  DropdownMenuItem(value: false, child: Text('Inactive Only')),
+                items: [
+                  DropdownMenuItem(value: null, child: Text('All Statuses', style: GoogleFonts.nunitoSans())),
+                  DropdownMenuItem(value: true, child: Text('Active Only', style: GoogleFonts.nunitoSans())),
+                  DropdownMenuItem(value: false, child: Text('Inactive Only', style: GoogleFonts.nunitoSans())),
                 ],
               ),
               const SizedBox(height: 16),
@@ -314,14 +437,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                       });
                       Navigator.pop(context);
                     },
-                    child: const Text('Clear'),
+                    child: Text('Clear', style: GoogleFonts.nunitoSans()),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      setState(() {}); // refresh with filters
+                      setState(() {});
                       Navigator.pop(context);
                     },
-                    child: const Text('Apply'),
+                    child: Text('Apply', style: GoogleFonts.nunitoSans(color: Colors.white)),
                   ),
                 ],
               ),
@@ -337,7 +460,13 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
     return Scaffold(
       backgroundColor: ColorsManager.darkBlue,
       appBar: AppBar(
-        title: Text("Manage Users", style: TextStyles.adminDashboardTitle),
+        title: Text("Manage Users",
+            style: const TextStyle(
+              fontFamily: 'Georgia',
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            )),
         backgroundColor: ColorsManager.gray,
         foregroundColor: ColorsManager.lightYellow,
         actions: [
@@ -353,9 +482,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
+              style: GoogleFonts.nunitoSans(),
               decoration: InputDecoration(
                 labelText: 'Search users...',
-                prefixIcon: const Icon(Icons.search),
+                labelStyle: GoogleFonts.nunitoSans(color: ColorsManager.gray),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: ColorsManager.gray,
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -365,7 +499,15 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                         },
                       )
                     : null,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: ColorsManager.gray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(color: ColorsManager.greyGreen, width: 2),
+                ),
               ),
               onChanged: (v) => setState(() => _searchQuery = v),
             ),
@@ -383,41 +525,70 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
                 final users = snapshot.data ?? [];
                 final filtered = _filterUsers(users);
                 if (filtered.isEmpty) {
-                  return const Center(child: Text('No users found'));
+                  return Center(
+                      child: Text('No users found', style: GoogleFonts.nunitoSans()));
                 }
 
                 return ListView.builder(
                   itemCount: filtered.length,
                   itemBuilder: (context, i) {
                     final u = filtered[i];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: u.isAdmin
-                            ? ColorsManager.mainBlue
-                            : ColorsManager.lightYellow,
-                        child: Icon(
-                          u.isAdmin ? Icons.admin_panel_settings : Icons.person,
-                          color: Colors.white,
+                    return Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [ColorsManager.gray, ColorsManager.greyGreen],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ),
-                      title: Text(u.username,
-                          style: TextStyle(
-                              color: u.isActive
-                                  ? Colors.white
-                                  : ColorsManager.lightYellow)),
-                      subtitle: Text('${u.email} • ${u.phoneNumber ?? "No phone"}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: ColorsManager.lightYellow),
-                            onPressed: () => _showEditDialog(u),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => _showEditDialog(u),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: u.isAdmin
+                                  ? ColorsManager.mainBlue
+                                  : ColorsManager.lightYellow,
+                              child: Icon(
+                                u.isAdmin
+                                    ? Icons.admin_panel_settings
+                                    : Icons.person,
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: Text(
+                              u.username,
+                              style: GoogleFonts.nunitoSans(
+                                color: u.isActive
+                                    ? Colors.white
+                                    : ColorsManager.lightYellow,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${u.email} • ${u.phoneNumber ?? "No phone"}',
+                              style: GoogleFonts.nunitoSans(color: Colors.white70),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: ColorsManager.lightYellow),
+                                  onPressed: () => _showEditDialog(u),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: ColorsManager.zhYellow),
+                                  onPressed: () => _deleteUser(u),
+                                ),
+                              ],
+                            ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteUser(u),
-                          ),
-                        ],
+                        ),
                       ),
                     );
                   },
@@ -430,8 +601,9 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
       floatingActionButton: _isLoading
           ? const CircularProgressIndicator()
           : FloatingActionButton(
+            backgroundColor: ColorsManager.lightYellow, 
               onPressed: _refreshUsers,
-              child: const Icon(Icons.refresh),
+              child: const Icon(Icons.refresh, color: ColorsManager.zhYellow),
             ),
     );
   }
