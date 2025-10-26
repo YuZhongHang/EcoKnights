@@ -202,7 +202,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       print('Cloudinary upload error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Failed to upload image: $e')),
+          SnackBar(content: Text('Failed to upload image: $e')),
         );
       }
       return null;
@@ -286,14 +286,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Profile updated successfully!')),
+          const SnackBar(content: Text('Profile updated successfully!')),
         );
-        setState(() => _image = null); // clear local image
+        setState(() => _image = null);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Error: $e')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
     } finally {

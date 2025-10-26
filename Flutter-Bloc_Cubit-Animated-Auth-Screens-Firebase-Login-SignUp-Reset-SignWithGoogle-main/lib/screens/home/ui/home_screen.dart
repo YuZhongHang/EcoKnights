@@ -82,7 +82,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // No auto-recording needed - ESP32 handles it!
-    WidgetsBinding.instance.addPostFrameCallback((_) => _verifyAndMonitorDevice());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _verifyAndMonitorDevice());
   }
 
   /// ✅ Verify device exists and optionally monitor history
@@ -99,10 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (device == null) return;
 
     final deviceName = device['deviceName'];
-    
+
     debugPrint("✅ Device found: $deviceName");
     debugPrint("📊 ESP32 records history every 30 seconds automatically");
-    
+
     // Optional: Monitor history to verify ESP32 is working
     _monitorHistoryUpdates(deviceName);
   }
@@ -112,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final historyRef = FirebaseDatabase.instance
         .ref("devices/$deviceName/readings/history")
         .limitToLast(1);
-    
+
     _historyMonitor = historyRef.onValue.listen((event) {
       if (event.snapshot.exists) {
         final data = event.snapshot.value as Map;
@@ -331,15 +332,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: ColorsManager.zhYellow),
               onPressed: () async {
                 if (user == null) return;
-                
+
                 // Show confirmation dialog
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Remove Device?'),
                     content: const Text(
-                      'Are you sure you want to disconnect and remove this device?'
-                    ),
+                        'Are you sure you want to disconnect and remove this device?'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
@@ -347,8 +347,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Remove', 
-                          style: TextStyle(color: Colors.red)),
+                        child: const Text('Remove',
+                            style: TextStyle(color: Colors.red)),
                       ),
                     ],
                   ),
@@ -364,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .collection('users')
                         .doc(user.uid)
                         .update({'device': FieldValue.delete()});
-                    
+
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -420,11 +420,11 @@ class _HomeScreenState extends State<HomeScreen> {
               return Center(
                 child: Column(
                   children: [
-                    const Icon(Icons.error_outline, 
-                      color: Colors.red, size: 48),
+                    const Icon(Icons.error_outline,
+                        color: Colors.red, size: 48),
                     const SizedBox(height: 8),
                     Text('Error: ${dbSnapshot.error}',
-                      style: const TextStyle(color: Colors.red)),
+                        style: const TextStyle(color: Colors.red)),
                   ],
                 ),
               );
@@ -441,14 +441,13 @@ class _HomeScreenState extends State<HomeScreen> {
               return Center(
                 child: Column(
                   children: [
-                    const Icon(Icons.sensors_off, 
-                      color: Colors.grey, size: 48),
+                    const Icon(Icons.sensors_off, color: Colors.grey, size: 48),
                     const SizedBox(height: 8),
                     Text('Waiting for sensor data...',
-                      style: GoogleFonts.nunitoSans(
-                        color: Colors.grey,
-                        fontSize: 16,
-                      )),
+                        style: GoogleFonts.nunitoSans(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        )),
                   ],
                 ),
               );
@@ -474,7 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: ColorsManager.darkBlue)),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: _getAirQualityColor(airQuality),
                         borderRadius: BorderRadius.circular(12),
@@ -493,26 +492,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 16.h),
                 _buildSensorRow(Icons.cloud_outlined, "CO2", "$co2 ppm"),
                 SizedBox(height: 8.h),
-                _buildSensorRow(Icons.thermostat_outlined, "Temperature", 
-                  "${temperature.toStringAsFixed(1)} °C"),
+                _buildSensorRow(Icons.thermostat_outlined, "Temperature",
+                    "${temperature.toStringAsFixed(1)} °C"),
                 SizedBox(height: 8.h),
-                _buildSensorRow(Icons.water_drop_outlined, "Humidity", 
-                  "${humidity.toStringAsFixed(1)} %"),
+                _buildSensorRow(Icons.water_drop_outlined, "Humidity",
+                    "${humidity.toStringAsFixed(1)} %"),
                 SizedBox(height: 8.h),
-                _buildSensorRow(Icons.grain, "Dust", 
-                  "${dust.toStringAsFixed(2)} mg/m³"),
+                _buildSensorRow(
+                    Icons.grain, "Dust", "${dust.toStringAsFixed(2)} mg/m³"),
                 SizedBox(height: 16.h),
                 Divider(color: ColorsManager.darkBlue.withOpacity(0.3)),
                 SizedBox(height: 8.h),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, 
-                      size: 16, color: ColorsManager.darkBlue),
+                    const Icon(Icons.access_time,
+                        size: 16, color: ColorsManager.darkBlue),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text("Last Updated: $timestamp",
                           style: GoogleFonts.nunitoSans(
-                              fontSize: 12.sp, 
+                              fontSize: 12.sp,
                               color: ColorsManager.darkBlue,
                               fontWeight: FontWeight.w600)),
                     ),
