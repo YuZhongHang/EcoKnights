@@ -20,7 +20,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Map<String, List<Map<String, dynamic>>> groupedByDate = {};
   bool _isLoading = true;
   int _totalRecords = 0;
-  
+
   // Filter state
   String? _selectedDate; // null means "All Dates"
   List<String> _availableDates = [];
@@ -56,7 +56,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         // Group records by date
         final Map<String, List<Map<String, dynamic>>> grouped = {};
         final Set<String> dates = {};
-        
+
         for (var record in records) {
           final timestamp = record['timestamp'] ?? '';
           final date = timestamp.split(' ').first;
@@ -160,7 +160,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.close, color: ColorsManager.darkBlue),
+                    icon:
+                        const Icon(Icons.close, color: ColorsManager.darkBlue),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -203,7 +204,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     required int recordCount,
   }) {
     final isSelected = _selectedDate == date;
-    
+
     return ListTile(
       leading: Icon(
         date == null ? Icons.view_list : Icons.calendar_today,
@@ -219,7 +220,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       trailing: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: isSelected ? ColorsManager.mainBlue : ColorsManager.lightYellow,
+          color:
+              isSelected ? ColorsManager.mainBlue : ColorsManager.lightYellow,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
@@ -302,7 +304,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete All', style: TextStyle(color: Colors.white)),
+            child:
+                const Text('Delete All', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -350,7 +353,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             Text(
-              _selectedDate == null 
+              _selectedDate == null
                   ? "$_filteredRecordCount records (All Dates)"
                   : "$_filteredRecordCount records",
               style: GoogleFonts.nunitoSans(
@@ -409,7 +412,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         const SizedBox(width: 8),
                         Text(
                           'Clear Filter',
-                          style: GoogleFonts.nunitoSans(color: ColorsManager.mainBlue),
+                          style: GoogleFonts.nunitoSans(
+                              color: ColorsManager.mainBlue),
                         ),
                       ],
                     ),
@@ -562,7 +566,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: ColorsManager.mainBlue,
                         borderRadius: BorderRadius.circular(12),
@@ -593,12 +598,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildRecordCard(
-      Map<String, dynamic> record, String formattedTime, String key, String date) {
+  Widget _buildRecordCard(Map<String, dynamic> record, String formattedTime,
+      String key, String date) {
     final co2 = record['co2'] ?? 0;
     final temperature = record['temperature'] ?? 0.0;
     final humidity = record['humidity'] ?? 0.0;
-    final dust = record['dust'] ?? 0.0;
+    final dust = record['dust'].toStringAsFixed(2) ?? 0.0;
     final airQuality = record['airQuality'] ?? 'Unknown';
 
     // Determine air quality color
@@ -660,16 +665,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
-              Divider(height: 16.h, color: ColorsManager.darkBlue.withOpacity(0.2)),
-              _buildDataRow(Icons.cloud_outlined, 'CO₂', '$co2 ppm', ColorsManager.mainBlue),
+              Divider(
+                  height: 16.h, color: ColorsManager.darkBlue.withOpacity(0.2)),
+              _buildDataRow(Icons.cloud_outlined, 'CO₂', '$co2 ppm',
+                  ColorsManager.mainBlue),
               SizedBox(height: 6.h),
-              _buildDataRow(Icons.thermostat_outlined, 'Temperature', '$temperature °C', Colors.orange),
+              _buildDataRow(Icons.thermostat_outlined, 'Temperature',
+                  '$temperature °C', Colors.orange),
               SizedBox(height: 6.h),
-              _buildDataRow(Icons.water_drop_outlined, 'Humidity', '$humidity %', Colors.blue),
+              _buildDataRow(Icons.water_drop_outlined, 'Humidity',
+                  '$humidity %', Colors.blue),
               SizedBox(height: 6.h),
               _buildDataRow(Icons.grain, 'Dust', '$dust mg/m³', Colors.brown),
               SizedBox(height: 6.h),
-              _buildDataRow(Icons.air, 'Air Quality', airQuality, airQualityColor),
+              _buildDataRow(
+                  Icons.air, 'Air Quality', airQuality, airQualityColor),
             ],
           ),
         ),
