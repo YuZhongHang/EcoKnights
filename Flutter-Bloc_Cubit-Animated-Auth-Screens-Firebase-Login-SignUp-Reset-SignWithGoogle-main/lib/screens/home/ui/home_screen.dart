@@ -73,10 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DatabaseReference? deviceDataRef;
   StreamSubscription? _historyMonitor;
 
-  final database = FirebaseDatabase(
-    databaseURL:
-        "https://my-iot-project-g01-43-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  );
+  final database = FirebaseDatabase.instance;
 
   @override
   void initState() {
