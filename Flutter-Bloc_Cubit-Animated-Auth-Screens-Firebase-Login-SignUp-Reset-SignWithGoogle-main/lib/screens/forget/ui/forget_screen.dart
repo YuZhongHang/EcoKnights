@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
 import '../../../core/widgets/already_have_account_text.dart';
-import '../../../core/widgets/progress_indicaror.dart';
 import '../../../core/widgets/terms_and_conditions_text.dart';
 import '../../../logic/cubit/auth_cubit.dart';
 import '../../../theming/styles.dart';
@@ -56,10 +55,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                       BlocConsumer<AuthCubit, AuthState>(
                         listenWhen: (previous, current) => previous != current,
                         listener: (context, state) async {
-                          if (state is AuthLoading) {
-                            ProgressIndicaror.showProgressIndicator(context);
-                          } else if (state is AuthError) {
-                            context.pop();
+                          if (state is AuthError) {
                             context.pop();
                             await AwesomeDialog(
                               context: context,
@@ -67,9 +63,9 @@ class _ForgetScreenState extends State<ForgetScreen> {
                               animType: AnimType.rightSlide,
                               title: 'Error',
                               desc: state.message,
+                              autoHide: Duration(seconds: 5),
                             ).show();
                           } else if (state is ResetPasswordSent) {
-                            context.pop();
                             context.pop();
                             AwesomeDialog(
                               context: context,
@@ -78,6 +74,10 @@ class _ForgetScreenState extends State<ForgetScreen> {
                               title: 'Reset Password',
                               desc:
                                   'Link to Reset password send to your email, please check inbox messages.',
+                              autoHide: Duration(seconds: 5),
+                              onDismissCallback: (type) {
+                                Navigator.pop(context);
+                              },
                             ).show();
                           }
                         },
