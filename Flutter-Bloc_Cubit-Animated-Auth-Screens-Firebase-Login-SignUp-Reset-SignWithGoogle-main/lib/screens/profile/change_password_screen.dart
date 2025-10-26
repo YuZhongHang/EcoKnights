@@ -16,6 +16,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _oldPassController = TextEditingController();
   final _newPassController = TextEditingController();
   bool _isLoading = false;
+  bool _obscureOldPassword = true;
+  bool _obscureNewPassword = true;
 
   @override
   void initState() {
@@ -44,32 +46,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _changePassword() async {
     // CRITICAL: Force validation and check result
     final isValid = _formKey.currentState?.validate() ?? false;
-    
+
     print("Form validation result: $isValid");
     print("Old password: '${_oldPassController.text.trim()}'");
     print("New password: '${_newPassController.text.trim()}'");
-    
+
     if (!isValid) {
       print("Form validation failed - stopping execution");
       return;
     }
 
-    // Extra safety check with detailed logging
     final oldPass = _oldPassController.text.trim();
     final newPass = _newPassController.text.trim();
-    
+
     if (oldPass == newPass) {
       print("BLOCKED: Passwords are identical after trim");
       _showMessage('New password cannot be the same as old password.');
       return;
     }
-    
+
     if (oldPass.isEmpty) {
       print("BLOCKED: Old password is empty");
       _showMessage('Please enter your old password.');
       return;
     }
-    
+
     if (newPass.isEmpty) {
       print("BLOCKED: New password is empty");
       _showMessage('Please enter a new password.');
@@ -115,12 +116,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   void _showMessage(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: msg.contains('successfully') ? Colors.green : Colors.red,
-      )
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: msg.contains('successfully') ? Colors.green : Colors.red,
+    ));
   }
 
   String? _validateOldPassword(String? value) {
@@ -134,23 +133,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (value == null || value.trim().isEmpty) {
       return 'Enter new password';
     }
-    
+
     final trimmedValue = value.trim();
-    
+
     if (trimmedValue.length < 8) {
       return 'Password must be at least 8 characters';
     }
-    
+
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(trimmedValue)) {
       return 'Include at least 1 special character';
     }
-    
-    // CRITICAL: Check against old password
+
+    // Check against old password
     final oldPassword = _oldPassController.text.trim();
     if (oldPassword.isNotEmpty && trimmedValue == oldPassword) {
       return 'New password cannot be the same as old password';
     }
-    
+
     return null;
   }
 
@@ -158,10 +157,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorsManager.lightYellow,
-      appBar: AppBar(title: Text('Change Password', style: TextStyles.profileScreenTitle,),
-      backgroundColor: ColorsManager.greyGreen,
+      appBar: AppBar(
+        title: Text(
+          'Change Password',
+          style: TextStyles.profileScreenTitle,
+        ),
+        backgroundColor: ColorsManager.greyGreen,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue), 
+          icon: const Icon(Icons.arrow_back, color: ColorsManager.mainBlue),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -176,10 +179,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 children: [
                   TextFormField(
                     controller: _oldPassController,
-                    obscureText: true,
+                    obscureText: _obscureOldPassword,
                     decoration: InputDecoration(
                       labelText: 'Old Password',
-                      labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                      labelStyle: TextStyle(
+                          color: ColorsManager.gray), // Label text color
                       border: const OutlineInputBorder(
                         borderSide: BorderSide(color: ColorsManager.gray),
                       ),
@@ -187,18 +191,38 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         borderSide: const BorderSide(color: ColorsManager.gray),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                        borderSide: const BorderSide(
+                            color: ColorsManager.greyGreen, width: 2.0),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.zhYellow), // <-- your custom color
+                        borderSide: BorderSide(
+                            color: ColorsManager
+                                .zhYellow), // <-- your custom color
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.zhYellow, width: 2.0), // <-- your custom color
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow,
+                            width: 2.0), // <-- your custom color
                       ),
-                      prefixIcon: Icon(Icons.lock, color: ColorsManager.gray,),
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: ColorsManager.gray,
+                      ),
                       errorStyle: GoogleFonts.nunitoSans(
-                        color: ColorsManager.zhYellow, 
-                        fontSize: 14,// custom font size
+                        color: ColorsManager.zhYellow,
+                        fontSize: 14, // custom font size
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            _obscureOldPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: ColorsManager.darkBlue),
+                        onPressed: () {
+                          setState(() {
+                            _obscureOldPassword = !_obscureOldPassword;
+                          });
+                        },
                       ),
                     ),
                     validator: _validateOldPassword,
@@ -206,10 +230,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _newPassController,
-                    obscureText: true,
+                    obscureText: _obscureNewPassword,
                     decoration: InputDecoration(
                       labelText: 'New Password',
-                      labelStyle: TextStyle(color: ColorsManager.gray), // Label text color
+                      labelStyle: TextStyle(
+                          color: ColorsManager.gray), // Label text color
                       border: const OutlineInputBorder(
                         borderSide: BorderSide(color: ColorsManager.gray),
                       ),
@@ -217,48 +242,72 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         borderSide: const BorderSide(color: ColorsManager.gray),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: ColorsManager.greyGreen, width: 2.0),
+                        borderSide: const BorderSide(
+                            color: ColorsManager.greyGreen, width: 2.0),
                       ),
                       errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.zhYellow), // <-- your custom color
+                        borderSide: BorderSide(
+                            color: ColorsManager
+                                .zhYellow), // <-- your custom color
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: ColorsManager.zhYellow, width: 2.0), // <-- your custom color
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow,
+                            width: 2.0), // <-- your custom color
                       ),
-                      prefixIcon: Icon(Icons.lock_outline, color: ColorsManager.gray,),
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: ColorsManager.gray,
+                      ),
                       errorStyle: GoogleFonts.nunitoSans(
                         color: ColorsManager.zhYellow,
-                        fontSize: 14,// custom font size
+                        fontSize: 14, // custom font size
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            _obscureNewPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: ColorsManager.darkBlue),
+                        onPressed: () {
+                          setState(() {
+                            _obscureNewPassword = !_obscureNewPassword;
+                          });
+                        },
                       ),
                     ),
                     validator: _validateNewPassword,
                   ),
                   const SizedBox(height: 30),
                   Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                  colors: [ColorsManager.greyGreen, ColorsManager.gray], 
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  ),
-                borderRadius: BorderRadius.circular(10),
-                ),
-                child: ElevatedButton(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ElevatedButton(
                       onPressed: _isLoading ? null : _changePassword,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent, // Make button background transparent
+                        backgroundColor: Colors
+                            .transparent, // Make button background transparent
                         shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       child: _isLoading
-                          ? const CircularProgressIndicator(color: ColorsManager.mainBlue)
+                          ? const CircularProgressIndicator(
+                              color: ColorsManager.mainBlue)
                           : Text(
                               'Change Password',
-                              style: GoogleFonts.nunitoSans (fontSize: 16, color: ColorsManager.lightYellow),
+                              style: GoogleFonts.nunitoSans(
+                                  fontSize: 16,
+                                  color: ColorsManager.lightYellow),
                             ),
                     ),
                   ),
