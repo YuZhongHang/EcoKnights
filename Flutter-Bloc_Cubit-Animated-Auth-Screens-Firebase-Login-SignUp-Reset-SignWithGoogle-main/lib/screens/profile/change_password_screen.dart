@@ -44,7 +44,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<void> _changePassword() async {
-    // CRITICAL: Force validation and check result
+    // Validation and check result
     final isValid = _formKey.currentState?.validate() ?? false;
 
     print("Form validation result: $isValid");
@@ -52,7 +52,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     print("New password: '${_newPassController.text.trim()}'");
 
     if (!isValid) {
-      print("Form validation failed - stopping execution");
       return;
     }
 
@@ -60,19 +59,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final newPass = _newPassController.text.trim();
 
     if (oldPass == newPass) {
-      print("BLOCKED: Passwords are identical after trim");
-      _showMessage('New password cannot be the same as old password.');
+      _showMessage("New password can't same as old password.");
       return;
     }
 
     if (oldPass.isEmpty) {
-      print("BLOCKED: Old password is empty");
       _showMessage('Please enter your old password.');
       return;
     }
 
     if (newPass.isEmpty) {
-      print("BLOCKED: New password is empty");
       _showMessage('Please enter a new password.');
       return;
     }
@@ -100,13 +96,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       print("Firebase Auth Error: ${e.code} - ${e.message}");
-      if (e.code == 'wrong-password') {
-        _showMessage('Old password is incorrect.');
-      } else if (e.code == 'weak-password') {
-        _showMessage('New password is too weak.');
-      } else {
-        _showMessage('Error: ${e.message}');
-      }
+      _showMessage('Old password is incorrect');
     } catch (e) {
       print("Unexpected error: $e");
       _showMessage('Unexpected error: $e');
@@ -315,11 +305,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
             ),
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.black54,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
         ],
       ),
     );
