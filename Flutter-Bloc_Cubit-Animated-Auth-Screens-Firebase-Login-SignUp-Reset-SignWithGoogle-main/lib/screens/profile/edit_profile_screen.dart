@@ -202,8 +202,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       print('Cloudinary upload error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload image: $e')),
-        );
+          SnackBar(
+            content: Text(
+            'Failed to upload image: $e',
+            style: const TextStyle(color: Colors.white), // text color
+          ),
+      backgroundColor: ColorsManager.zhYellow
+    ),
+  );
       }
       return null;
     }
@@ -285,22 +291,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .set(userData, SetOptions(merge: true));
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
-        );
-        setState(() => _image = null);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: const Text(
+        'Profile updated successfully!',
+        style: TextStyle(color: Colors.white), // text color
+      ),
+      backgroundColor: ColorsManager.mainBlue, // background color
+    ),
+  );
+  setState(() => _image = null);
+}
+} catch (e) {
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Error: $e',
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: ColorsManager.zhYellow, // background for errors
+      ),
+    );
   }
-
+} finally {
+  if (mounted) setState(() => _isLoading = false);
+}
+  }
   Widget _buildProfileImage(User? user) {
     const double size = 120; // diameter of profile picture
 
@@ -416,6 +433,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderSide: const BorderSide(
                         color: ColorsManager.greyGreen, width: 2.0),
                   ),
+                  errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow), // <-- your custom color
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow,
+                            width: 2.0), // <-- your custom color
+                      ),
                   prefixIcon: Icon(
                     Icons.person,
                     color: ColorsManager.gray,
@@ -428,6 +454,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     vertical: 16,
                     horizontal: 12,
                   ),
+                  errorStyle: const TextStyle(
+      color: ColorsManager.zhYellow, 
+    ),
                 ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
@@ -458,6 +487,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     borderSide: const BorderSide(
                         color: ColorsManager.greyGreen, width: 2.0),
                   ),
+                  errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow), // <-- your custom color
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: ColorsManager.zhYellow,
+                            width: 2.0), // <-- your custom color
+                      ),
+                      errorStyle: const TextStyle(
+      color: ColorsManager.zhYellow, 
+    ),
                   prefixIcon: InkWell(
                     onTap: _openCountryPicker,
                     child: Container(
