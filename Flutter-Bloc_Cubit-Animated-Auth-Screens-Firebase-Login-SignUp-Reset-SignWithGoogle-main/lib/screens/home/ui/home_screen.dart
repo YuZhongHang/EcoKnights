@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
   StreamSubscription? _historyMonitor;
-  DateTime? _lastAlertTime;
+  DateTime? _lastAlertTime; // Add this variable for timing control
 
   final database = FirebaseDatabase(
     databaseURL:
@@ -462,27 +462,9 @@ class _HomeScreenState extends State<HomeScreen> {
             final airQuality = sensorData['airQuality'] ?? 'Unknown';
             final timestamp = sensorData['timestamp'] ?? 'No timestamp';
 
-            // --- Check for poor air quality and show alert every 1 minute ---
-            if (airQuality.toLowerCase() == 'poor' ||
-                airQuality.toLowerCase() == 'very poor') {
-              final now = DateTime.now();
-              if (_lastAlertTime == null ||
-                  now.difference(_lastAlertTime!) >
-                      const Duration(minutes: 1)) {
-                _lastAlertTime = now;
-
-                // Show AwesomeDialog alert
-                AwesomeDialog(
-                  context: context,
-                  dialogType: DialogType.error,
-                  animType: AnimType.rightSlide,
-                  title: 'Poor Air Quality',
-                  desc:
-                      'Warning: Air quality is $airQuality. Please check ventilation or air purifier.',
-                  autoHide: const Duration(seconds: 5),
-                ).show();
-              }
-            }
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _checkAirQualityAlert(airQuality, context);
+            });
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,6 +572,41 @@ class _HomeScreenState extends State<HomeScreen> {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  void _checkAirQualityAlert(String airQuality, BuildContext context) {
+    if (airQuality.toLowerCase() == 'poor' ||
+        airQuality.toLowerCase() == 'very poor') {
+      final now = DateTime.now();
+
+      // Only show alert if it's been more than 1 minute since last alert
+      if (_lastAlertTime == null ||
+          now.difference(_lastAlertTime!) > const Duration(seconds: 15)) {
+        _lastAlertTime = now;
+
+        // Use WidgetsBinding to ensure dialog shows after build is complete
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            AwesomeDialog(
+              context: context,
+              dialogType: DialogType.error,
+              animType: AnimType.rightSlide,
+              title: 'Poor Air Quality Alert!',
+              desc: 'Warning: Air quality is "$airQuality".\n\n'
+                  '• Consider improving ventilation\n'
+                  '• Use air purifier if available\n'
+                  '• Limit outdoor activities',
+              btnOkOnPress: () {
+                debugPrint('User acknowledged air quality alert');
+              },
+              btnOkText: 'OK',
+              btnOkColor: Colors.red,
+              autoHide: const Duration(seconds: 8),
+            ).show();
+          }
+        });
+      }
     }
   }
 }
