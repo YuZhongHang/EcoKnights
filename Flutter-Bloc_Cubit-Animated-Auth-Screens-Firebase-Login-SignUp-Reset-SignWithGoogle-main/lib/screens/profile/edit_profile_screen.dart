@@ -1,5 +1,3 @@
-// lib/ui/profile/edit_profile_screen.dart
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -181,8 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           http.MultipartRequest('POST', Uri.parse(CLOUDINARY_UPLOAD_URL));
 
       request.fields['upload_preset'] = CLOUDINARY_UPLOAD_PRESET;
-      request.fields['folder'] =
-          'profile_images'; // Optional: organize in folders
+      request.fields['folder'] = 'profile_images';
 
       request.files
           .add(await http.MultipartFile.fromPath('file', imageFile.path));
@@ -194,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final responseString = String.fromCharCodes(responseData);
         final jsonMap = json.decode(responseString);
 
-        return jsonMap['secure_url']; // This is the image URL
+        return jsonMap['secure_url'];
       } else {
         throw Exception('Failed to upload image: ${response.statusCode}');
       }
@@ -204,12 +201,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-            'Failed to upload image: $e',
-            style: const TextStyle(color: Colors.white), // text color
+              'Failed to upload image: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.zhYellow,
           ),
-      backgroundColor: ColorsManager.zhYellow
-    ),
-  );
+        );
       }
       return null;
     }
@@ -291,36 +288,123 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .set(userData, SetOptions(merge: true));
 
       if (mounted) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: const Text(
-        'Profile updated successfully!',
-        style: TextStyle(color: Colors.white), // text color
-      ),
-      backgroundColor: ColorsManager.mainBlue, // background color
-    ),
-  );
-  setState(() => _image = null);
-}
-} catch (e) {
-  if (mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Error: $e',
-          style: const TextStyle(color: Colors.white),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Profile updated successfully!',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.mainBlue,
+          ),
+        );
+        setState(() => _image = null);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.zhYellow,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // ✅ NEW FUNCTION: Delete Account
+  Future<void> _deleteAccount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text(
+          'Are you sure you want to delete your account? This action cannot be undone.',
         ),
-        backgroundColor: ColorsManager.zhYellow, // background for errors
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          TextButton(
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
       ),
     );
-  }
-} finally {
-  if (mounted) setState(() => _isLoading = false);
-}
-  }
-  Widget _buildProfileImage(User? user) {
-    const double size = 120; // diameter of profile picture
 
+    if (confirmed != true) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .delete();
+      await user.delete();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Account deleted successfully.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.mainBlue,
+          ),
+        );
+
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please re-login before deleting your account.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.zhYellow,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error: ${e.message}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: ColorsManager.zhYellow,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error deleting account: $e',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: ColorsManager.zhYellow,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Widget _buildProfileImage(User? user) {
+    const double size = 120;
     Widget imageWidget;
 
     if (_image != null) {
@@ -328,7 +412,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _image!,
         width: size,
         height: size,
-        fit: BoxFit.cover, // cover fills but keeps aspect ratio
+        fit: BoxFit.cover,
       );
     } else if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
       imageWidget = Image.network(
@@ -378,202 +462,157 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: _isLoading ? null : _pickImage,
-                child: Center(child: _buildProfileImage(user)),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap to change profile picture',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.nunitoSans(
-                  fontSize: 16,
-                  color: ColorsManager.gray,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                initialValue: user?.email ?? '',
-                enabled: false,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
-                  prefixIconConstraints: BoxConstraints(
-                    minWidth: 72,
-                    minHeight: 48,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _nameController,
-                textInputAction: TextInputAction.next,
-                style: GoogleFonts.nunitoSans(
-                  color: ColorsManager.mainBlue,
-                ),
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  labelStyle:
-                      TextStyle(color: ColorsManager.gray), // Label text color
-                  border: const OutlineInputBorder(
-                    borderSide: BorderSide(color: ColorsManager.gray),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: ColorsManager.gray),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: ColorsManager.greyGreen, width: 2.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: ColorsManager.zhYellow), // <-- your custom color
+              Expanded(
+                // Wrap ListView with Expanded
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: _isLoading ? null : _pickImage,
+                      child: Center(child: _buildProfileImage(user)),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tap to change profile picture',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.nunitoSans(
+                        fontSize: 16,
+                        color: ColorsManager.gray,
                       ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: ColorsManager.zhYellow,
-                            width: 2.0), // <-- your custom color
+                    ),
+                    const SizedBox(height: 20),
+                    // Email field (read-only)
+                    TextFormField(
+                      initialValue: user?.email ?? '',
+                      enabled: false,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.email),
                       ),
-                  prefixIcon: Icon(
-                    Icons.person,
-                    color: ColorsManager.gray,
-                  ),
-                  prefixIconConstraints: BoxConstraints(
-                    minWidth: 72,
-                    minHeight: 48,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                  errorStyle: const TextStyle(
-      color: ColorsManager.zhYellow, 
-    ),
-                ),
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
-                    return 'Enter your name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                style: GoogleFonts.nunitoSans(
-                  color: ColorsManager.mainBlue,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  labelStyle:
-                      TextStyle(color: ColorsManager.gray), // Label text color
-                  border: const OutlineInputBorder(
-                    borderSide: BorderSide(color: ColorsManager.gray),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: ColorsManager.gray),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                        color: ColorsManager.greyGreen, width: 2.0),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: ColorsManager.zhYellow), // <-- your custom color
+                    ),
+                    const SizedBox(height: 20),
+                    // Name field
+                    TextFormField(
+                      controller: _nameController,
+                      textInputAction: TextInputAction.next,
+                      style:
+                          GoogleFonts.nunitoSans(color: ColorsManager.mainBlue),
+                      decoration: const InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(),
+                        prefixIcon:
+                            Icon(Icons.person, color: ColorsManager.gray),
                       ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: ColorsManager.zhYellow,
-                            width: 2.0), // <-- your custom color
-                      ),
-                      errorStyle: const TextStyle(
-      color: ColorsManager.zhYellow, 
-    ),
-                  prefixIcon: InkWell(
-                    onTap: _openCountryPicker,
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 72,
-                      child: Text(
-                        _selectedCountryCode,
-                        style: const TextStyle(
-                          color: ColorsManager.gray,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      validator: (v) {
+                        if (v == null || v.trim().isEmpty)
+                          return 'Enter your name';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    // Phone field
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.done,
+                      style:
+                          GoogleFonts.nunitoSans(color: ColorsManager.mainBlue),
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number',
+                        border: const OutlineInputBorder(),
+                        prefixIcon: InkWell(
+                          onTap: _openCountryPicker,
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: 72,
+                            child: Text(
+                              _selectedCountryCode,
+                              style: const TextStyle(
+                                color: ColorsManager.gray,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
+                      validator: (value) {
+                        final v = (value ?? '').trim();
+                        if (v.isEmpty) return 'Enter phone number';
+                        if (!RegExp(r'^\d{7,15}$').hasMatch(v))
+                          return 'Enter 7-15 digits';
+                        return null;
+                      },
                     ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                ),
-                validator: (value) {
-                  final v = (value ?? '').trim();
-                  if (v.isEmpty) return 'Enter phone number';
-                  if (!RegExp(r'^\d{7,15}$').hasMatch(v)) {
-                    return 'Enter 7-15 digits';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [ColorsManager.greyGreen, ColorsManager.gray],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _saveProfile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors
-                        .transparent, // Make button background transparent
-                    shadowColor: Colors.transparent,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  color: ColorsManager.mainBlue,
-                                  strokeWidth: 2),
-                            ),
-                            SizedBox(width: 12),
-                            Text('Saving...',
+                    const SizedBox(height: 30),
+                    // Save Profile Button
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [ColorsManager.greyGreen, ColorsManager.gray],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _saveProfile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: _isLoading
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                        color: ColorsManager.mainBlue,
+                                        strokeWidth: 2),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text('Saving...',
+                                      style: GoogleFonts.nunitoSans(
+                                          color: ColorsManager.mainBlue,
+                                          fontSize: 18)),
+                                ],
+                              )
+                            : Text('Save Profile',
                                 style: GoogleFonts.nunitoSans(
-                                    color: ColorsManager.mainBlue,
+                                    color: ColorsManager.lightYellow,
                                     fontSize: 18)),
-                          ],
-                        )
-                      : Text('Save Profile',
-                          style: GoogleFonts.nunitoSans(
-                              color: ColorsManager.lightYellow, fontSize: 18)),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-              )
+              ),
+              // ✅ Delete Account Button - Moved outside ListView
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20, top: 50),
+                child: Center(
+                  child: TextButton.icon(
+                    onPressed: _isLoading ? null : _deleteAccount,
+                    icon: const Icon(Icons.delete_forever, color: Colors.red),
+                    label: Text(
+                      'Delete Account',
+                      style: GoogleFonts.nunitoSans(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
