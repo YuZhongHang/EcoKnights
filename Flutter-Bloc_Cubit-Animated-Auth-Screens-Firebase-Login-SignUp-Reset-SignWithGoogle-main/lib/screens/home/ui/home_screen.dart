@@ -81,12 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // No auto-recording needed - ESP32 handles it!
+    // No auto-recording needed
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _verifyAndMonitorDevice());
   }
 
-  /// ✅ Verify device exists and optionally monitor history
+  /// Verify device exists and optionally monitor history
   Future<void> _verifyAndMonitorDevice() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as fbp;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
@@ -331,7 +330,6 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         )),
       );
       Navigator.pop(context, true);
-      updateDeviceToken(deviceId);
     } else {
       final data = snapshot.data()!;
 
@@ -369,35 +367,6 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
         );
       }
     }
-  }
-
-  Future<void> updateDeviceToken(String deviceId) async {
-    final FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    String? token = await messaging.getToken();
-
-    if (token != null) {
-      // Store it under the device document
-      await FirebaseFirestore.instance
-          .collection('devices')
-          .doc(deviceId)
-          .update({
-        'fcmToken': token,
-      });
-
-      print('FCM token saved for device $deviceId');
-    }
-
-    // Listen for token refresh (when app reinstall / update)
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-      await FirebaseFirestore.instance
-          .collection('devices')
-          .doc(deviceId)
-          .update({
-        'fcmToken': newToken,
-      });
-      print('🔄 Token refreshed and updated for $deviceId');
-    });
   }
 
   @override
