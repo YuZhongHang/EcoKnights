@@ -13,6 +13,7 @@ import '../../../theming/colors.dart';
 import '../../../theming/styles.dart';
 import '../../device/add_device_screen.dart';
 import '../../history/history_screen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 /// ----- WELCOME CARD ---------------------------------------------------------
 Widget _buildWelcomeSectionWithName(String? username, String? email) {
@@ -72,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   fbp.BluetoothDevice? connectedDevice;
   DatabaseReference? deviceDataRef;
   StreamSubscription? _historyMonitor;
+  DateTime? _lastAlertTime;
 
   final database = FirebaseDatabase(
     databaseURL:
@@ -459,6 +461,28 @@ class _HomeScreenState extends State<HomeScreen> {
             final dust = sensorData['dust'] ?? 0.0;
             final airQuality = sensorData['airQuality'] ?? 'Unknown';
             final timestamp = sensorData['timestamp'] ?? 'No timestamp';
+
+            // --- Check for poor air quality and show alert every 1 minute ---
+            if (airQuality.toLowerCase() == 'poor' ||
+                airQuality.toLowerCase() == 'very poor') {
+              final now = DateTime.now();
+              if (_lastAlertTime == null ||
+                  now.difference(_lastAlertTime!) >
+                      const Duration(minutes: 1)) {
+                _lastAlertTime = now;
+
+                // Show AwesomeDialog alert
+                AwesomeDialog(
+                  context: context,
+                  dialogType: DialogType.error,
+                  animType: AnimType.rightSlide,
+                  title: 'Poor Air Quality',
+                  desc:
+                      'Warning: Air quality is $airQuality. Please check ventilation or air purifier.',
+                  autoHide: const Duration(seconds: 5),
+                ).show();
+              }
+            }
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
