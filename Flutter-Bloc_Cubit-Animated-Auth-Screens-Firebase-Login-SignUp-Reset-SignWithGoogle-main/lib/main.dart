@@ -48,6 +48,9 @@ class MyApp extends StatelessWidget {
               selectionColor: Color.fromARGB(188, 36, 124, 255),
               selectionHandleColor: ColorsManager.mainBlue,
             ),
+            progressIndicatorTheme: const ProgressIndicatorThemeData(
+    color: ColorsManager.mainBlue, // 👈 changes loading icon color globally
+  ),
           ),
           onGenerateRoute: router.generateRoute,
           debugShowCheckedModeBanner: false,
