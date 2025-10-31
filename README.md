@@ -23,6 +23,9 @@ Ekoknights Air Quality Monitoring System is a **Flutter-based mobile application
 3. **Install dependencies**
     flutter pub get
 
+4. **Choose running device**
+    Select emulator or physical device
+
 4. **Run the app**
     flutter run
 
