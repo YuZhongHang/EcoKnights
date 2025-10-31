@@ -18,7 +18,7 @@ Ekoknights Air Quality Monitoring System is a **Flutter-based mobile application
    git clone https://github.com/YuZhongHang/EcoKnights.git
 
 2. **Navigate to the project folder**
-    cd flutter_project
+    cd EcoKnights Air Quality Monitoring System
 
 3. **Install dependencies**
     flutter pub get
