@@ -1,0 +1,3850 @@
+{
+  "devices": {
+    "EcoKnights_6C19F6641D44": {
+      "readings": {
+        "history": {
+          "-OcVhBoZbjgTZvlemX1R": {
+            "airQuality": "Excellent",
+            "co2": 50,
+            "dust": 261.67032,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:28:30"
+          },
+          "-OcVhJ02hNOlnImTAVx8": {
+            "airQuality": "Excellent",
+            "co2": 31,
+            "dust": 193.17215,
+            "humidity": 62.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:29:00"
+          },
+          "-OcVhQKt7C9eG3Fu6pYV": {
+            "airQuality": "Excellent",
+            "co2": 52,
+            "dust": 269.89011,
+            "humidity": 60.6,
+            "temperature": 34.7,
+            "timestamp": "2025-10-26 21:29:30"
+          },
+          "-OcVhXfCtg7hn7jbQs1j": {
+            "airQuality": "Excellent",
+            "co2": 54,
+            "dust": 219.88644,
+            "humidity": 60.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:30:00"
+          },
+          "-OcVhdzvGLeRabDNG-tn": {
+            "airQuality": "Excellent",
+            "co2": 49,
+            "dust": 116.45422,
+            "humidity": 60.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:30:30"
+          },
+          "-OcVhlJVv9a6OTTKQCVS": {
+            "airQuality": "Excellent",
+            "co2": 52,
+            "dust": 189.74724,
+            "humidity": 60.5,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:31:00"
+          },
+          "-OcVhsecTRtKgfkGt4Bs": {
+            "airQuality": "Excellent",
+            "co2": 45,
+            "dust": 180.8425,
+            "humidity": 60.6,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:31:30"
+          },
+          "-OcVhzyNHTHjLWRt1LdY": {
+            "airQuality": "Excellent",
+            "co2": 44,
+            "dust": 218.51649,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:32:00"
+          },
+          "-OcVi6IyCMbA_2u4IP0H": {
+            "airQuality": "Excellent",
+            "co2": 42,
+            "dust": 195.91208,
+            "humidity": 60.6,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:32:30"
+          },
+          "-OcViDc_nK72UoSUOVz2": {
+            "airQuality": "Excellent",
+            "co2": 41,
+            "dust": 186.32234,
+            "humidity": 60.4,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:33:00"
+          },
+          "-OcViKxW4s6ZQT_r-vhG": {
+            "airQuality": "Excellent",
+            "co2": 37,
+            "dust": 109.60439,
+            "humidity": 60.3,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:33:30"
+          },
+          "-OcViSIAO3heYk1Ir2Se": {
+            "airQuality": "Excellent",
+            "co2": 38,
+            "dust": 134.94872,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:34:00"
+          },
+          "-OcViZdUkYoWCnDIl27x": {
+            "airQuality": "Excellent",
+            "co2": 35,
+            "dust": 116.45422,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:34:30"
+          },
+          "-OcVifx-El6GCjo9Vx_D": {
+            "airQuality": "Excellent",
+            "co2": 36,
+            "dust": 148.64835,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:35:00"
+          },
+          "-OcVinGbQFX1CTxYOCXJ": {
+            "airQuality": "Excellent",
+            "co2": 36,
+            "dust": 135.6337,
+            "humidity": 60.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:35:30"
+          },
+          "-OcViuaEfDW5BUprzljV": {
+            "airQuality": "Excellent",
+            "co2": 31,
+            "dust": 139.05859,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:36:00"
+          },
+          "-OcVj0vEjqoqNrzdqDT0": {
+            "airQuality": "Excellent",
+            "co2": 32,
+            "dust": 183.58241,
+            "humidity": 60.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:36:30"
+          },
+          "-OcVj8LNSP6ppjmX-nf3": {
+            "airQuality": "Excellent",
+            "co2": 32,
+            "dust": 217.83151,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:37:00"
+          },
+          "-OcVjFaTQSEhRRirHKtT": {
+            "airQuality": "Excellent",
+            "co2": 30,
+            "dust": 158.2381,
+            "humidity": 60.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:37:30"
+          },
+          "-OcVjMxC91mLKlJUBXnD": {
+            "airQuality": "Excellent",
+            "co2": 33,
+            "dust": 195.91208,
+            "humidity": 60.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:38:00"
+          },
+          "-OcVjUFSclVpmeaxkzU2": {
+            "airQuality": "Excellent",
+            "co2": 32,
+            "dust": 273.31503,
+            "humidity": 60.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:38:30"
+          },
+          "-OcVja_WKQJu-QuiE1QT": {
+            "airQuality": "Excellent",
+            "co2": 29,
+            "dust": 145.90842,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:39:00"
+          },
+          "-OcVji02wkEJnnQeZzv-": {
+            "airQuality": "Excellent",
+            "co2": 31,
+            "dust": 152.75822,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:39:30"
+          },
+          "-OcVjpFCp5DDL5mr8hGA": {
+            "airQuality": "Excellent",
+            "co2": 30,
+            "dust": 202.7619,
+            "humidity": 60.3,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:40:00"
+          },
+          "-OcVjwfAMKXPrWBVA0xx": {
+            "airQuality": "Excellent",
+            "co2": 30,
+            "dust": 174.67766,
+            "humidity": 60.2,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:40:30"
+          },
+          "-OcVk2zEB9Oj4w0h3Elk": {
+            "airQuality": "Excellent",
+            "co2": 30,
+            "dust": 250.02563,
+            "humidity": 60.2,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:41:00"
+          },
+          "-OcVkAJfqySHsdLjtYKY": {
+            "airQuality": "Excellent",
+            "co2": 28,
+            "dust": 128.78387,
+            "humidity": 60.2,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:41:30"
+          },
+          "-OcVkHaxboubk_9yauFs": {
+            "airQuality": "Excellent",
+            "co2": 28,
+            "dust": 191.8022,
+            "humidity": 60.2,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:42:00"
+          },
+          "-OcVkOyANpJaUkufMha2": {
+            "airQuality": "Excellent",
+            "co2": 29,
+            "dust": 144.53847,
+            "humidity": 60.2,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 21:42:30"
+          },
+          "-OcVkWGo4auvYzvNCA-8": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 276.73993,
+            "humidity": 60.3,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:43:00"
+          },
+          "-OcVkcThiPwg2CoKfntA": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 204.81686,
+            "humidity": 60.4,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:43:30"
+          },
+          "-OcVkjqSZJ-rD5GICBRo": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 123.98901,
+            "humidity": 60.7,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:44:00"
+          },
+          "-OcVkr8iHwoNyLzchpoc": {
+            "airQuality": "Excellent",
+            "co2": 29,
+            "dust": 109.60439,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:44:30"
+          },
+          "-OcVkyXQddZ2dvt5W8Kn": {
+            "airQuality": "Excellent",
+            "co2": 26,
+            "dust": 106.86447,
+            "humidity": 60.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:45:00"
+          },
+          "-OcVl4qwr02yXKmXMSxK": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 108.23444,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:45:30"
+          },
+          "-OcVlC8JulRHQ7ex4e4Y": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 211.66667,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:46:00"
+          },
+          "-OcVlJVURLvam69kP16G": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 163.03296,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:46:30"
+          },
+          "-OcVlQqiClqLAUfcs3pj": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 141.79852,
+            "humidity": 60.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:47:00"
+          },
+          "-OcVleTkJLDhFCLH7X3G": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 206.87178,
+            "humidity": 60.7,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:48:00"
+          },
+          "-OcVllhFdQACzWREMU2V": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 161.66301,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:48:30"
+          },
+          "-OcVlsvhS1wieyqpptfS": {
+            "airQuality": "Excellent",
+            "co2": 24,
+            "dust": 147.96336,
+            "humidity": 60.8,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:49:00"
+          },
+          "-OcVm-GVFfRi4jMSSgHY": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 177.41759,
+            "humidity": 61.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:49:30"
+          },
+          "-OcVm_5bSGb4EpXlsRlq": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 162.34798,
+            "humidity": 60.4,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:52:00"
+          },
+          "-OcVmgDUQwebBTH2PE7N": {
+            "airQuality": "Excellent",
+            "co2": 26,
+            "dust": 227.42123,
+            "humidity": 60.4,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:52:30"
+          },
+          "-OcVmnYLYudpHfDnTQ3U": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 202.07692,
+            "humidity": 60.5,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:53:00"
+          },
+          "-OcVmutrGPkIEQKaN0M2": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 133.57877,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:53:30"
+          },
+          "-OcVn1AO8KyoYn_k0zDy": {
+            "airQuality": "Excellent",
+            "co2": 24,
+            "dust": 171.93773,
+            "humidity": 60.8,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:54:00"
+          },
+          "-OcVn8VFeTA0wElPIADE": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 202.7619,
+            "humidity": 60.7,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:54:30"
+          },
+          "-OcVnFqaWPYinRrjHFv3": {
+            "airQuality": "Excellent",
+            "co2": 26,
+            "dust": 174.67766,
+            "humidity": 60.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:55:00"
+          },
+          "-OcVnN8tSKZr51Kzh2A_": {
+            "airQuality": "Excellent",
+            "co2": 24,
+            "dust": 181.52748,
+            "humidity": 60.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:55:30"
+          },
+          "-OcVnUTegTGbnZZ2wAkw": {
+            "airQuality": "Excellent",
+            "co2": 25,
+            "dust": 239.75092,
+            "humidity": 60.6,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:56:00"
+          },
+          "-OcVnanNJvOcbvg_NwwC": {
+            "airQuality": "Excellent",
+            "co2": 27,
+            "dust": 95.21978,
+            "humidity": 60.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 21:56:30"
+          },
+          "-OcVni7HJdHoHGueOjrt": {
+            "airQuality": "Excellent",
+            "co2": 26,
+            "dust": 106.17948,
+            "humidity": 60.5,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 21:57:00"
+          },
+          "-OcVs3Z2_c6Bxf1PFRLp": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 132.20879,
+            "humidity": 61.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 22:16:00"
+          },
+          "-OcVsAsgM82627kBWQ1b": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 60.9707,
+            "humidity": 61.4,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 22:16:30"
+          },
+          "-OcVsICejRkbyNUbgJrP": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 41.10623,
+            "humidity": 61.4,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:17:00"
+          },
+          "-OcVsPZAdFW9sCswCfyB": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 88.36996,
+            "humidity": 61.3,
+            "temperature": 34.7,
+            "timestamp": "2025-10-26 22:17:30"
+          },
+          "-OcVsWrIsGnqGvPZ60gr": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 245.91576,
+            "humidity": 61.1,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:18:00"
+          },
+          "-OcVsdB2WQSbVE4GLXie": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 214.4066,
+            "humidity": 61.3,
+            "temperature": 34.8,
+            "timestamp": "2025-10-26 22:18:30"
+          },
+          "-OcVskW2b5NRAtGKNYIh": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 43.16117,
+            "humidity": 61.3,
+            "temperature": 34.7,
+            "timestamp": "2025-10-26 22:19:00"
+          },
+          "-OcVsrpVq2grYDTGtZT1": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 71.24542,
+            "humidity": 61.4,
+            "temperature": 34.7,
+            "timestamp": "2025-10-26 22:19:30"
+          },
+          "-OcVsz9SYeE10pC01owl": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 224.68134,
+            "humidity": 61.6,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:20:00"
+          },
+          "-OcVt5r0hI-DuLcHzlnj": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 214.4066,
+            "humidity": 61.8,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:20:30"
+          },
+          "-OcVtCmuP2skFsUZzFRB": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 208.24176,
+            "humidity": 61.7,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:21:00"
+          },
+          "-OcVtKC4_g8V55LdI-JH": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 108.23444,
+            "humidity": 61.8,
+            "temperature": 34.6,
+            "timestamp": "2025-10-26 22:21:30"
+          },
+          "-OcVtRXe5YZu5UAodE28": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 108.91941,
+            "humidity": 61.6,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 22:22:00"
+          },
+          "-OcVtZ-Ch9ZeJihDWUwA": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 113.02931,
+            "humidity": 62,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 22:22:30"
+          },
+          "-OcVtf3EzJZ8gqEGwQP5": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 163.03296,
+            "humidity": 61.9,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 22:23:00"
+          },
+          "-OcVxRgDZKSa7bA6YyvT": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 52.75092,
+            "humidity": 62.9,
+            "temperature": 34.1,
+            "timestamp": "2025-10-26 22:39:30"
+          },
+          "-OcVxZ610SEbxxWt9kTD": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 257.56042,
+            "humidity": 62.9,
+            "temperature": 34.1,
+            "timestamp": "2025-10-26 22:40:00"
+          },
+          "-OcVxfNSmEp97zXWKHb_": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 119.19415,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:40:30"
+          },
+          "-OcVxmenVmbHeMEMrozt": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 73.30037,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:41:00"
+          },
+          "-OcVxu-cViV1ZTSKAmT7": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 189.06227,
+            "humidity": 63,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:41:30"
+          },
+          "-OcVy0JZ4wcJtEO5LM42": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 19.8718,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:42:00"
+          },
+          "-OcVy7jkIuCs0JjEU4ja": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 218.51649,
+            "humidity": 62.8,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:42:30"
+          },
+          "-OcVyF2bkgc5_qm4dbyb": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 142.48351,
+            "humidity": 62.6,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:43:00"
+          },
+          "-OcVyMMNMslkJIIHAR5p": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 98.64469,
+            "humidity": 62.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 22:43:30"
+          },
+          "-OcVyTizVFocgoCF0gQg": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 63.02564,
+            "humidity": 62.8,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:44:00"
+          },
+          "-OcVya15uYcJlqbqH7xk": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 215.77657,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:44:30"
+          },
+          "-OcVyhVg-B9bbHARzb1K": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 192.48718,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:45:00"
+          },
+          "-OcVyodngxwrfpAKwTEn": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 205.50183,
+            "humidity": 63.1,
+            "temperature": 34.1,
+            "timestamp": "2025-10-26 22:45:30"
+          },
+          "-OcVyvyddbeFCoqxpsuA": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 250.02563,
+            "humidity": 63.1,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:46:00"
+          },
+          "-OcVz2HDctzdvbkEQPaW": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 155.49817,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:46:30"
+          },
+          "-OcVz9kL1G4Bi3T_5LUR": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 211.66667,
+            "humidity": 63.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:47:00"
+          },
+          "-OcVzH23wNUhJivoplcI": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 214.4066,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:47:30"
+          },
+          "-OcVzOL47zfevUL3AT-T": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 84.26007,
+            "humidity": 63.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:48:00"
+          },
+          "-OcVzVdK6PlHnv1BpZSo": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 203.44688,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:48:30"
+          },
+          "-OcVzby4v0dqYl_rt5YI": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 244.54578,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:49:00"
+          },
+          "-OcVzjHCV1Glk3-NdSgU": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 178.10257,
+            "humidity": 62.7,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:49:30"
+          },
+          "-OcVzqabXLsCKFR3e1eN": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 283.58975,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:50:00"
+          },
+          "-OcVzxvptQuihZ4q1ytx": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 104.80953,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:50:30"
+          },
+          "-OcW-4G9z6jVV0DAG-5V": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 258.93042,
+            "humidity": 62.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 22:51:00"
+          },
+          "-OcW-BiWReamnvpyjMa7": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 226.73627,
+            "humidity": 62.7,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:51:30"
+          },
+          "-OcW-IvfZnIfTOholyD6": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 152.75822,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:52:00"
+          },
+          "-OcW-QFa63K3ezZR6jm9": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 64.39561,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:52:30"
+          },
+          "-OcW-X_HmtrQT-iUmACO": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 218.51649,
+            "humidity": 62.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 22:53:00"
+          },
+          "-OcW-dnPBL2FMmvgNe3H": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 77.41025,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:53:30"
+          },
+          "-OcW-lWSNihNUaGfOer8": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 137.00366,
+            "humidity": 63,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:54:00"
+          },
+          "-OcW-sUFtxDsBhg_oV3l": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 156.18314,
+            "humidity": 63.3,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:54:30"
+          },
+          "-OcW0-F-Lqg25KmGVrdf": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 81.52015,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:55:00"
+          },
+          "-OcW06DdVpOiz30rk76I": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 202.07692,
+            "humidity": 63,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:55:30"
+          },
+          "-OcW0DaH7XpwEjJThOj-": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 72.61539,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:56:00"
+          },
+          "-OcW0KrmT6tj4RK-tJgJ": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 215.77657,
+            "humidity": 63.2,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:56:30"
+          },
+          "-OcW0S8OcFY5V898z1Hp": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 184.26741,
+            "humidity": 63.2,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:57:00"
+          },
+          "-OcW0fqQmR16Zhs16Ad-": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 64.39561,
+            "humidity": 63.2,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 22:58:00"
+          },
+          "-OcW0nBNqtulxvN3K3fu": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 56.8608,
+            "humidity": 63.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:58:30"
+          },
+          "-OcW0uUPk7n7SeX7Nr3V": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 73.30037,
+            "humidity": 62.9,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:59:00"
+          },
+          "-OcW10yQNz2A_M_mAN6e": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 144.53847,
+            "humidity": 63.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 22:59:30"
+          },
+          "-OcW18-VyIzMstTAfMos": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 100.69963,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:00:00"
+          },
+          "-OcW1F_RjtANCEakx2dp": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 189.74724,
+            "humidity": 63,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:00:30"
+          },
+          "-OcW1McSjtPHSDAig_rL": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 83.57509,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:01:00"
+          },
+          "-OcW1U5JpV6Ui9BsT4rY": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 91.10989,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:01:30"
+          },
+          "-OcW1aTbYKHFw-CC4vdi": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 239.06593,
+            "humidity": 63.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:02:00"
+          },
+          "-OcW1p-PX6hlb8K7NWob": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 164.40294,
+            "humidity": 63.1,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:03:00"
+          },
+          "-OcW1wJVrRiO8GnrMY3X": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 192.48718,
+            "humidity": 63.2,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:03:30"
+          },
+          "-OcW22nbM8WgSVkMQol0": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 225.3663,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:04:00"
+          },
+          "-OcW2AB48HXWuVzZOzVu": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 221.94139,
+            "humidity": 62.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:04:30"
+          },
+          "-OcW2HKx7m7EIAMra6r7": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 267.83514,
+            "humidity": 63,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:05:00"
+          },
+          "-OcW2OiQSpzfBGj8H19_": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 96.58974,
+            "humidity": 62.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:05:30"
+          },
+          "-OcW2VyAVahMS45BP21H": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 103.43956,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:06:00"
+          },
+          "-OcW2cI2FBWRe54FQzWG": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 123.98901,
+            "humidity": 62.5,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:06:30"
+          },
+          "-OcW2jl-lCcbqJ-LuuLi": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 317.15384,
+            "humidity": 62.7,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:07:00"
+          },
+          "-OcW2r0dVRm2dzTJp9MR": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 64.39561,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:07:30"
+          },
+          "-OcW2yL_HPgzykbwzeHI": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 149.33333,
+            "humidity": 62.8,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:08:00"
+          },
+          "-OcW34eEuDweEze1lEzH": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 140.42857,
+            "humidity": 62.5,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:08:30"
+          },
+          "-OcW3BxUz2cG3hqbmYu9": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 314.41391,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:09:00"
+          },
+          "-OcW3JI_Q8x5TBiDX6ux": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 98.64469,
+            "humidity": 62.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:09:30"
+          },
+          "-OcW3QpixM51brT1r2IK": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 341.1282,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:10:00"
+          },
+          "-OcW3YAPWvsxTUY5-Lw_": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 137.68864,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:10:30"
+          },
+          "-OcW3lQYBqQBJPyXGeJr": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 127.41392,
+            "humidity": 62.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:11:30"
+          },
+          "-OcW3syCII0Uhk6B29ny": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 213.7216,
+            "humidity": 62.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:12:00"
+          },
+          "-OcW4-I3Lgi2trdVKaL5": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 71.9304,
+            "humidity": 62.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:12:30"
+          },
+          "-OcW46bep1YdJ50dr_Sb": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 159.60805,
+            "humidity": 62.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:13:00"
+          },
+          "-OcW4E2SxAnIWIbB3yhM": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 154.1282,
+            "humidity": 62.5,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:13:30"
+          },
+          "-OcW4LNcfPimo9nxWHSB": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 126.72894,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:14:00"
+          },
+          "-OcW4SSJzS7MCKsH0skP": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 283.58975,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:14:30"
+          },
+          "-OcW4ZpDNVgN-9AbHCtF": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 119.87913,
+            "humidity": 62.5,
+            "temperature": 34.5,
+            "timestamp": "2025-10-26 23:15:00"
+          },
+          "-OcW4g9-bIB0p5Vdhmny": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 96.58974,
+            "humidity": 62.3,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:15:30"
+          },
+          "-OcW4nbI3gDft3va0HMc": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 167.82785,
+            "humidity": 62.3,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:16:00"
+          },
+          "-OcW4uuc-mFVskaV1AM8": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 267.83514,
+            "humidity": 62.3,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:16:30"
+          },
+          "-OcW51Aeq9YtCvlyjaz8": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 99.32967,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:17:00"
+          },
+          "-OcW58WW-bsZI1tDDz-0": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 101.38462,
+            "humidity": 62.6,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:17:30"
+          },
+          "-OcW5FiY6J0HziZOE3HF": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 108.91941,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:18:00"
+          },
+          "-OcW5N3IFfFfdqUUdd0F": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 315.78387,
+            "humidity": 62.3,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:18:30"
+          },
+          "-OcW5UQhkmu8E243xrav": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 61.65567,
+            "humidity": 62,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:19:00"
+          },
+          "-OcW5alxwxB1OSNANihT": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 180.1575,
+            "humidity": 62.1,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:19:30"
+          },
+          "-OcW5i5AiOWPyy333bM7": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 204.81686,
+            "humidity": 61.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:20:00"
+          },
+          "-OcW5pIA5gZbpgXqStJ4": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 267.83514,
+            "humidity": 61.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:20:30"
+          },
+          "-OcW5wgkIyyBrwcysW9X": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 126.72894,
+            "humidity": 61.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:21:00"
+          },
+          "-OcW634NPy7dV_bG75Ps": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 164.40294,
+            "humidity": 61.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:21:30"
+          },
+          "-OcW6APa0N0HcBLXoCql": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 305.50916,
+            "humidity": 61.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:22:00"
+          },
+          "-OcW6HnTeLRJFKLercPj": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 101.38462,
+            "humidity": 61.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:22:30"
+          },
+          "-OcW6P6dQy6bN8YMQE8F": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 283.58975,
+            "humidity": 61.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:23:00"
+          },
+          "-OcW6WNKlp5MBUShofPr": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 311.67398,
+            "humidity": 61.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:23:30"
+          },
+          "-OcW6cjcT1_vpSUP1aA6": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 147.96336,
+            "humidity": 61.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:24:00"
+          },
+          "-OcW6k8wBZ7wvIzpx-57": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 315.78387,
+            "humidity": 61.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:24:30"
+          },
+          "-OcW6rSF7IyjqhHhtDk4": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 315.78387,
+            "humidity": 61.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:25:00"
+          },
+          "-OcW6z-xrbGM5XVddhrO": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 117.82417,
+            "humidity": 62,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:25:30"
+          },
+          "-OcW751d_U2gOAzwIuv_": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 80.15018,
+            "humidity": 62.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:26:00"
+          },
+          "-OcW7CD_KpTr9wId0lf5": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 150.01833,
+            "humidity": 62,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:26:30"
+          },
+          "-OcW7Jg-6aDfMtXSuvtJ": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 272.63004,
+            "humidity": 62.1,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:27:00"
+          },
+          "-OcW7Qqux31IzUW-CCL7": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 217.14651,
+            "humidity": 62.2,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:27:30"
+          },
+          "-OcW7YL49tWRKpJWq0Pj": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 153.44324,
+            "humidity": 62.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:28:00"
+          },
+          "-OcW7ekiOxQYF_soBkW3": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 241.80588,
+            "humidity": 62,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:28:30"
+          },
+          "-OcW7lu4_0xOJjmzmeSB": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 240.4359,
+            "humidity": 61.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:29:00"
+          },
+          "-OcW7tRYYlI-IRqgCVWF": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 302.08423,
+            "humidity": 61.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:29:30"
+          },
+          "-OcW80UGGwoCCebZU-zJ": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 114.39926,
+            "humidity": 61.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:30:00"
+          },
+          "-OcW86nFJ-uMkzpNGo7C": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 160.97803,
+            "humidity": 61.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:30:30"
+          },
+          "-OcW8GRnrk_O2AFt6KkP": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 274,
+            "humidity": 61.9,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:31:00"
+          },
+          "-OcW8Lf08FyIO1lAvwzY": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 415.10623,
+            "humidity": 61.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:31:30"
+          },
+          "-OcW8SwT6vA-zhL6ipxa": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 149.33333,
+            "humidity": 61.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:32:00"
+          },
+          "-OcW8_4_8M6EUrZpdn19": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 282.21976,
+            "humidity": 61.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:32:30"
+          },
+          "-OcW8gdlxoP0NZBclteJ": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 239.06593,
+            "humidity": 61.6,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:33:00"
+          },
+          "-OcW8nr7hiD7cC9LgsPC": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 156.86815,
+            "humidity": 62,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:33:30"
+          },
+          "-OcW8vwhoUBJHdo3_kx2": {
+            "airQuality": "Excellent",
+            "co2": 17,
+            "dust": 315.78387,
+            "humidity": 61.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:34:00"
+          },
+          "-OcW91Ow5Z9Ry9KFdPvd": {
+            "airQuality": "Excellent",
+            "co2": 18,
+            "dust": 100.01466,
+            "humidity": 61.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:34:30"
+          },
+          "-OcW991ay8wdUg2MGawX": {
+            "airQuality": "Excellent",
+            "co2": 16,
+            "dust": 327.42859,
+            "humidity": 61.5,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:35:00"
+          },
+          "-OcWArl9AjXx3ZiTtvSX": {
+            "airQuality": "Poor",
+            "co2": 17,
+            "dust": 164.40294,
+            "humidity": 62.1,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:42:30"
+          },
+          "-OcWAz4c65zawZ6wHa5n": {
+            "airQuality": "Fair",
+            "co2": 17,
+            "dust": 138.37363,
+            "humidity": 63.3,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:43:00"
+          },
+          "-OcWB5PLnj78mij9Rcls": {
+            "airQuality": "Very Poor",
+            "co2": 16,
+            "dust": 265.09521,
+            "humidity": 62.1,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:43:30"
+          },
+          "-OcWBCfpRod_9jpfXbNA": {
+            "airQuality": "",
+            "co2": 17,
+            "dust": 206.87178,
+            "humidity": 62.1,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:44:00"
+          },
+          "-OcWBJz7WPNZotHNkDc9": {
+            "airQuality": "",
+            "co2": 16,
+            "dust": 114.39926,
+            "humidity": 62.2,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:44:30"
+          },
+          "-OcWBRKLgDt3DhmhYx3V": {
+            "airQuality": "",
+            "co2": 15,
+            "dust": 210.98169,
+            "humidity": 62.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:45:00"
+          },
+          "-OcWBYd05NxmXhHVvn7O": {
+            "airQuality": "",
+            "co2": 16,
+            "dust": 152.07326,
+            "humidity": 62.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:45:30"
+          },
+          "-OcWBmNouiSr-5Q3gtCB": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 247.97069,
+            "humidity": 62.1,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:46:30"
+          },
+          "-OcWBtgPskoNeKr8hx8R": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 160.29305,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:47:00"
+          },
+          "-OcWC0-qnFJXOSYnQfBc": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 127.41392,
+            "humidity": 62.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:47:30"
+          },
+          "-OcWC7Kj40h1vMt1Dp-2": {
+            "airQuality": "",
+            "co2": 19,
+            "dust": 284.27472,
+            "humidity": 62.4,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:48:00"
+          },
+          "-OcWCEfm3ikwDVVLZ6J4": {
+            "airQuality": "",
+            "co2": 17,
+            "dust": 91.10989,
+            "humidity": 62.7,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:48:30"
+          },
+          "-OcWCLzGtUXcAAGhqmdz": {
+            "airQuality": "",
+            "co2": 19,
+            "dust": 110.97436,
+            "humidity": 62.4,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:49:00"
+          },
+          "-OcWCTJ4NfLyZCm-4Kpr": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 201.39195,
+            "humidity": 62.6,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:49:30"
+          },
+          "-OcWC_eG7HBtlVXXoPY1": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 173.30768,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:50:00"
+          },
+          "-OcWCgw6yWGA-2SbJePi": {
+            "airQuality": "",
+            "co2": 17,
+            "dust": 278.79486,
+            "humidity": 62.9,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:50:30"
+          },
+          "-OcWCoFzty9tttk1WXuX": {
+            "airQuality": "",
+            "co2": 17,
+            "dust": 150.01833,
+            "humidity": 62.6,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:51:00"
+          },
+          "-OcWCv_raksNrWXVRnGs": {
+            "airQuality": "",
+            "co2": 18,
+            "dust": 318.5238,
+            "humidity": 62.6,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:51:30"
+          },
+          "-OcWD1vr9z5pE-RwFYvm": {
+            "airQuality": "",
+            "co2": 16,
+            "dust": 100.69963,
+            "humidity": 62.8,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:52:00"
+          },
+          "-OcWD9EPivEf6IFdXEOR": {
+            "airQuality": "",
+            "co2": 15,
+            "dust": 299.34433,
+            "humidity": 62.7,
+            "temperature": 34.2,
+            "timestamp": "2025-10-26 23:52:30"
+          },
+          "-OcWDGZJc8dQog8NctCN": {
+            "airQuality": "",
+            "co2": 16,
+            "dust": 345.23813,
+            "humidity": 62.8,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:53:00"
+          },
+          "-OcWDNszLJh6QA1jnGi5": {
+            "airQuality": "",
+            "co2": 16,
+            "dust": 111.65935,
+            "humidity": 62.7,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:53:30"
+          },
+          "-OcWDVCsigpxr2AyeZHl": {
+            "airQuality": "",
+            "co2": 15,
+            "dust": 202.7619,
+            "humidity": 62.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-26 23:54:00"
+          },
+          "-OcWDbXPv6NXbBdRBSO1": {
+            "airQuality": "",
+            "co2": 15,
+            "dust": 318.5238,
+            "humidity": 63.3,
+            "temperature": 34.4,
+            "timestamp": "2025-10-26 23:54:30"
+          },
+          "-OcWIsRj0f-7eGpn9WQg": {
+            "airQuality": "Poor",
+            "co2": 16,
+            "dust": 200.02197,
+            "humidity": 64.7,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:17:30"
+          },
+          "-OcWIzdN9waXl5uwYg4r": {
+            "airQuality": "Fair",
+            "co2": 18,
+            "dust": 141.79852,
+            "humidity": 66.4,
+            "temperature": 34.1,
+            "timestamp": "2025-10-27 00:18:00"
+          },
+          "-OcWJ5zMboJIGo5xgb-e": {
+            "airQuality": "Poor",
+            "co2": 17,
+            "dust": 223.99632,
+            "humidity": 64.5,
+            "temperature": 34.1,
+            "timestamp": "2025-10-27 00:18:30"
+          },
+          "-OcWJDI3wtCAHs3e13Ux": {
+            "airQuality": "Excellent",
+            "co2": 19,
+            "dust": 86.31503,
+            "humidity": 64.6,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:19:00"
+          },
+          "-OcWJKbyABGloS3x0j2W": {
+            "airQuality": "Poor",
+            "co2": 19,
+            "dust": 197.96704,
+            "humidity": 64.5,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:19:30"
+          },
+          "-OcWJRwfh95sLIBYll-e": {
+            "airQuality": "Fair",
+            "co2": 19,
+            "dust": 134.94872,
+            "humidity": 64.1,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:20:00"
+          },
+          "-OcWJZRaNvs9DEfaDs6a": {
+            "airQuality": "Fair",
+            "co2": 18,
+            "dust": 113.02931,
+            "humidity": 64.3,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:20:30"
+          },
+          "-OcWJfdag0h7VivBvM0S": {
+            "airQuality": "Poor",
+            "co2": 18,
+            "dust": 176.04761,
+            "humidity": 64.4,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:21:00"
+          },
+          "-OcWLVp3IGc4EMCPbUcS": {
+            "airQuality": "Good",
+            "co2": 15,
+            "dust": 87,
+            "humidity": 65.7,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:29:00"
+          },
+          "-OcWLc8pBCy8ebkgWMT8": {
+            "airQuality": "Good",
+            "co2": 15,
+            "dust": 64.39561,
+            "humidity": 65.5,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:29:30"
+          },
+          "-OcWLjTaQmZNPe2Xt63N": {
+            "airQuality": "Good",
+            "co2": 14,
+            "dust": 97.95971,
+            "humidity": 65.9,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:30:00"
+          },
+          "-OcWLqnKxm6WNLUwF9bI": {
+            "airQuality": "Poor",
+            "co2": 14,
+            "dust": 294.54944,
+            "humidity": 65.7,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:30:30"
+          },
+          "-OcWLy5VPpzU-ih7lV5h": {
+            "airQuality": "Good",
+            "co2": 14,
+            "dust": 145.22343,
+            "humidity": 65.8,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:31:00"
+          },
+          "-OcWM4U0-vo2w5AqRQtH": {
+            "airQuality": "Good",
+            "co2": 14,
+            "dust": 75.35531,
+            "humidity": 65.6,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:31:30"
+          },
+          "-OcWMBkGXTnw8bp7jkD-": {
+            "airQuality": "Fair",
+            "co2": 13,
+            "dust": 205.50183,
+            "humidity": 65.7,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:32:00"
+          },
+          "-OcWMJ4Kc7xZ0KA-qOEb": {
+            "airQuality": "Poor",
+            "co2": 15,
+            "dust": 319.20877,
+            "humidity": 65.9,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:32:30"
+          },
+          "-OcWMQS09Rr-6cj9NkPB": {
+            "airQuality": "Poor",
+            "co2": 14,
+            "dust": 281.53479,
+            "humidity": 66.2,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:33:00"
+          },
+          "-OcWMXioqj4xONtQ1aOx": {
+            "airQuality": "Good",
+            "co2": 14,
+            "dust": 124.67399,
+            "humidity": 66.5,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:33:30"
+          },
+          "-OcWMe6NcDi46t_4grX9": {
+            "airQuality": "Poor",
+            "co2": 14,
+            "dust": 299.34433,
+            "humidity": 66.7,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:34:00"
+          },
+          "-OcWMlGIkAsHxWBVIFTF": {
+            "airQuality": "Poor",
+            "co2": 14,
+            "dust": 271.94504,
+            "humidity": 66.8,
+            "temperature": 33.7,
+            "timestamp": "2025-10-27 00:34:30"
+          },
+          "-OcWMscblbJKKYUZV-lf": {
+            "airQuality": "Good",
+            "co2": 14,
+            "dust": 123.30404,
+            "humidity": 66.6,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:35:00"
+          },
+          "-OcWMzyI_Qtd2jZM5Udz": {
+            "airQuality": "Poor",
+            "co2": 14,
+            "dust": 306.87912,
+            "humidity": 66.7,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:35:30"
+          },
+          "-OcWN6GxaB2eG8_gv_TL": {
+            "airQuality": "Good",
+            "co2": 11,
+            "dust": 145.90842,
+            "humidity": 66.5,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:36:00"
+          },
+          "-OcWNDaXrM73jrUrLGKz": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 277.4249,
+            "humidity": 66.4,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:36:30"
+          },
+          "-OcWNKvILLeDVD4wKxvR": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 283.58975,
+            "humidity": 66.3,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:37:00"
+          },
+          "-OcWNSFCreUiImUBsL6F": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 147.96336,
+            "humidity": 66.6,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:37:30"
+          },
+          "-OcWOUFPmNeJhVY5c1m_": {
+            "airQuality": "Fair",
+            "co2": 9,
+            "dust": 171.93773,
+            "humidity": 66.5,
+            "temperature": 34.1,
+            "timestamp": "2025-10-27 00:42:00"
+          },
+          "-OcWOaVU6nuSUUAMzzgt": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 195.91208,
+            "humidity": 66.6,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:42:30"
+          },
+          "-OcWOhnXCvRTV4vpG6q8": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 345.9231,
+            "humidity": 66.8,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:43:00"
+          },
+          "-OcWOp7DKdDNmtzTXugZ": {
+            "airQuality": "Fair",
+            "co2": 9,
+            "dust": 156.86815,
+            "humidity": 66.8,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:43:30"
+          },
+          "-OcWOwS3VV_utVi68xIT": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 241.80588,
+            "humidity": 66.9,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:44:00"
+          },
+          "-OcWP2lxYmtz7i8lZhpe": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 73.98534,
+            "humidity": 66.8,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:44:30"
+          },
+          "-OcWPA5xgsgJLGCKZu8s": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 152.07326,
+            "humidity": 67,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:45:00"
+          },
+          "-OcWPHRymFMMj2r5cEMn": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 118.50915,
+            "humidity": 67.4,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:45:30"
+          },
+          "-OcWPOkHgG4N4l-kRqx8": {
+            "airQuality": "Fair",
+            "co2": 9,
+            "dust": 178.10257,
+            "humidity": 67,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:46:00"
+          },
+          "-OcWPW4HFmDi56SBFnSv": {
+            "airQuality": "Good",
+            "co2": 11,
+            "dust": 93.16484,
+            "humidity": 67,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:46:30"
+          },
+          "-OcWPcOx5DQiEuN-uFVM": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 275.36996,
+            "humidity": 67.1,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:47:00"
+          },
+          "-OcWPjipQz4r3AU8Wz02": {
+            "airQuality": "Good",
+            "co2": 11,
+            "dust": 130.15385,
+            "humidity": 67.2,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:47:30"
+          },
+          "-OcWPr5KNesCJO29mxyY": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 176.04761,
+            "humidity": 67.1,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:48:00"
+          },
+          "-OcWPyNQunmKYhgfjH45": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 96.58974,
+            "humidity": 67.2,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:48:30"
+          },
+          "-OcWQ4hKi5hqtjvojXG2": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 184.26741,
+            "humidity": 67.3,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:49:00"
+          },
+          "-OcWQC15Cqkb26JO-Bkx": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 114.39926,
+            "humidity": 67.3,
+            "temperature": 33.8,
+            "timestamp": "2025-10-27 00:49:30"
+          },
+          "-OcWQJLjrHUNzBIYfem2": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 146.59341,
+            "humidity": 67.1,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:50:00"
+          },
+          "-OcWQQf_a4IMifApQEV0": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 221.25642,
+            "humidity": 67,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:50:30"
+          },
+          "-OcWQY1KNloDBxg39ZSz": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 169.88277,
+            "humidity": 66.9,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:51:00"
+          },
+          "-OcWQeKN4UqKGZ5AZi1j": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 158.92307,
+            "humidity": 66.9,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:51:30"
+          },
+          "-OcWQleHL46Xz4OBUF0O": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 150.70331,
+            "humidity": 66.9,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:52:00"
+          },
+          "-OcWQsys9e9poCxhRItL": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 88.36996,
+            "humidity": 67.2,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:52:30"
+          },
+          "-OcWR-JsqUxTFDwbOz8N": {
+            "airQuality": "Excellent",
+            "co2": 9,
+            "dust": 47.95604,
+            "humidity": 67.1,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:53:00"
+          },
+          "-OcWR6cnn_r1FSmoQ_rZ": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 265.09521,
+            "humidity": 67,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:53:30"
+          },
+          "-OcWRE4B77kwMm2nRbC2": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 104.80953,
+            "humidity": 66.9,
+            "temperature": 34,
+            "timestamp": "2025-10-27 00:54:00"
+          },
+          "-OcWRLGyiq9gk3vHLxN5": {
+            "airQuality": "Poor",
+            "co2": 9,
+            "dust": 310.30405,
+            "humidity": 67.1,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:54:30"
+          },
+          "-OcWRSc9UomSv_Hvu0YQ": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 134.94872,
+            "humidity": 67.2,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:55:00"
+          },
+          "-OcWRZz5__AXyDEBpcp4": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 115.08424,
+            "humidity": 67.2,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:55:30"
+          },
+          "-OcWRgFXxkF_E26nMNBX": {
+            "airQuality": "Poor",
+            "co2": 9,
+            "dust": 295.23444,
+            "humidity": 67.3,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:56:00"
+          },
+          "-OcWRnb8JYIedc6eQfYh": {
+            "airQuality": "Fair",
+            "co2": 9,
+            "dust": 150.01833,
+            "humidity": 67.2,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:56:30"
+          },
+          "-OcWRv-Z_4FiJxWxok9d": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 241.12086,
+            "humidity": 67.1,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:57:00"
+          },
+          "-OcWS1Dv8l0ZFJy9vPqO": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 97.95971,
+            "humidity": 67.5,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:57:30"
+          },
+          "-OcWS8YoFQYbCqi6cEAS": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 118.50915,
+            "humidity": 67.7,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:58:00"
+          },
+          "-OcWSFuFDahFIEH5YFL_": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 134.26373,
+            "humidity": 67.7,
+            "temperature": 33.9,
+            "timestamp": "2025-10-27 00:58:30"
+          },
+          "-OcWgaP38V15AYfUwDHg": {
+            "airQuality": "Fair",
+            "co2": 14,
+            "dust": 239.75092,
+            "humidity": 70.1,
+            "temperature": 32.5,
+            "timestamp": "2025-10-27 02:05:30"
+          },
+          "-OcWghig8Ki0KJj8B-gk": {
+            "airQuality": "Fair",
+            "co2": 13,
+            "dust": 163.03296,
+            "humidity": 69.6,
+            "temperature": 32.6,
+            "timestamp": "2025-10-27 02:06:00"
+          },
+          "-OcWgp2UMAN2xwUyU6s9": {
+            "airQuality": "Fair",
+            "co2": 13,
+            "dust": 233.58607,
+            "humidity": 69.3,
+            "temperature": 32.7,
+            "timestamp": "2025-10-27 02:06:30"
+          },
+          "-OcWgwO_df399bNPljv0": {
+            "airQuality": "Poor",
+            "co2": 13,
+            "dust": 373.32236,
+            "humidity": 69,
+            "temperature": 32.7,
+            "timestamp": "2025-10-27 02:07:00"
+          },
+          "-OcWh2hPwtmOMf_HNFJb": {
+            "airQuality": "Poor",
+            "co2": 12,
+            "dust": 258.24542,
+            "humidity": 69,
+            "temperature": 32.8,
+            "timestamp": "2025-10-27 02:07:30"
+          },
+          "-OcWhA0fcMKAvFzVb8rE": {
+            "airQuality": "Good",
+            "co2": 13,
+            "dust": 133.57877,
+            "humidity": 68.9,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:08:00"
+          },
+          "-OcWhHK4IGKz0V0yqZSW": {
+            "airQuality": "Good",
+            "co2": 13,
+            "dust": 123.30404,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:08:30"
+          },
+          "-OcWhOeKCL3I-5lG-y08": {
+            "airQuality": "Fair",
+            "co2": 12,
+            "dust": 152.07326,
+            "humidity": 68.7,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:09:00"
+          },
+          "-OcWhVyjhjbT41ly1yay": {
+            "airQuality": "Fair",
+            "co2": 13,
+            "dust": 237.01099,
+            "humidity": 68.6,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:09:30"
+          },
+          "-OcWhcIVyGqrwqluMakP": {
+            "airQuality": "Fair",
+            "co2": 12,
+            "dust": 202.7619,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:10:00"
+          },
+          "-OcWhje1EsXfU8KM-fIH": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 167.82785,
+            "humidity": 68.4,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:10:30"
+          },
+          "-OcWhqx2DnDeQuOFiQKj": {
+            "airQuality": "Good",
+            "co2": 12,
+            "dust": 118.50915,
+            "humidity": 68.2,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:11:00"
+          },
+          "-OcWhyIi3pHSEJb93j8E": {
+            "airQuality": "Fair",
+            "co2": 12,
+            "dust": 239.75092,
+            "humidity": 68.3,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:11:30"
+          },
+          "-OcWiC-_eh1QK2R1KIuP": {
+            "airQuality": "Poor",
+            "co2": 12,
+            "dust": 299.34433,
+            "humidity": 67.9,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:12:30"
+          },
+          "-OcWiJK0In47Qb2QI2Wk": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 164.40294,
+            "humidity": 68.1,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:13:00"
+          },
+          "-OcWiQe4Vi1O0qDOx1l-": {
+            "airQuality": "Very Poor",
+            "co2": 12,
+            "dust": 418.53113,
+            "humidity": 68,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:13:30"
+          },
+          "-OcWiXyu8VurLAqkryVh": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 207.55679,
+            "humidity": 68,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:14:00"
+          },
+          "-OcWie65NGoyxLDKIGdY": {
+            "airQuality": "Fair",
+            "co2": 12,
+            "dust": 233.58607,
+            "humidity": 68.2,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:14:30"
+          },
+          "-OcWilQU4VH0x4ypYIRN": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 239.06593,
+            "humidity": 68.4,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:15:00"
+          },
+          "-OcWiskRKz5L1oy6kSoR": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 191.11722,
+            "humidity": 68.3,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:15:30"
+          },
+          "-OcWj-4En2lcrNoZ4eJx": {
+            "airQuality": "Fair",
+            "co2": 12,
+            "dust": 195.22711,
+            "humidity": 68.4,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:16:00"
+          },
+          "-OcWj6P2uIWLz-Is5J8k": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 150.70331,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:16:30"
+          },
+          "-OcWjDinJuU8REA44_Pa": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 195.22711,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:17:00"
+          },
+          "-OcWjL4RFO4ZW_VLBQZd": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 242.49084,
+            "humidity": 68.3,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:17:30"
+          },
+          "-OcWjSNjdSUntpVu8RcO": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 470.58975,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:18:00"
+          },
+          "-OcWjZj-1VDRTd8wD8tV": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 404.83148,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:18:30"
+          },
+          "-OcWjg2uWKUhWR_LitMF": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 156.86815,
+            "humidity": 68.5,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:19:00"
+          },
+          "-OcWjnKJmCRr8wAD1FGj": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 500.72891,
+            "humidity": 68.2,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:19:30"
+          },
+          "-OcWjufgffSYElbd16kG": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 482.91943,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:20:00"
+          },
+          "-OcWk11TVXxlpeMQca0f": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 491.82416,
+            "humidity": 68.3,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:20:30"
+          },
+          "-OcWk8KLqp78Ng58yPcR": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 502.78391,
+            "humidity": 68.1,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:21:00"
+          },
+          "-OcWkFcbbLKBZqMmVmrZ": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 245.91576,
+            "humidity": 68,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:21:30"
+          },
+          "-OcWkMxgBIYf3Qo2fm98": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 460.315,
+            "humidity": 68.2,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:22:00"
+          },
+          "-OcWkUH9fzC2A8mZbRCt": {
+            "airQuality": "Poor",
+            "co2": 11,
+            "dust": 282.90475,
+            "humidity": 68.4,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:22:30"
+          },
+          "-OcWkab-S_oyzCUjLUbh": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 490.45422,
+            "humidity": 68.3,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:23:00"
+          },
+          "-OcWkhvuGWwVtWkMjfpZ": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 419.21609,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:23:30"
+          },
+          "-OcWkpFbUXRYpkhz-ykv": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 468.53482,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:24:00"
+          },
+          "-OcWkwclF_wllDltncdO": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 449.35532,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:24:30"
+          },
+          "-OcWl2uDsl_aLmtNh8y1": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 476.06961,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:25:00"
+          },
+          "-OcWlAE0ihRI-16TRZun": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 480.86444,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:25:30"
+          },
+          "-OcWlHYvDRGW59f4deq6": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 172.62271,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:26:00"
+          },
+          "-OcWlOuJRp13uV-mDk4P": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 468.53482,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:26:30"
+          },
+          "-OcWlWCQIjX7BEmnXz_7": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 180.1575,
+            "humidity": 68.6,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:27:00"
+          },
+          "-OcWlcXE9ZnkHebSDDhg": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 443.19049,
+            "humidity": 68.7,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:27:30"
+          },
+          "-OcWljrANBx87x2Dxqe7": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 452.78021,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:28:00"
+          },
+          "-OcWlrAu_GspAh5Jvimq": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 471.95969,
+            "humidity": 68.9,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:28:30"
+          },
+          "-OcWlyVeCw8LNWSvCxvn": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 478.80951,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:29:00"
+          },
+          "-OcWm4pUdHTOEyXlVuxh": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 482.23444,
+            "humidity": 68.7,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:29:30"
+          },
+          "-OcWmC8qRhQnUdilPXXq": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 452.78021,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:30:00"
+          },
+          "-OcWmJU7CVi5TPrb75dN": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 460.315,
+            "humidity": 68.8,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:30:30"
+          },
+          "-OcWmQnsWk_c2_gKX7IQ": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 478.80951,
+            "humidity": 68.4,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:31:00"
+          },
+          "-OcWmY62CRUKsFTJhL-w": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 489.08426,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:31:30"
+          },
+          "-OcWmeSRd1bgZeN2rGat": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 457.5751,
+            "humidity": 68.8,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:32:00"
+          },
+          "-OcWmlpep4cIOcsSqUsH": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 445.93039,
+            "humidity": 68.8,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:32:30"
+          },
+          "-OcWmt9I0TuwfpQUaeas": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 493.87909,
+            "humidity": 68.6,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:33:00"
+          },
+          "-OcWn-U9SzgWdXtEWm_7": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 487.0293,
+            "humidity": 68.6,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:33:30"
+          },
+          "-OcWn6nxPJkbRZ9sFHaQ": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 467.16483,
+            "humidity": 68.4,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:34:00"
+          },
+          "-OcWnE7v5YBWmOJYFvyX": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 481.54947,
+            "humidity": 68.6,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:34:30"
+          },
+          "-OcWnLU7r23d5vFee8Mg": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 499.35898,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:35:00"
+          },
+          "-OcWnSmVRMYLfwc-qihO": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 474.69965,
+            "humidity": 68.9,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:35:30"
+          },
+          "-OcWn_6BjGkBiRl6vDTO": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 478.80951,
+            "humidity": 69.3,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:36:00"
+          },
+          "-OcWngR59ozCV5djkw_q": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 495.93408,
+            "humidity": 68.9,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:36:30"
+          },
+          "-OcWnnkuNpS9X-W2c9Xt": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 228.10623,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:37:00"
+          },
+          "-OcWnv4tGgIVPueIsfwk": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 359.62274,
+            "humidity": 69,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:37:30"
+          },
+          "-OcWo1PQnfS3HIKBBLGV": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 343.18314,
+            "humidity": 68.8,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:38:00"
+          },
+          "-OcWo8jESXR8oXbwAOH0": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 160.29305,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:38:30"
+          },
+          "-OcWoG4Ee4NwFVYyTaOR": {
+            "airQuality": "Fair",
+            "co2": 11,
+            "dust": 193.17215,
+            "humidity": 68.9,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:39:00"
+          },
+          "-OcWoNNw9FU1au_GjmR2": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 370.5824,
+            "humidity": 68.9,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:39:30"
+          },
+          "-OcWoUhm0N4FdYruxv_Y": {
+            "airQuality": "Poor",
+            "co2": 11,
+            "dust": 369.89743,
+            "humidity": 69,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:40:00"
+          },
+          "-OcWob4nY61SX98S7q6Y": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 193.85713,
+            "humidity": 69,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:40:30"
+          },
+          "-OcWoiNzSHdZgkd_0I8a": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 375.37729,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:41:00"
+          },
+          "-OcWope_rYAVrawQNRBJ": {
+            "airQuality": "Fair",
+            "co2": 10,
+            "dust": 243.86079,
+            "humidity": 69,
+            "temperature": 32.9,
+            "timestamp": "2025-10-27 02:41:30"
+          },
+          "-OcWowzK5rgOOCiB17GA": {
+            "airQuality": "Good",
+            "co2": 10,
+            "dust": 106.86447,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:42:00"
+          },
+          "-OcWp3JOEFHn_87G6kN0": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 326.74359,
+            "humidity": 68.8,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:42:30"
+          },
+          "-OcWpAcyvTtL-y0e6Qj7": {
+            "airQuality": "Poor",
+            "co2": 11,
+            "dust": 341.1282,
+            "humidity": 68.7,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:43:00"
+          },
+          "-OcWpHyzthD7hno5qdRY": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 295.23444,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:43:30"
+          },
+          "-OcWpPKNAYI5mAECsRXq": {
+            "airQuality": "Poor",
+            "co2": 11,
+            "dust": 327.42859,
+            "humidity": 68.5,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:44:00"
+          },
+          "-OcWpWcdnWSTipxjH4MI": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 333.59341,
+            "humidity": 68.2,
+            "temperature": 33.2,
+            "timestamp": "2025-10-27 02:44:30"
+          },
+          "-OcWpcxnQFi0ANTI4lmt": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 283.58975,
+            "humidity": 68.4,
+            "temperature": 33.2,
+            "timestamp": "2025-10-27 02:45:00"
+          },
+          "-OcWpkOPM5ry2KuBCT1X": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 380.17218,
+            "humidity": 68.3,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:45:30"
+          },
+          "-OcWprd0tyfYO5VT3hBY": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 302.08423,
+            "humidity": 68.5,
+            "temperature": 33.1,
+            "timestamp": "2025-10-27 02:46:00"
+          },
+          "-OcWpyy0cFPTE_sN6Fuu": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 296.6044,
+            "humidity": 68.4,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:46:30"
+          },
+          "-OcWq5G1G1HlZO40azfq": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 362.36264,
+            "humidity": 68.6,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:47:00"
+          },
+          "-OcWqEbATdJwGgovuubx": {
+            "airQuality": "Good",
+            "co2": 9,
+            "dust": 121.93406,
+            "humidity": 68.5,
+            "temperature": 33,
+            "timestamp": "2025-10-27 02:47:30"
+          },
+          "-OcYHRxBcUmtNnmGNHVY": {
+            "airQuality": "Very Poor",
+            "co2": 45,
+            "dust": 568.54211,
+            "humidity": 75,
+            "temperature": 32.1,
+            "timestamp": "2025-10-27 09:30:30"
+          },
+          "-OcYHZHAAIhCwdgSYBM-": {
+            "airQuality": "Very Poor",
+            "co2": 47,
+            "dust": 432.23074,
+            "humidity": 74.7,
+            "temperature": 32.1,
+            "timestamp": "2025-10-27 09:31:00"
+          },
+          "-OcYHfaylkl9Lpbwy9EX": {
+            "airQuality": "Very Poor",
+            "co2": 54,
+            "dust": 589.09155,
+            "humidity": 74.5,
+            "temperature": 32.1,
+            "timestamp": "2025-10-27 09:31:30"
+          },
+          "-OcYHmvANBoCgVoMQH_5": {
+            "airQuality": "Very Poor",
+            "co2": 60,
+            "dust": 525.38831,
+            "humidity": 74.5,
+            "temperature": 32.2,
+            "timestamp": "2025-10-27 09:32:00"
+          },
+          "-OcYMFSdqA1DgKuTgKJX": {
+            "airQuality": "Fair",
+            "co2": 26,
+            "dust": 199.33699,
+            "humidity": 71.8,
+            "temperature": 32.3,
+            "timestamp": "2025-10-27 09:51:30"
+          },
+          "-OcYXTHzcyvVM7uJ_AI6": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 689.09888,
+            "humidity": 61.6,
+            "temperature": 27,
+            "timestamp": "2025-10-27 10:40:30"
+          },
+          "-OcYX_cDBbp11o-aw389": {
+            "airQuality": "Very Poor",
+            "co2": 37,
+            "dust": 728.82782,
+            "humidity": 61.5,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 10:41:00"
+          },
+          "-OcYXgx8aavc2ZWIOjBb": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 689.78387,
+            "humidity": 61.8,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 10:41:30"
+          },
+          "-OcYXoGrEIAwfZ6JK_qg": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 721.97803,
+            "humidity": 61.8,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 10:42:00"
+          },
+          "-OcY_RmVwJci8xvazFv5": {
+            "airQuality": "Very Poor",
+            "co2": 33,
+            "dust": 730.88275,
+            "humidity": 61.7,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 10:53:30"
+          },
+          "-OcY_Z6D8CoNy9ctMGrI": {
+            "airQuality": "Very Poor",
+            "co2": 35,
+            "dust": 738.41754,
+            "humidity": 62.1,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 10:54:00"
+          },
+          "-OcY_fQSrGgj_EfqD8vF": {
+            "airQuality": "Very Poor",
+            "co2": 35,
+            "dust": 776.77661,
+            "humidity": 61.6,
+            "temperature": 27,
+            "timestamp": "2025-10-27 10:54:30"
+          },
+          "-OcY_mlq9n_j-Yd6rHiY": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 748.69232,
+            "humidity": 61.8,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 10:55:00"
+          },
+          "-OcY_u7Y3iofx33Ooz5q": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 743.8974,
+            "humidity": 61.4,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 10:55:30"
+          },
+          "-OcYa0PEbbe9LrC78daw": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 732.93774,
+            "humidity": 61.2,
+            "temperature": 27,
+            "timestamp": "2025-10-27 10:56:00"
+          },
+          "-OcYa7jxjNBesLMO8p5G": {
+            "airQuality": "Very Poor",
+            "co2": 35,
+            "dust": 719.9231,
+            "humidity": 60.9,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 10:56:30"
+          },
+          "-OcYaF2Ux1Kq_5M7NCGP": {
+            "airQuality": "Very Poor",
+            "co2": 34,
+            "dust": 723.34796,
+            "humidity": 60.9,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 10:57:00"
+          },
+          "-OcYd6CVyoF-9YfrpDxD": {
+            "airQuality": "Very Poor",
+            "co2": 33,
+            "dust": 728.14288,
+            "humidity": 60.9,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:09:30"
+          },
+          "-OcYdDR1dyvkz6ripG3n": {
+            "airQuality": "Very Poor",
+            "co2": 35,
+            "dust": 775.40656,
+            "humidity": 61,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:10:00"
+          },
+          "-OcYdKkXQDufL8dD-Gct": {
+            "airQuality": "Poor",
+            "co2": 35,
+            "dust": 338.38831,
+            "humidity": 61.5,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:10:30"
+          },
+          "-OcYdS5TjD0tq40suR_o": {
+            "airQuality": "Very Poor",
+            "co2": 44,
+            "dust": 801.43585,
+            "humidity": 63,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:11:00"
+          },
+          "-OcYdZUHh7cv41kW9hGR": {
+            "airQuality": "Very Poor",
+            "co2": 42,
+            "dust": 789.79114,
+            "humidity": 61.1,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:11:30"
+          },
+          "-OcYdfpdVIhPOWii-uir": {
+            "airQuality": "Poor",
+            "co2": 45,
+            "dust": 346.60806,
+            "humidity": 61,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:12:00"
+          },
+          "-OcYdn2qUQZ0gTtbcqeH": {
+            "airQuality": "Poor",
+            "co2": 46,
+            "dust": 326.74359,
+            "humidity": 60.9,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:12:30"
+          },
+          "-OcYduNsAjQOc1H6t_oH": {
+            "airQuality": "Poor",
+            "co2": 45,
+            "dust": 369.21246,
+            "humidity": 60.7,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:13:00"
+          },
+          "-OcYe0mX6QA6QVokPc-U": {
+            "airQuality": "Very Poor",
+            "co2": 41,
+            "dust": 808.28571,
+            "humidity": 60.7,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:13:30"
+          },
+          "-OcYe830h2RqUqwAXAzZ": {
+            "airQuality": "Very Poor",
+            "co2": 42,
+            "dust": 800.75092,
+            "humidity": 60.7,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:14:00"
+          },
+          "-OcYeFUMI-rXV3VmtEYM": {
+            "airQuality": "Very Poor",
+            "co2": 43,
+            "dust": 469.21979,
+            "humidity": 60.8,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:14:30"
+          },
+          "-OcYeMt-WLfoTZm4laT2": {
+            "airQuality": "Very Poor",
+            "co2": 43,
+            "dust": 810.34064,
+            "humidity": 60.8,
+            "temperature": 27.1,
+            "timestamp": "2025-10-27 11:15:00"
+          },
+          "-OcYeU34ZpSWf46Mwu4c": {
+            "airQuality": "Very Poor",
+            "co2": 41,
+            "dust": 825.41022,
+            "humidity": 60.9,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:15:30"
+          },
+          "-OcYeaNlw1LP-lSyTaeI": {
+            "airQuality": "Very Poor",
+            "co2": 41,
+            "dust": 550.7326,
+            "humidity": 60.8,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:16:00"
+          },
+          "-OcYeheXLhsNuAQTKHIt": {
+            "airQuality": "Very Poor",
+            "co2": 44,
+            "dust": 747.32239,
+            "humidity": 61,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:16:30"
+          },
+          "-OcYeozLIPeqtYrVmGdd": {
+            "airQuality": "Very Poor",
+            "co2": 42,
+            "dust": 678.13922,
+            "humidity": 61.3,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:17:00"
+          },
+          "-OcYewOttj-jbKisHUzD": {
+            "airQuality": "Very Poor",
+            "co2": 40,
+            "dust": 761.02191,
+            "humidity": 61,
+            "temperature": 26.8,
+            "timestamp": "2025-10-27 11:17:30"
+          },
+          "-OcYf2eo2ELLvy1kLX2h": {
+            "airQuality": "Very Poor",
+            "co2": 39,
+            "dust": 809.6557,
+            "humidity": 61.3,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:18:00"
+          },
+          "-OcYf9xbkMnJaZu5vTp9": {
+            "airQuality": "Very Poor",
+            "co2": 43,
+            "dust": 769.92676,
+            "humidity": 61.2,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:18:30"
+          },
+          "-OcYfHHOi-EccurYklRl": {
+            "airQuality": "Very Poor",
+            "co2": 41,
+            "dust": 791.16119,
+            "humidity": 61,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:19:00"
+          },
+          "-OcYfOfYkb60_p6VTGAQ": {
+            "airQuality": "Very Poor",
+            "co2": 43,
+            "dust": 829.52008,
+            "humidity": 61,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:19:30"
+          },
+          "-OcYfVv70ol4rRS-gMza": {
+            "airQuality": "Very Poor",
+            "co2": 42,
+            "dust": 502.78391,
+            "humidity": 61,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:20:00"
+          },
+          "-OcYfcHa48XDYTWA7Qpe": {
+            "airQuality": "Very Poor",
+            "co2": 44,
+            "dust": 781.57147,
+            "humidity": 61.1,
+            "temperature": 26.9,
+            "timestamp": "2025-10-27 11:20:30"
+          },
+          "-OcYfjcmnGw2MYO9blQ6": {
+            "airQuality": "Very Poor",
+            "co2": 41,
+            "dust": 838.42493,
+            "humidity": 61,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:21:00"
+          },
+          "-OcYfr1Rn39mX-n8LdAb": {
+            "airQuality": "Very Poor",
+            "co2": 45,
+            "dust": 565.80219,
+            "humidity": 60.9,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:21:30"
+          },
+          "-OcYfyLnBPV3SGSo8TPP": {
+            "airQuality": "Very Poor",
+            "co2": 43,
+            "dust": 799.38092,
+            "humidity": 61,
+            "temperature": 27,
+            "timestamp": "2025-10-27 11:22:00"
+          },
+          "-OcpCwnrpZTtQUO7DQ06": {
+            "airQuality": "Very Poor",
+            "co2": 182,
+            "dust": 2594.71802,
+            "humidity": 62.1,
+            "temperature": 34.5,
+            "timestamp": "2025-10-30 21:04:00"
+          },
+          "-OcpD3AxwJEsw52z8ViP": {
+            "airQuality": "Very Poor",
+            "co2": 148,
+            "dust": 636.35529,
+            "humidity": 62.2,
+            "temperature": 34.5,
+            "timestamp": "2025-10-30 21:04:30"
+          },
+          "-OcpDAW03xgx0NBDU-qI": {
+            "airQuality": "Very Poor",
+            "co2": 129,
+            "dust": 736.36261,
+            "humidity": 62.3,
+            "temperature": 34.4,
+            "timestamp": "2025-10-30 21:05:00"
+          },
+          "-OcpGbK5K5YQRn-a7W5W": {
+            "airQuality": "Very Poor",
+            "co2": 137,
+            "dust": 789.1062,
+            "humidity": 62.7,
+            "temperature": 33.9,
+            "timestamp": "2025-10-30 21:20:00"
+          },
+          "-OcpGiTzXUK1L_zIPVYY": {
+            "airQuality": "Very Poor",
+            "co2": 145,
+            "dust": 902.12823,
+            "humidity": 62.5,
+            "temperature": 34.1,
+            "timestamp": "2025-10-30 21:20:30"
+          },
+          "-OcpGq2lNPTmYwm5P9O-": {
+            "airQuality": "Very Poor",
+            "co2": 141,
+            "dust": 908.29303,
+            "humidity": 61.9,
+            "temperature": 34.2,
+            "timestamp": "2025-10-30 21:21:00"
+          },
+          "-OcpGxIOgE8NLwyDNR_I": {
+            "airQuality": "Very Poor",
+            "co2": 136,
+            "dust": 895.96332,
+            "humidity": 61.9,
+            "temperature": 34.3,
+            "timestamp": "2025-10-30 21:21:30"
+          },
+          "-OcpH3aqI1BQIvpbsuwT": {
+            "airQuality": "Very Poor",
+            "co2": 191,
+            "dust": 893.22345,
+            "humidity": 61.8,
+            "temperature": 34.2,
+            "timestamp": "2025-10-30 21:22:00"
+          },
+          "-OcpHAvauKbO3Plo7vta": {
+            "airQuality": "Very Poor",
+            "co2": 159,
+            "dust": 896.64832,
+            "humidity": 61.7,
+            "temperature": 34.4,
+            "timestamp": "2025-10-30 21:22:30"
+          },
+          "-OcpHILkkluviZhpEtXN": {
+            "airQuality": "Very Poor",
+            "co2": 146,
+            "dust": 909.66296,
+            "humidity": 61.6,
+            "temperature": 34.4,
+            "timestamp": "2025-10-30 21:23:00"
+          },
+          "-Ocq2qY2X9QZPut0iCDP": {
+            "airQuality": "Very Poor",
+            "co2": 93,
+            "dust": 885.68872,
+            "humidity": 67.7,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 00:59:30"
+          },
+          "-Ocq2xtRuLvYPiWsmz3S": {
+            "airQuality": "Very Poor",
+            "co2": 104,
+            "dust": 1277.49817,
+            "humidity": 67.6,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:00:00"
+          },
+          "-Ocq34CxM4QUATjGMcMa": {
+            "airQuality": "Very Poor",
+            "co2": 85,
+            "dust": 702.11353,
+            "humidity": 67.6,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:00:30"
+          },
+          "-Ocq3BZ5EL2RdQI6TCKL": {
+            "airQuality": "Very Poor",
+            "co2": 80,
+            "dust": 1116.52747,
+            "humidity": 67.6,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:01:00"
+          },
+          "-Ocq3ItTzDwkyzuLM3df": {
+            "airQuality": "Very Poor",
+            "co2": 76,
+            "dust": 711.01831,
+            "humidity": 67.5,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:01:30"
+          },
+          "-Ocq3QJooMngxcoswYqj": {
+            "airQuality": "Very Poor",
+            "co2": 70,
+            "dust": 2606.36279,
+            "humidity": 67.5,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:02:00"
+          },
+          "-Ocq3Xe6PZg87lm4Nexz": {
+            "airQuality": "Very Poor",
+            "co2": 68,
+            "dust": 791.84619,
+            "humidity": 67.8,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:02:30"
+          },
+          "-Ocq3dwO-yVTS7sZCc2h": {
+            "airQuality": "Very Poor",
+            "co2": 64,
+            "dust": 1915.21606,
+            "humidity": 67.6,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:03:00"
+          },
+          "-Ocq3lEefcTKia_Q2N6B": {
+            "airQuality": "Very Poor",
+            "co2": 66,
+            "dust": 2104.95605,
+            "humidity": 67.8,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:03:30"
+          },
+          "-Ocq3sZqqUYxgqFHvgwu": {
+            "airQuality": "Very Poor",
+            "co2": 63,
+            "dust": 2389.22363,
+            "humidity": 67.8,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:04:00"
+          },
+          "-Ocq3zueFaPYMiFHo_qq": {
+            "airQuality": "Very Poor",
+            "co2": 59,
+            "dust": 2133.72534,
+            "humidity": 67.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:04:30"
+          },
+          "-Ocq46EdQPnhOUItFPR1": {
+            "airQuality": "Very Poor",
+            "co2": 55,
+            "dust": 805.54584,
+            "humidity": 67.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:05:00"
+          },
+          "-Ocq4DZuciATlW94kBY5": {
+            "airQuality": "Very Poor",
+            "co2": 58,
+            "dust": 950.0769,
+            "humidity": 68,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:05:30"
+          },
+          "-Ocq4KtXoDYadhLSkjAa": {
+            "airQuality": "Very Poor",
+            "co2": 56,
+            "dust": 832.26013,
+            "humidity": 68.2,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:06:00"
+          },
+          "-Ocq4SDHHAzV79yjim2f": {
+            "airQuality": "Very Poor",
+            "co2": 62,
+            "dust": 689.09888,
+            "humidity": 67.9,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:06:30"
+          },
+          "-Ocq4ZY-iTLlcrVO-ufX": {
+            "airQuality": "Very Poor",
+            "co2": 60,
+            "dust": 2640.61182,
+            "humidity": 68.1,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:07:00"
+          },
+          "-Ocq4ftaPwv2b-MFbZJA": {
+            "airQuality": "Very Poor",
+            "co2": 59,
+            "dust": 1445.31873,
+            "humidity": 67.9,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:07:30"
+          },
+          "-Ocq4nDVS40uNshkkl-P": {
+            "airQuality": "Very Poor",
+            "co2": 59,
+            "dust": 820.61542,
+            "humidity": 67.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:08:00"
+          },
+          "-Ocq4uWXQYHzXOcJSXEu": {
+            "airQuality": "Very Poor",
+            "co2": 55,
+            "dust": 869.24902,
+            "humidity": 67.8,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:08:30"
+          },
+          "-Ocq50qPO8eFLPDe-FyW": {
+            "airQuality": "Very Poor",
+            "co2": 55,
+            "dust": 756.91211,
+            "humidity": 68.1,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:09:00"
+          },
+          "-Ocq5FLquls8oQcKaBbk": {
+            "airQuality": "Very Poor",
+            "co2": 53,
+            "dust": 704.16846,
+            "humidity": 68.2,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:10:00"
+          },
+          "-Ocq5U2FhZslo6UcbSgR": {
+            "airQuality": "Very Poor",
+            "co2": 56,
+            "dust": 839.10986,
+            "humidity": 68.1,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:11:00"
+          },
+          "-Ocq5aRZVY6PmY2NJTaZ": {
+            "airQuality": "Very Poor",
+            "co2": 56,
+            "dust": 828.15015,
+            "humidity": 68,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:11:30"
+          },
+          "-Ocq5hlj_syluQw0i4jM": {
+            "airQuality": "Very Poor",
+            "co2": 53,
+            "dust": 920.62268,
+            "humidity": 68.1,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:12:00"
+          },
+          "-Ocq5p42zeStaiEwwofS": {
+            "airQuality": "Very Poor",
+            "co2": 52,
+            "dust": 677.45416,
+            "humidity": 68.3,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 01:12:30"
+          },
+          "-Ocq5wN-9Rf6chO3Or_Q": {
+            "airQuality": "Very Poor",
+            "co2": 55,
+            "dust": 2540.60425,
+            "humidity": 68.4,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 01:13:00"
+          },
+          "-Ocqc7S97Pirljppchat": {
+            "airQuality": "Very Poor",
+            "co2": 9,
+            "dust": 1171.32605,
+            "humidity": 73,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 03:38:00"
+          },
+          "-OcqcEmyglysEBTI64i9": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 507.57874,
+            "humidity": 72.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:38:30"
+          },
+          "-OcqcM54fWbrGMxY2xAY": {
+            "airQuality": "Very Poor",
+            "co2": 9,
+            "dust": 1265.16846,
+            "humidity": 72.8,
+            "temperature": 33.5,
+            "timestamp": "2025-10-31 03:39:00"
+          },
+          "-OcqcTS0-ahC2924FWA3": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 1470.66309,
+            "humidity": 73.2,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:39:30"
+          },
+          "-Ocqc_dKIF5wKiZ_AqEI": {
+            "airQuality": "Poor",
+            "co2": 10,
+            "dust": 395.24176,
+            "humidity": 73,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:40:00"
+          },
+          "-Ocqcgy1tGC1e5hIq08l": {
+            "airQuality": "Very Poor",
+            "co2": 9,
+            "dust": 2354.28931,
+            "humidity": 73,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:40:30"
+          },
+          "-OcqcoKi1QfZ3U0sTeRY": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 1332.29663,
+            "humidity": 73,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:41:00"
+          },
+          "-Ocqcvbe1UhhOm2Yy8Xd": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 1108.30774,
+            "humidity": 73.1,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:41:30"
+          },
+          "-Ocqd1whKvTBF01Sz5hD": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 535.66302,
+            "humidity": 73.2,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:42:00"
+          },
+          "-Ocqd9GeU_GqV49yCPpC": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 426.75095,
+            "humidity": 73.1,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:42:30"
+          },
+          "-OcqdGbLPYSlCtPDiwxy": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1774.10986,
+            "humidity": 73.1,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:43:00"
+          },
+          "-OcqdNv9vwgzJtUXsMGH": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2073.44678,
+            "humidity": 73.2,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:43:30"
+          },
+          "-OcqdVHtw7HuR6dnYMV8": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2441.96704,
+            "humidity": 73,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:44:00"
+          },
+          "-Ocqdbc4V5cdN1PpRwT6": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 937.06226,
+            "humidity": 73.2,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:44:30"
+          },
+          "-OcqdizWXvhCex9uBkfh": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 634.30035,
+            "humidity": 73,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:45:00"
+          },
+          "-OcqdqLd3dKLtlCbAV0D": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 404.83148,
+            "humidity": 73,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:45:30"
+          },
+          "-OcqdxbxAi8kzV7RA_5d": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 752.80225,
+            "humidity": 72.9,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:46:00"
+          },
+          "-Ocqe3x4ZLXp9djNpMC8": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1423.39929,
+            "humidity": 73.1,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:46:30"
+          },
+          "-OcqeBIRC4PZZ2DqO0Br": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2035.77295,
+            "humidity": 72.9,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:47:00"
+          },
+          "-OcqeIaQ--XRcTeX6lEw": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2344.01465,
+            "humidity": 72.7,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:47:30"
+          },
+          "-OcqePyVCVW3lOqwJkVI": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 581.55676,
+            "humidity": 73.2,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:48:00"
+          },
+          "-OcqeXGnmh2LDg_01g6X": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1035.69971,
+            "humidity": 72.8,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:48:30"
+          },
+          "-OcqedaRjOY4kgIl3HQF": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2120.71069,
+            "humidity": 73,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:49:00"
+          },
+          "-OcqekvNy7DNjzdLKTb6": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2190.57861,
+            "humidity": 73,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:49:30"
+          },
+          "-Ocqes8VKzCiN4fmBAey": {
+            "airQuality": "Poor",
+            "co2": 11,
+            "dust": 396.61172,
+            "humidity": 72.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 03:50:00"
+          },
+          "-OcqezUbQAjo793Q2Fgx": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 685.67401,
+            "humidity": 72.9,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:50:30"
+          },
+          "-Ocqf5ospk7m7Ni7QrSt": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 743.8974,
+            "humidity": 72.8,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:51:00"
+          },
+          "-OcqfD8VReT5NWztrl8P": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2125.50562,
+            "humidity": 72.6,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:51:30"
+          },
+          "-OcqfKaDO3ame1ViA4F5": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1088.44324,
+            "humidity": 72.6,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:52:00"
+          },
+          "-OcqfRoTmu8oLeVm8ANL": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 415.7912,
+            "humidity": 72.8,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:52:30"
+          },
+          "-OcqfZ9YHn7KRGHSbVdu": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2453.61182,
+            "humidity": 72.8,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:53:00"
+          },
+          "-OcqffV6JFYHoUgFS1iH": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1044.60437,
+            "humidity": 72.9,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:53:30"
+          },
+          "-Ocqfmp9m79U1UCYpKQx": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 725.40289,
+            "humidity": 73,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:54:00"
+          },
+          "-OcqfuE2oEAcUpngqbGQ": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 793.90112,
+            "humidity": 72.6,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:54:30"
+          },
+          "-Ocqg0SreeGYd9gcdBAd": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1224.06958,
+            "humidity": 72.9,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:55:00"
+          },
+          "-Ocqg7lu6wEim38WmDmh": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2444.70703,
+            "humidity": 73,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:55:30"
+          },
+          "-OcqgF72wBdwZcrnyLaq": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2433.06226,
+            "humidity": 72.8,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:56:00"
+          },
+          "-OcqgMRfSxJ8INn3Ysa9": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1339.83154,
+            "humidity": 72.7,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:56:30"
+          },
+          "-OcqgTi5twKATB22Km65": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 1282.97803,
+            "humidity": 72.8,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:57:00"
+          },
+          "-OcqgobUUvjugGBmKuEv": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 2167.97437,
+            "humidity": 72.7,
+            "temperature": 33.2,
+            "timestamp": "2025-10-31 03:58:30"
+          },
+          "-Ocqgvw244TGcYYEcj0a": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 2422.10254,
+            "humidity": 72.7,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:59:00"
+          },
+          "-Ocqh2FHJzNpGKc8uOZ4": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 1742.60083,
+            "humidity": 72.6,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 03:59:30"
+          },
+          "-Ocqh9az_DXyDiBWQC7Q": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 408.94141,
+            "humidity": 72.4,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 04:00:00"
+          },
+          "-OcqhH1Ys0Kf3qQDrqNq": {
+            "airQuality": "Very Poor",
+            "co2": 11,
+            "dust": 1687.11731,
+            "humidity": 72.7,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 04:00:30"
+          },
+          "-OcqhOFU7sUjpVzol9hs": {
+            "airQuality": "Very Poor",
+            "co2": 10,
+            "dust": 491.82416,
+            "humidity": 72.8,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 04:01:00"
+          },
+          "-Ocra9ChJM8rZ11dR_VL": {
+            "airQuality": "Fair",
+            "co2": 43,
+            "dust": 231.53114,
+            "humidity": 76,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:09:00"
+          },
+          "-OcraGVlUit_43EnyaPu": {
+            "airQuality": "Fair",
+            "co2": 43,
+            "dust": 186.32234,
+            "humidity": 76,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:09:30"
+          },
+          "-OcraNpS9HtnW5Is-Xx8": {
+            "airQuality": "Fair",
+            "co2": 43,
+            "dust": 237.69595,
+            "humidity": 76.1,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:10:00"
+          },
+          "-OcraVD8B-bZruD5nmpi": {
+            "airQuality": "Fair",
+            "co2": 46,
+            "dust": 217.83151,
+            "humidity": 76.3,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:10:30"
+          },
+          "-OcrabVpdqQjnyCQCn8O": {
+            "airQuality": "Fair",
+            "co2": 43,
+            "dust": 233.58607,
+            "humidity": 76.2,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:11:00"
+          },
+          "-Ocraip3BCQMy5bqjglI": {
+            "airQuality": "Fair",
+            "co2": 43,
+            "dust": 152.07326,
+            "humidity": 76.3,
+            "temperature": 33,
+            "timestamp": "2025-10-31 08:11:30"
+          },
+          "-OcraxTzcAyfLfr8V6cF": {
+            "airQuality": "Fair",
+            "co2": 49,
+            "dust": 228.79121,
+            "humidity": 75.8,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 08:12:30"
+          },
+          "-Ocrb3kQxP42QNcxT-EC": {
+            "airQuality": "Fair",
+            "co2": 49,
+            "dust": 219.88644,
+            "humidity": 75.7,
+            "temperature": 33.3,
+            "timestamp": "2025-10-31 08:13:00"
+          },
+          "-OcrbB4AdHZNYmIT90Yh": {
+            "airQuality": "Fair",
+            "co2": 44,
+            "dust": 217.14651,
+            "humidity": 75.9,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 08:13:30"
+          },
+          "-OcrbIPQng3Er6KKgv-T": {
+            "airQuality": "Fair",
+            "co2": 50,
+            "dust": 206.87178,
+            "humidity": 75.7,
+            "temperature": 33.4,
+            "timestamp": "2025-10-31 08:14:00"
+          }
+        },
+        "latest": {
+          "airQuality": "Fair",
+          "co2": 46,
+          "dust": 215.09158,
+          "humidity": 75.7,
+          "temperature": 33.4,
+          "timestamp": "2025-10-31 08:14:02"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+name: auth_bloc
+description: "A new Flutter project."
+publish_to: "none" 
+version: 1.5.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  awesome_dialog: ^3.2.1
+  cached_network_image: ^3.3.1
+  cloud_firestore: ^4.17.3  
+  cupertino_icons: ^1.0.6
+  firebase_auth: ^4.19.5
+  firebase_core: ^2.31.0
+  firebase_storage: ^11.0.1
+  flutter:
+    sdk: flutter
+  flutter_blue_plus: ^1.36.6
+  permission_handler: ^11.0.1
+  flutter_bloc: ^8.1.5
+  flutter_offline: ^3.0.1
+  flutter_screenutil: ^5.9.1
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.2
+  gap: ^3.0.1
+  google_sign_in: ^6.2.1
+  rive: ^0.13.4
+  file_picker: ^8.0.0
+  http: ^1.1.0
+  google_fonts: ^6.2.1
+  cloud_functions: ^4.3.0
+  firebase_database: ^10.5.7
+  intl: ^0.20.2
+  collection: ^1.18.0
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.jpg"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/animation/
+    - assets/images/
+    - assets/svgs/
